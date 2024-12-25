@@ -9,11 +9,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["UserService.API/UserService.API.csproj", "UserService.API/"]
-RUN dotnet restore "./UserService.API/UserService.API.csproj"
+COPY ["server/Microservices/UserService/UserService.API/UserService.API.csproj", "UserService.API/"]
+COPY ["server/Shared/Shared.csproj", "Shared/"]
+RUN dotnet restore "./UserService.API.csproj"
 COPY . .
 WORKDIR "/src/UserService.API"
-RUN dotnet build "./UserService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN ls -la /src/UserService.API
+RUN dotnet build "UserService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release

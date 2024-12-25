@@ -2,19 +2,19 @@ services:
 
   api-gateway:
     build:
-      context: ./server/api-gateway
+      context: ./server/ApiGateway
       dockerfile: Dockerfile
     ports:
       - "8080:80"
     depends_on:
       - user-service
-      - movie-service
-      - booking-service
+    #   - movie-service
+    #   - booking-service
 
   user-service:
     build:
-      context: ./server/microservices/UserService
-      dockerfile: UserService.API/Dockerfile
+      context: .
+      dockerfile: server/Microservices/UserService/UserService.API/Dockerfile
     ports:
       - "5001:5000"
     depends_on:
@@ -22,27 +22,27 @@ services:
       - redis
       - rabbitmq
 
-  movie-service:
-    build:
-      context: ./server/microservices/MovieService
-      dockerfile: MovieService.API/Dockerfile
-    ports:
-      - "5002:5000"
-    depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+#   movie-service:
+#     build:
+#       context: ./server
+#       dockerfile: Microservices/MovieService/MovieService.API/Dockerfile
+#     ports:
+#       - "5002:5000"
+#     depends_on:
+#       - postgres
+#       - redis
+#       - rabbitmq
 
-  booking-service:
-    build:
-      context: ./server/microservices/BookingService
-      dockerfile: BookingService.API/Dockerfile
-    ports:
-      - "5003:5000"
-    depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+#   booking-service:
+#     build:
+#       context: ./server
+#       dockerfile: Microservices/BookingService/BookingService.API/Dockerfile
+#     ports:
+#       - "5003:5000"
+#     depends_on:
+#       - postgres
+#       - redis
+#       - rabbitmq
 
   rabbitmq:
     container_name: RabbitMQ

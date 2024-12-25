@@ -1,35 +1,48 @@
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.HttpOverrides;
 
-namespace UserService.API;
+using UserService.API.Extensions;
+using UserService.API.Middlewares;
+using UserService.Application.Extensions;
+using UserService.Infrastructure.Extensions;
+using UserService.Persistence.Extensions;
 
-public class Program
+await CommandLineParser.RunMigration(args);
+
+var builder = WebApplication.CreateBuilder(args);
+var services  = builder.Services;
+var configuration = builder.Configuration;
+
+services.AddAPI(configuration)
+	.AddApplication()
+	.AddInfrastructure()
+	.AddPersistence(configuration);
+
+var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
+app.MapHealthChecks("/health");
+
+app.UseCookiePolicy(new CookiePolicyOptions
 {
-	public static void Main(string[] args)
-	{
-		var builder = WebApplication.CreateBuilder(args);
+	MinimumSameSitePolicy = SameSiteMode.None,
+	HttpOnly = HttpOnlyPolicy.Always,
+	Secure = CookieSecurePolicy.Always
+});
+app.UseHttpsRedirection();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+	ForwardedHeaders = ForwardedHeaders.All
+});
+app.UseCors();
 
-		// Add services to the container.
+app.UseAuthentication();
+app.UseAuthorization();
 
-		builder.Services.AddControllers();
-		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen();
+app.MapControllers();
 
-		var app = builder.Build();
-
-		// Configure the HTTP request pipeline.
-		if (app.Environment.IsDevelopment())
-		{
-			app.UseSwagger();
-			app.UseSwaggerUI();
-		}
-
-		app.UseHttpsRedirection();
-
-		app.UseAuthorization();
-
-
-		app.MapControllers();
-
-		app.Run();
-	}
-}
+app.Run();
