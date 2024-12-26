@@ -1,4 +1,7 @@
+using HealthChecks.UI.Client;
+
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 
 using UserService.API.Extensions;
@@ -25,7 +28,12 @@ app.UseSwaggerUI();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks(
+	"/health",
+	new HealthCheckOptions
+	{
+		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+	});
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {

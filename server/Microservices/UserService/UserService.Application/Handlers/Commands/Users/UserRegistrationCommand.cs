@@ -15,14 +15,12 @@ namespace UserService.Application.Handlers.Commands.Users;
 public class UserRegistrationCommand(
 	string email,
 	string password,
-	Role role,
 	string? firstName = null,
 	string? lastName = null,
 	string? dateOfBirth = null) : IRequest<AuthDto>
 {
 	public string Email { get; private set; } = email;
 	public string Password { get; private set; } = password;
-	public Role Role { get; private set; } = role;
 	public string? FirstName { get; private set; } = firstName;
 	public string? LastName { get; private set; } = lastName;
 	public string? DateOfBirth { get; private set; } = dateOfBirth;
@@ -41,7 +39,7 @@ public class UserRegistrationCommand(
 		{
 			if (!DateTime.TryParseExact(
 				request.DateOfBirth,
-				Constants.DateTimeConstants.DATE_TIME_FORMAT,
+				Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None,
 				out DateTime parsedDateTime))
@@ -52,40 +50,29 @@ public class UserRegistrationCommand(
 			if (existUser is not null)
 				throw new AlreadyExistsException($"User with email {request.Email} already exists");
 
-			if (request.FirstName == null || request.LastName == null || request.DateOfBirth == null)
-				throw new ArgumentException("First name, last name, and date of birth are required for participants.");
-
-			UserModel userModel = request.Role == Role.User ?
-				new(
+			UserModel userModel = new(
 					Guid.NewGuid(),
 					request.Email,
 					_passwordHash.Generate(request.Password),
-					request.Role) :
-				new(
-					Guid.NewGuid(),
-					request.Email,
-					_passwordHash.Generate(request.Password),
-					request.Role,
+					Role.User,
 					request.FirstName,
 					request.LastName,
 					parsedDateTime);
 
-			var accessToken = _jwt.GenerateAccessToken(userModel.Id, userModel.Role);
+			Role role = Role.User;
+
+			var accessToken = _jwt.GenerateAccessToken(userModel.Id, role);
 			var refreshToken = _jwt.GenerateRefreshToken();
 
 			RefreshTokenModel refreshTokenModel = new(
 				userModel.Id,
-				userModel.Role,
+				role,
 				refreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
 			await _usersRepository.Create(userModel, refreshTokenModel, cancellationToken);
 
-			return new AuthDto
-			{
-				AccessToken = accessToken,
-				RefreshToken = refreshToken
-			};
+			return new AuthDto(accessToken, refreshToken);
 		}
 	}
 }

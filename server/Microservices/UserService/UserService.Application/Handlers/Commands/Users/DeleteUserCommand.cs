@@ -15,10 +15,10 @@ public class DeleteUserCommand(Guid id) : IRequest
 
 		public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 		{
-			var _ = await _usersRepository.Get(request.Id, cancellationToken)
+			var user = await _usersRepository.Get(request.Id, cancellationToken)
 				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
 
-			await _usersRepository.Delete(request.Id, cancellationToken);
+			await _usersRepository.Delete(user, cancellationToken);
 			return;
 		}
 	}

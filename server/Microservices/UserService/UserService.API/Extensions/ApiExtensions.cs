@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 
 using FluentValidation;
@@ -14,7 +15,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using Swashbuckle.AspNetCore.Filters;
+
 using UserService.API.Behaviors;
+using UserService.API.Contracts.Examples;
 using UserService.API.Validators;
 using UserService.Application.Handlers.Commands.Users;
 using UserService.Infrastructure.Auth;
@@ -29,12 +33,15 @@ public static class ApiExtensions
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(options =>
 		{
+			options.ExampleFilters();
 			options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
 			{
 				Name = "Authorization",
 				In = ParameterLocation.Header,
 				Type = SecuritySchemeType.Http,
-				Scheme = "Bearer"
+				Scheme = "Bearer",
+				BearerFormat = "JWT",
+				Description = "Введите токен JWT в формате 'Bearer {токен}'"
 			});
 			options.AddSecurityRequirement(new OpenApiSecurityRequirement
 			{
@@ -51,15 +58,11 @@ public static class ApiExtensions
 				}
 			});
 		});
+		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
 
 		services.AddProblemDetails();
-
 		services.AddHealthChecks();
 
-		services.AddControllers(options =>
-		{
-			options.Filters.Add<GlobalRoleValidationFilter>();
-		});
 
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
@@ -94,24 +97,31 @@ public static class ApiExtensions
 				{
 					OnAuthenticationFailed = context =>
 					{
-						Console.WriteLine("Authentication failed: " + context.Exception.Message);
+						Debug.WriteLine(context.Request.Headers.Authorization);
+						Debug.WriteLine("Authentication failed: " + context.Exception.Message);
 						return Task.CompletedTask;
 					},
 					OnTokenValidated = context =>
 					{
-						Console.WriteLine("Token is valid.");
+						Debug.WriteLine("Token is valid.");
 						return Task.CompletedTask;
 					},
 					OnMessageReceived = context =>
 					{
-						context.Token = context.Request.Cookies[Application.Constants.JwtConstants.COOKIE_NAME];
+						// Проверяем, есть ли Authorization заголовок
+						var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+						if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+						{
+							// Извлекаем токен, удаляя "Bearer "
+							context.Token = authHeader.Substring("Bearer ".Length).Trim();
+						}
 						return Task.CompletedTask;
 					}
 				};
 			});
 
 
-		//services.Configure<JwtModel>(configuration.GetSection(nameof(JwtModel)));
+		services.Configure<JwtModel>(configuration.GetSection(nameof(JwtModel)));
 		services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
 
 
@@ -144,14 +154,10 @@ public static class ApiExtensions
 
 		services.AddScoped<IAuthorizationHandler, ActiveAdminHandler>();
 
-		//services.AddStackExchangeRedisCache(options =>
-		//{
-		//	options.Configuration = configuration.GetConnectionString("RedisCache");
-		//});
-
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
+		//services.AddValidatorsFromAssemblyContaining<UserRegistrationCommandValidator<UserRegistrationCommand>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 

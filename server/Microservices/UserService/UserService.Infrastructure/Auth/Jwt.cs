@@ -32,6 +32,8 @@ public class Jwt : IJwt
 			new Claim(ClaimTypes.Role, EnumExtensions.GetDescription(role))
 		};
 
+		var strr = _jwtOptions.SecretKey;
+
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
 		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -58,17 +60,8 @@ public class Jwt : IJwt
 
 		if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.UtcNow)
 			return Guid.Empty;
-
-		if (storedToken.AdminId.HasValue && storedToken.AdminId.Value != Guid.Empty)
-		{
-			return storedToken.AdminId.Value;
-		}
-		else if (storedToken.UserId.HasValue && storedToken.UserId.Value != Guid.Empty)
-		{
-			return storedToken.UserId.Value;
-		}
-
-		return Guid.Empty;
+		
+		return storedToken.UserId.Value;
 	}
 
 	public int GetRefreshTokenExpirationDays()

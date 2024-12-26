@@ -39,6 +39,15 @@ public class UsersRepository : IUsersRepository
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
+	public async Task<Role?> GetRoleById(Guid id, CancellationToken cancellationToken)
+	{
+		return await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Id == id)
+			.Select(u => u.Role)
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
 	public async Task<IList<UserModel>> Get(CancellationToken cancellationToken)
 	{
 		var users = await _context.Users
@@ -50,14 +59,12 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<Guid> Create(UserModel user, RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
 	{
+		var userEntity = _mapper.Map<UserEntity>(user);
 		var refreshTokenEntity = _mapper.Map<RefreshTokenEntity>(refreshTokenModel);
 
 		using var transaction = _context.Database.BeginTransaction();
-
 		try
 		{
-			var userEntity = _mapper.Map<UserEntity>(user);
-
 			await _context.Users.AddAsync(userEntity, cancellationToken);
 			await _context.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
 			await _context.SaveChangesAsync(cancellationToken);
@@ -65,33 +72,6 @@ public class UsersRepository : IUsersRepository
 			transaction.Commit();
 
 			return userEntity.Id;
-
-			//if (user.Role is Role.User)
-			//{
-			//	await _context.Users.AddAsync(userEntity, cancellationToken);
-			//	await _context.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
-			//	await _context.SaveChangesAsync(cancellationToken);
-
-			//	transaction.Commit();
-
-			//	return userEntity.Id;
-			//}
-			//else if (user.Role is Role.Admin)
-			//{
-			//	//var adminCount = await _context.Users
-			//	//	.Where(u => u.Role == Role.Admin)
-			//	//	.CountAsync(cancellationToken);
-
-			//	//userEntity.IsActiveAdmin = adminCount == 0; // true, если это первая запись
-
-			//	await _context.Users.AddAsync(userEntity, cancellationToken);
-			//	await _context.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
-			//	await _context.SaveChangesAsync(cancellationToken);
-
-			//	transaction.Commit();
-
-			//	return userEntity.Id;
-			//}
 		}
 		catch (Exception ex)
 		{
@@ -102,40 +82,68 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<UserModel> Update(UserModel model, CancellationToken cancellationToken)
 	{
+		// Загружаем существующую сущность из базы данных
 		var entity = await _context.Users.FindAsync(model.Id, cancellationToken)
-			?? throw new InvalidOperationException("The entity was not found.");
+		?? throw new InvalidOperationException("The entity was not found.");
 
+		// Если роль не Admin, обновляем только нужные поля
 		if (entity.Role is not Role.Admin)
 		{
-			entity = _mapper.Map<UserEntity>(model);
+			_mapper.Map(model, entity); // Обновляем существующую сущность
 		}
-
+		
+		// Сохраняем изменения в базе данных
 		await _context.SaveChangesAsync(cancellationToken);
 
+		// Возвращаем обновлённую модель
 		return _mapper.Map<UserModel>(entity);
 	}
 
-	public async Task Delete(Guid userId, CancellationToken cancellationToken)
+	public async Task Delete(UserModel model, CancellationToken cancellationToken)
 	{
-		var entity = await _context.Users.FindAsync(userId, cancellationToken, cancellationToken)
-			?? throw new InvalidOperationException("The entity was not found.");
+		var entity = _mapper.Map<UserEntity>(model);
+		
+		var token = await _context.RefreshTokens
+			.FirstOrDefaultAsync(rt => rt.UserId == model.Id, cancellationToken);
 
-		if (entity.Role is not Role.Admin)
+		if (entity == null)
 		{
-			_context.Users.Remove(entity!);
-			await _context.SaveChangesAsync(cancellationToken);
+			throw new NotFoundException("User not found.");
 		}
-		else if (entity.Role is Role.Admin)
+
+		using var transaction = _context.Database.BeginTransaction();
+		try
 		{
-			var adminCount = await _context.Users
-				.Where(u => u.Role == Role.Admin)
-				.CountAsync(cancellationToken);
+			if (entity.Role == Role.User)
+			{
+				_context.Users.Remove(entity);
+				_context.RefreshTokens.Remove(token);
 
-			if (adminCount == 1)
-				throw new BadRequestException("Сannot delete the last Admin");
+				await _context.SaveChangesAsync(cancellationToken);
+			}
+			else if (entity.Role == Role.Admin)
+			{
+				var adminCount = await _context.Users
+					.Where(u => u.Role == Role.Admin)
+					.CountAsync(cancellationToken);
 
-			_context.Users.Remove(entity);
-			await _context.SaveChangesAsync(cancellationToken);
+				if (adminCount == 1)
+				{
+					throw new BadRequestException("Cannot delete the last Admin");
+				}
+
+				_context.Users.Remove(entity);
+				_context.RefreshTokens.Remove(token);
+
+				await _context.SaveChangesAsync(cancellationToken);
+			}
+			transaction.Commit();
+			return;
+		}
+		catch (Exception ex)
+		{
+			await transaction.RollbackAsync(cancellationToken);
+			throw new InvalidOperationException($"An error occurred while creating user and saving token: {ex.Message}", ex);
 		}
 	}
 }

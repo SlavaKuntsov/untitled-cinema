@@ -1,0 +1,1 @@
+dotnet ef migrations add initial -s UserService.API -p UserService.Persistence

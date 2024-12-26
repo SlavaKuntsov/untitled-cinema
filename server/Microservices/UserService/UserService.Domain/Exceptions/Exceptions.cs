@@ -24,4 +24,7 @@ public class NotFoundException(string message) : Exception(message) { }
 public class ValidationProblemException(string message) : Exception(message) { }
 
 
+/// <summary>
+/// Represents an exception that occurs when there is a invalid token.
+/// </summary>
 public class InvalidTokenException(string message) : Exception(message) { }

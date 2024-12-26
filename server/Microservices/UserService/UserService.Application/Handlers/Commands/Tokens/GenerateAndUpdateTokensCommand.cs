@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using MediatR;
+﻿using MediatR;
 
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces.Auth;
@@ -41,12 +35,7 @@ public class GenerateAndUpdateTokensCommand(Guid id, Role role) : IRequest<AuthD
 				refreshTokenModel,
 				cancellationToken);
 
-			return new AuthDto
-			{
-				AccessToken = accessToken,
-				RefreshToken = newRefreshToken
-			};
-
+			return new AuthDto(accessToken, newRefreshToken);
 		}
 	}
 }

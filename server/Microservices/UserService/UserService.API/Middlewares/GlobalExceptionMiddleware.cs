@@ -1,5 +1,6 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using System.Text.Json;
+
+using FluentValidation;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,28 +29,33 @@ public class GlobalExceptionMiddleware
 		}
 	}
 
+	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
+	{
+		{ typeof(AlreadyExistsException), (StatusCodes.Status400BadRequest, "Resource Already Exists") },
+		{ typeof(BadRequestException), (StatusCodes.Status400BadRequest, "Bad Request") },
+		{ typeof(NotFoundException), (StatusCodes.Status404NotFound, "Resource Not Found") },
+		{ typeof(ValidationProblemException), (StatusCodes.Status400BadRequest, "Validation Error") },
+		{ typeof(UnauthorizedAccessException), (StatusCodes.Status401Unauthorized, "Unauthorized") },
+		{ typeof(InvalidTokenException), (StatusCodes.Status400BadRequest, "Invalid Token") },
+		{ typeof(ValidationException), (StatusCodes.Status400BadRequest, "Invalid Data") },
+		{ typeof(InvalidOperationException), (StatusCodes.Status400BadRequest, "Invalid Operation") },
+	};
+
 	private static Task HandleExceptionAsync(HttpContext context, Exception exception)
 	{
-		var statusCode = exception switch
-		{
-			ValidationProblemException => HttpStatusCode.BadRequest,
-			BadRequestException => HttpStatusCode.BadRequest,
-			NotFoundException => HttpStatusCode.NotFound,
-			AlreadyExistsException => HttpStatusCode.Conflict,
-			NotImplementedException => HttpStatusCode.NotImplemented,
-			UnauthorizedAccessException => HttpStatusCode.Unauthorized,
-			_ => HttpStatusCode.InternalServerError,
-		};
+		var (statusCode, title) = ExceptionMappings.TryGetValue(exception.GetType(), out var mapping)
+			? mapping
+			: (StatusCodes.Status500InternalServerError, "Internal Server Error");
 
 		var problemDetails = new ProblemDetails
 		{
-			Status = (int)statusCode,
-			Title = "An error occurred",
+			Status = statusCode,
+			Title = title,
 			Detail = exception.Message
 		};
 
 		context.Response.ContentType = "application/json";
-		context.Response.StatusCode = (int)statusCode;
+		context.Response.StatusCode = statusCode;
 
 		var response = JsonSerializer.Serialize(problemDetails);
 		return context.Response.WriteAsync(response);

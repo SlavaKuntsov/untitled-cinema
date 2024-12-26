@@ -14,12 +14,15 @@ public class UpdateUserCommand(
 	Guid id,
 	string firstName,
 	string lastName,
-	string dateOfBirth) : IRequest<UserModel>
+	string dateOfBirthString,
+	DateTime? dateOfBirth = null
+	) : IRequest<UserModel>
 {
 	public Guid Id { get; private set; } = id;
 	public string FirstName { get; private set; } = firstName;
 	public string LastName { get; private set; } = lastName;
-	public string DateOfBirth { get; private set; } = dateOfBirth;
+	public string DateOfBirthString { get; private set; } = dateOfBirthString;
+	public DateTime? DateOfBirth { get; private set; } = dateOfBirth;
 
 	public class UpdateParticipantCommandHandler(IUsersRepository usersRepository) : IRequestHandler<UpdateUserCommand, UserModel>
 	{
@@ -28,8 +31,8 @@ public class UpdateUserCommand(
 		public async Task<UserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
 		{
 			if (!DateTime.TryParseExact(
-				request.DateOfBirth,
-				Constants.DateTimeConstants.DATE_TIME_FORMAT,
+				request.DateOfBirthString,
+				Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None,
 				out DateTime parsedDateTime))
@@ -37,7 +40,7 @@ public class UpdateUserCommand(
 
 			var existUser = await _usersRepository.Get(request.Id, cancellationToken)
 				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
-
+		    
 			request.Adapt(existUser);
 
 			return await _usersRepository.Update(existUser, cancellationToken);

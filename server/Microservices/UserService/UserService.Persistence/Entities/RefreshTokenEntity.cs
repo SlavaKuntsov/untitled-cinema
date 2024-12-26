@@ -9,5 +9,5 @@ public class RefreshTokenEntity
 	public DateTime CreatedAt { get; set; }
 	public bool IsRevoked { get; set; }
 
-	public virtual UserEntity User { get; set; }
+	public virtual UserEntity User { get; set; } = null!;
 }

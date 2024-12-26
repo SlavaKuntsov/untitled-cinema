@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BCrypt.Net;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using UserService.Persistence.Entities;
@@ -34,6 +36,14 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 		builder.Property(d => d.DateOfBirth)
 			.IsRequired();
 
+		builder.Property(p => p.DateOfBirth)
+			.IsRequired()
+			.HasColumnType("date")
+			.HasConversion(
+				v => v.Date,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+			);
+
 		//builder.HasOne(u => u.Data)
 		//	.WithOne(d => d.User)
 		//	.HasForeignKey<UserDataEntity>(d => d.Id);
@@ -41,5 +51,14 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 		builder.HasOne(u => u.RefreshToken)
 			.WithOne(r => r.User)
 			.HasForeignKey<RefreshTokenEntity>(r => r.UserId);
+
+		builder.HasData(
+			new UserEntity
+			{
+				Id = Guid.NewGuid(),
+				Email = "admin@gmail.com",
+				Password = BCrypt.Net.BCrypt.EnhancedHashPassword("qweQWE123"),
+				Role = Domain.Enums.Role.Admin
+			});
 	}
 }

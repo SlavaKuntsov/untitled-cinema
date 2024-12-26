@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserService.Persistence;
@@ -11,9 +12,11 @@ using UserService.Persistence;
 namespace UserService.Persistence.Migrations
 {
     [DbContext(typeof(UserServiceDBContext))]
-    partial class UserServiceDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241226012827_date")]
+    partial class date
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,18 +90,6 @@ namespace UserService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("94c7e850-8679-465c-9ece-46d0cc3f073d"),
-                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@gmail.com",
-                            FirstName = "",
-                            LastName = "",
-                            Password = "$2a$11$.5pNl0VTQRv1eAg0A2itiuQ0OgMXAn9xkiXZHMYdcmm83OfJ0rQi.",
-                            Role = 3
-                        });
                 });
 
             modelBuilder.Entity("UserService.Persistence.Entities.RefreshTokenEntity", b =>

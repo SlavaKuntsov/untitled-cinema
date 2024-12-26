@@ -26,10 +26,7 @@ public class LoginQuery(string email, string password) : IRequest<UserModel>
 			//_logger.LogInformation($"Start handling {request.GetType().Name} for user with Email {request.Email}");
 
 			var existUser = await _usersRepository.Get(request.Email, cancellationToken)
-				?? throw new NotFoundException(request.Email);
-
-			if (existUser.Role is Role.Admin && !existUser.isActiveAdmin)
-				throw new UnauthorizedAccessException("Admin doesn't have active role");
+				?? throw new NotFoundException("User not found");
 
 			var isCorrectPassword = _passwordHash.Verify(request.Password, existUser.Password);
 

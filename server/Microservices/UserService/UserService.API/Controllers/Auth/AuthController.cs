@@ -1,8 +1,15 @@
+using System.Diagnostics;
+using System.Security.Claims;
+
+using MapsterMapper;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using UserService.Application.Handlers.Commands.Tokens;
+using UserService.Application.Handlers.Queries.Users;
+using UserService.Domain.Exceptions;
 
 namespace UserService.API.Controllers;
 
@@ -11,9 +18,12 @@ namespace UserService.API.Controllers;
 public class AuthController : ControllerBase
 {
 	private readonly IMediator _mediator;
-	public AuthController(IMediator mediator)
+	private readonly IMapper _mapper;
+
+	public AuthController(IMediator mediator, IMapper mapper)
 	{
 		_mediator = mediator;
+		_mapper = mapper;
 	}
 
 	// TODO - move to GRPC
@@ -23,47 +33,44 @@ public class AuthController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> RefreshToken()
 	{
-		string? refreshToken = HttpContext.Request.Cookies[Application.Constants.JwtConstants.COOKIE_NAME];
+		string? refreshToken = HttpContext.Request.Cookies[Domain.Constants.JwtConstants.COOKIE_NAME];
 
 		if (string.IsNullOrEmpty(refreshToken))
-			return Unauthorized("Refresh token is missing.");
+			throw new UnauthorizedAccessException("Refresh token is missing.");
 
-		var userDto = await _mediator.Send(new RefreshTokenCommand(refreshToken));
+		var userRoleDto = await _mediator.Send(new RefreshTokenCommand(refreshToken));
 
-		var authResult = await _mediator.Send(new GenerateAndUpdateTokensCommand(userDto.Id, userDto.Role));
+		var authDto = await _mediator.Send(new GenerateAndUpdateTokensCommand(userRoleDto.Id, userRoleDto.Role));
 
-		HttpContext.Response.Cookies.Append(Application.Constants.JwtConstants.COOKIE_NAME, authResult.RefreshToken);
+		HttpContext.Response.Cookies.Append(Domain.Constants.JwtConstants.COOKIE_NAME, authDto.RefreshToken);
 
-		return Ok(authResult);
+		return Ok(authDto);
 	}
 
-	// TODO - move to GRPC
 	[HttpGet(nameof(Authorize))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> Authorize()
 	{
-		string? refreshToken = HttpContext.Request.Cookies[Application.Constants.JwtConstants.COOKIE_NAME];
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-		if (string.IsNullOrEmpty(refreshToken))
-			throw new UnauthorizedAccessException("Refresh token is missing.");
+		if (userIdClaim == null)
+			throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		var userDto = await _mediator.Send(new RefreshTokenCommand(refreshToken));
+		Guid userId = Guid.Parse(userIdClaim.Value);
 
-		var authResult = await _mediator.Send(new GenerateAndUpdateTokensCommand(userDto.Id, userDto.Role));
+		var user = await _mediator.Send(new GetUserQuery(userId))
+			?? throw new NotFoundException("User not found");
 
-		HttpContext.Response.Cookies.Append(Application.Constants.JwtConstants.COOKIE_NAME, authResult.RefreshToken);
-
-		return Ok(authResult);
+		return Ok(_mapper.Map<UserDto>(user));
 	}
 
-	// TODO - "Unauthorize" or "LogOut"?
 	[HttpGet(nameof(Unauthorize))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public IActionResult Unauthorize()
 	{
-		HttpContext.Response.Cookies.Delete(Application.Constants.JwtConstants.COOKIE_NAME);
+		HttpContext.Response.Cookies.Delete(Domain.Constants.JwtConstants.COOKIE_NAME);
 
 		return Ok();
 	}

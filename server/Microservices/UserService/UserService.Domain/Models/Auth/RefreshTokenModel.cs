@@ -9,7 +9,6 @@ public class RefreshTokenModel
 	public DateTime ExpiresAt { get; private set; }
 	public bool IsRevoked { get; private set; } = false;
 	public DateTime CreatedAt { get; private set; }
-	public Guid? AdminId { get; private set; }
 	public Guid? UserId { get; private set; }
 
 	public RefreshTokenModel() { }
@@ -21,8 +20,7 @@ public class RefreshTokenModel
 		ExpiresAt = DateTime.UtcNow.Add(TimeSpan.FromDays(refreshTokenExpirationDays));
 		CreatedAt = DateTime.UtcNow;
 		IsRevoked = false;
-		AdminId = role == Role.Admin ? userId : null;
-		UserId = role == Role.User ? userId : null;
+		UserId = userId;
 	}
 
 	//public RefreshTokenModel(Guid id, string token, DateTime expiresAt, bool isRevoked, DateTime createdAt, Guid? adminId, Guid? participantId)

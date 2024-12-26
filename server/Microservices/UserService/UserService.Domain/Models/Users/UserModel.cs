@@ -8,11 +8,9 @@ public class UserModel
 	public string Email { get; private set; } = string.Empty;
 	public string Password { get; private set; } = string.Empty;
 	public Role Role { get; private set; }
-	public bool isActiveAdmin { get; private set; } = false;
-	public string? FirstName { get; private set; } = string.Empty;
-	public string? LastName { get; private set; } = string.Empty;
-	public DateTime? DateOfBirth { get; private set; } = null;
-	//public UserDataModel? UserData { get; private set; }
+	public string FirstName { get; private set; } = string.Empty;
+	public string LastName { get; private set; } = string.Empty;
+	public DateTime DateOfBirth { get; private set; }
 
 	public UserModel(
 		Guid id,
@@ -27,8 +25,8 @@ public class UserModel
 		Email = email;
 		Password = password;
 		Role = role;
-		FirstName = firstName ?? null;
-		LastName = lastName ?? null;
-		DateOfBirth = dateOfBirth ?? null;
+		FirstName = firstName ?? string.Empty;
+		LastName = lastName ?? string.Empty;
+		DateOfBirth = dateOfBirth ?? DateTime.MinValue;
 	}
 }

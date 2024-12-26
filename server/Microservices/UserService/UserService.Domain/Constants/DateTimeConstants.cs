@@ -1,4 +1,4 @@
-﻿namespace UserService.API.Constants;
+﻿namespace UserService.Domain.Constants;
 
 public class DateTimeConstants
 {

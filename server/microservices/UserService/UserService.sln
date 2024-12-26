@@ -13,11 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Infrastructure"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Persistence", "UserService.Persistence\UserService.Persistence.csproj", "{822E0845-B8DA-4E24-A8F6-9B8840EC75F3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{AEAEE70D-864E-4E1F-9A04-FF7720454FE3}"
-	ProjectSection(SolutionItems) = preProject
-		stylecop.ruleset = stylecop.ruleset
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
