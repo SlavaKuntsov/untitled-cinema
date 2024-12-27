@@ -32,12 +32,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UserService.Infrastructure\UserService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Protobufs\Protobufs.csproj" />
     <ProjectReference Include="..\UserService.Persistence\UserService.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="..\..\..\Protobufs\Auth\auth.proto" GrpcServices="Server">
       <Link>Protos\auth.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\..\Protobufs\Auth\AuthService.proto" GrpcServices="Server">
+      <Link>Protos\AuthService.proto</Link>
     </Protobuf>
   </ItemGroup>
 

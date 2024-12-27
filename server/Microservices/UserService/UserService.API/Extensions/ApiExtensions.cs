@@ -29,6 +29,7 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddGrpc();
 		services.AddControllers();
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(options =>
@@ -162,5 +163,10 @@ public static class ApiExtensions
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 		return services;
+	}
+
+	public static void UseAPI(this WebApplication app)
+	{
+		app.MapGrpcService<Controllers.Grpc.Auth.AuthController>();
 	}
 }

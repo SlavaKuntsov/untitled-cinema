@@ -23,6 +23,9 @@ services.AddAPI(configuration)
 
 var app = builder.Build();
 
+app.UseAPI();
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
