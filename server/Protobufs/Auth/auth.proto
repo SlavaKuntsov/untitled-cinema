@@ -7,10 +7,8 @@ message RefreshTokenRequest {
 }
 
 message RefreshTokenResponse {
-  bool isValid = 1;
-  string refreshToken = 2;
-  string accessToken = 3;
-  string error = 4;
+  string refreshToken = 1;
+  string accessToken = 2;
 }
 
 service RefreshToken {
