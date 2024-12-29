@@ -1,29 +1,28 @@
-﻿using System.Globalization;
-
-using MediatR;
+﻿using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Extensions;
 using UserService.Application.Interfaces.Auth;
+using UserService.Domain;
 using UserService.Domain.Enums;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Auth;
-using UserService.Domain.Models.Users;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Users;
 
 public class UserRegistrationCommand(
 	string email,
 	string password,
-	string? firstName = null,
-	string? lastName = null,
-	string? dateOfBirth = null) : IRequest<AuthDto>
+	string firstName,
+	string lastName,
+	string dateOfBirth) : IRequest<AuthDto>
 {
 	public string Email { get; private set; } = email;
 	public string Password { get; private set; } = password;
-	public string? FirstName { get; private set; } = firstName;
-	public string? LastName { get; private set; } = lastName;
-	public string? DateOfBirth { get; private set; } = dateOfBirth;
+	public string FirstName { get; private set; } = firstName;
+	public string LastName { get; private set; } = lastName;
+	public string DateOfBirth { get; private set; } = dateOfBirth;
 
 	public class UserRegistrationCommandHandler(
 		IUsersRepository usersRepository,
@@ -37,20 +36,15 @@ public class UserRegistrationCommand(
 
 		public async Task<AuthDto> Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
 		{
-			if (!DateTime.TryParseExact(
-				request.DateOfBirth,
-				Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
-				CultureInfo.InvariantCulture,
-				DateTimeStyles.None,
-				out DateTime parsedDateTime))
+			if (!request.DateOfBirth.CustomTryParse(out DateTime parsedDateTime))
 				throw new BadRequestException("Invalid date format.");
 
-			var existUser = await _usersRepository.Get(request.Email, cancellationToken);
+			var existUser = await _usersRepository.GetAsync(request.Email, cancellationToken);
 
 			if (existUser is not null)
 				throw new AlreadyExistsException($"User with email {request.Email} already exists");
 
-			UserModel userModel = new(
+			var userModel = new UserModel(
 					Guid.NewGuid(),
 					request.Email,
 					_passwordHash.Generate(request.Password),
@@ -59,18 +53,18 @@ public class UserRegistrationCommand(
 					request.LastName,
 					parsedDateTime);
 
-			Role role = Role.User;
+			var role = Role.User;
 
 			var accessToken = _jwt.GenerateAccessToken(userModel.Id, role);
 			var refreshToken = _jwt.GenerateRefreshToken();
 
-			RefreshTokenModel refreshTokenModel = new(
+			var refreshTokenModel = new RefreshTokenModel(
 				userModel.Id,
 				role,
 				refreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
-			await _usersRepository.Create(userModel, refreshTokenModel, cancellationToken);
+			await _usersRepository.CreateAsync(userModel, refreshTokenModel, cancellationToken);
 
 			return new AuthDto(accessToken, refreshToken);
 		}

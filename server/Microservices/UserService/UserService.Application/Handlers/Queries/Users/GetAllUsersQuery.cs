@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
+using UserService.Domain;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Users;
 
 namespace UserService.Application.Handlers.Queries.Users;
 
@@ -13,7 +13,7 @@ public class GetAllUsersQuery() : IRequest<IList<UserModel>>
 
 		public async Task<IList<UserModel>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
 		{
-			return await _usersRepository.Get(cancellationToken);
+			return await _usersRepository.GetAsync(cancellationToken);
 		}
 	}
 }

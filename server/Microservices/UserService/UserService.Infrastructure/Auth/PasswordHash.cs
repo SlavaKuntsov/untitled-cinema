@@ -4,7 +4,6 @@ namespace UserService.Infrastructure.Auth;
 
 public class PasswordHash : IPasswordHash
 {
-
 	public string Generate(string password)
 	{
 		return BCrypt.Net.BCrypt.EnhancedHashPassword(password);

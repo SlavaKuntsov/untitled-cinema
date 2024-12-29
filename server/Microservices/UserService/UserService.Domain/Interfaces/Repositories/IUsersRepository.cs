@@ -1,16 +1,15 @@
 ﻿using UserService.Domain.Enums;
-using UserService.Domain.Models.Auth;
-using UserService.Domain.Models.Users;
+using UserService.Domain.Models;
 
 namespace UserService.Domain.Interfaces.Repositories;
 
 public interface IUsersRepository
 {
-	Task<Guid> Create(UserModel user, RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
-	Task Delete(UserModel model, CancellationToken cancellationToken);
-	Task<UserModel?> Get(Guid id, CancellationToken cancellationToken);
-	Task<UserModel?> Get(string email, CancellationToken cancellationToken);
-	Task<IList<UserModel>> Get(CancellationToken cancellationToken);
-	Task<Role?> GetRoleById(Guid id, CancellationToken cancellationToken);
-	Task<UserModel> Update(UserModel model, CancellationToken cancellationToken);
+	Task<Guid> CreateAsync(UserModel user, RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
+	Task DeleteAsync(UserModel model, CancellationToken cancellationToken);
+	Task<UserModel?> GetAsync(Guid id, CancellationToken cancellationToken);
+	Task<UserModel?> GetAsync(string email, CancellationToken cancellationToken);
+	Task<IList<UserModel>> GetAsync(CancellationToken cancellationToken);
+	Task<Role?> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken);
+	Task<UserModel> UpdateAsync(UserModel model, CancellationToken cancellationToken);
 }

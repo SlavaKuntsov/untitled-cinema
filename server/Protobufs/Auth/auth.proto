@@ -11,6 +11,6 @@ message RefreshTokenResponse {
   string accessToken = 2;
 }
 
-service RefreshToken {
+service RefreshTokenService {
   rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
 }

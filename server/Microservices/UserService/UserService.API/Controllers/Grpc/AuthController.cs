@@ -10,7 +10,7 @@ using UserService.Application.Handlers.Commands.Tokens;
 
 namespace UserService.API.Controllers.Grpc.Auth;
 
-public class AuthController : RefreshToken.RefreshTokenBase
+public class AuthController : RefreshTokenService.RefreshTokenServiceBase
 {
 	private readonly IMediator _mediator;
 	private readonly IMapper _mapper;
@@ -30,10 +30,6 @@ public class AuthController : RefreshToken.RefreshTokenBase
 
 		var authDto = await _mediator.Send(new GenerateAndUpdateTokensCommand(userRoleDto.Id, userRoleDto.Role));
 
-		return new RefreshTokenResponse()
-		{
-			RefreshToken = authDto.RefreshToken,
-			AccessToken = authDto.AccessToken
-		};
+		return _mapper.Map<RefreshTokenResponse>(authDto);
 	}
 }

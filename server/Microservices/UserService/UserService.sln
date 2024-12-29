@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Infrastructure"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Persistence", "UserService.Persistence\UserService.Persistence.csproj", "{822E0845-B8DA-4E24-A8F6-9B8840EC75F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protobufs", "..\..\Protobufs\Protobufs.csproj", "{D0E265E2-BD23-44C9-8258-7E6DC70E3AE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{822E0845-B8DA-4E24-A8F6-9B8840EC75F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822E0845-B8DA-4E24-A8F6-9B8840EC75F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822E0845-B8DA-4E24-A8F6-9B8840EC75F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E265E2-BD23-44C9-8258-7E6DC70E3AE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E265E2-BD23-44C9-8258-7E6DC70E3AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E265E2-BD23-44C9-8258-7E6DC70E3AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E265E2-BD23-44C9-8258-7E6DC70E3AE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

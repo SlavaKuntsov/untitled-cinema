@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Auth;
+using UserService.Domain.Models;
 using UserService.Persistence.Entities;
 
 namespace UserService.Persistence.Repositories;
@@ -20,7 +20,7 @@ public class TokensRepository : ITokensRepository
 		_mapper = mapper;
 	}
 
-	public async Task<RefreshTokenModel?> GetRefreshToken(string refreshToken, CancellationToken cancellationToken)
+	public async Task<RefreshTokenModel?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
 	{
 		var entity = await _context
 			.RefreshTokens
@@ -33,7 +33,7 @@ public class TokensRepository : ITokensRepository
 		return _mapper.Map<RefreshTokenModel>(entity);
 	}
 
-	public async Task UpdateRefreshToken(Guid userId, Role role, RefreshTokenModel newRefreshToken, CancellationToken cancellationToken)
+	public async Task SetorUpdateRefreshTokenAsync(Guid userId, Role role, RefreshTokenModel newRefreshToken, CancellationToken cancellationToken)
 	{
 		var existingToken = await _context.RefreshTokens
 				.FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
@@ -57,7 +57,7 @@ public class TokensRepository : ITokensRepository
 		}
 	}
 
-	public async Task DeleteRefreshToken(string refreshToken, CancellationToken cancellationToken)
+	public async Task DeleteRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
 	{
 		var token = await _context
 			.RefreshTokens

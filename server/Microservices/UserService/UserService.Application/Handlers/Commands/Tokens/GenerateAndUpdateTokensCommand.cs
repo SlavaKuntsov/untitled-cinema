@@ -4,7 +4,7 @@ using UserService.Application.DTOs;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Auth;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Tokens;
 
@@ -23,13 +23,13 @@ public class GenerateAndUpdateTokensCommand(Guid id, Role role) : IRequest<AuthD
 			var accessToken = _jwt.GenerateAccessToken(request.Id, request.Role);
 			var newRefreshToken = _jwt.GenerateRefreshToken();
 
-			RefreshTokenModel refreshTokenModel = new(
+			var refreshTokenModel = new RefreshTokenModel(
 				request.Id,
 				request.Role,
 				newRefreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
-			await _tokensRepository.UpdateRefreshToken(
+			await _tokensRepository.SetorUpdateRefreshTokenAsync(
 				request.Id,
 				request.Role,
 				refreshTokenModel,

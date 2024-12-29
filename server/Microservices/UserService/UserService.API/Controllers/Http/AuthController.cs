@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> RefreshToken()
 	{
-		string? refreshToken = HttpContext.Request.Cookies[Domain.Constants.JwtConstants.COOKIE_NAME];
+		var refreshToken = HttpContext.Request.Cookies[Domain.Constants.JwtConstants.COOKIE_NAME];
 
 		if (string.IsNullOrEmpty(refreshToken))
 			throw new UnauthorizedAccessException("Refresh token is missing.");
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
 		if (userIdClaim == null)
 			throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		Guid userId = Guid.Parse(userIdClaim.Value);
+		var userId = Guid.Parse(userIdClaim.Value);
 
 		var user = await _mediator.Send(new GetUserQuery(userId))
 			?? throw new NotFoundException("User not found");

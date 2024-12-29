@@ -1,6 +1,6 @@
 ﻿using UserService.Domain.Enums;
 
-namespace UserService.Domain.Models.Auth;
+namespace UserService.Domain.Models;
 
 public class RefreshTokenModel
 {
@@ -34,7 +34,7 @@ public class RefreshTokenModel
 	//	UserId = participantId;
 	//}
 
-	//public static Result<RefreshTokenModel> Create(Guid userId, Role role, string token, int refreshTokenExpirationDays)
+	//public static Result<RefreshTokenModel> CreateAsync(Guid userId, Role role, string token, int refreshTokenExpirationDays)
 	//{
 	//	RefreshTokenModel model = new(
 	//		Guid.NewGuid(),

@@ -54,9 +54,9 @@ public class Jwt : IJwt
 		return Convert.ToBase64String(randomBytes);
 	}
 
-	public async Task<Guid> ValidateRefreshToken(string refreshToken, CancellationToken cancellationToken)
+	public async Task<Guid> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
 	{
-		var storedToken = await _tokensRepository.GetRefreshToken(refreshToken, cancellationToken);
+		var storedToken = await _tokensRepository.GetRefreshTokenAsync(refreshToken, cancellationToken);
 
 		if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.UtcNow)
 			return Guid.Empty;

@@ -110,17 +110,6 @@ public static class ApiExtensions
 					{
 						Debug.WriteLine("Token is valid.");
 						return Task.CompletedTask;
-					},
-					OnMessageReceived = context =>
-					{
-						// Проверяем, есть ли Authorization заголовок
-						var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-						if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-						{
-							// Извлекаем токен, удаляя "Bearer "
-							context.Token = authHeader.Substring("Bearer ".Length).Trim();
-						}
-						return Task.CompletedTask;
 					}
 				};
 			});

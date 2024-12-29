@@ -4,13 +4,10 @@ using MediatR;
 
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain.Enums;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Users;
 
 namespace UserService.Application.Handlers.Commands.Tokens;
-
 
 public class RefreshTokenCommand(string refreshToken) : IRequest<UserRoleDto>
 {
@@ -24,12 +21,12 @@ public class RefreshTokenCommand(string refreshToken) : IRequest<UserRoleDto>
 
 		public async Task<UserRoleDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
 		{
-			var userId = await _jwt.ValidateRefreshToken(request.RefreshToken, cancellationToken);
+			var userId = await _jwt.ValidateRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
 			if (userId == Guid.Empty)
 				throw new InvalidTokenException("Invalid refresh token");
 
-			Role role = await _usersRepository.GetRoleById(userId, cancellationToken)
+			var role = await _usersRepository.GetRoleByIdAsync(userId, cancellationToken)
 				?? throw new NotFoundException("User not found");
 
 			return new UserRoleDto(userId, role);

@@ -51,14 +51,9 @@ public class UserController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
-	public async Task<IActionResult> Registration([FromBody] CreateUserRequest request)
+	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request)
 	{
-		var authResultDto = await _mediator.Send(new UserRegistrationCommand(
-			request.Email,
-			request.Password,
-			request.Firstname,
-			request.Lastname,
-			request.DateOfBirth));
+		var authResultDto = await _mediator.Send(request);
 
 		return Ok(authResultDto);
 	}
@@ -69,13 +64,9 @@ public class UserController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(UpdateUserRequest), typeof(UpdateUserRequestExample))]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request)
 	{
-		var particantModel = await _mediator.Send(new UpdateUserCommand(
-			request.Id,
-			request.Firstname,
-			request.Lastname,
-			request.DateOfBirth));
+		var particantModel = await _mediator.Send(request);
 
 		return Ok(particantModel);
 	}

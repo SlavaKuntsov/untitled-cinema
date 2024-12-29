@@ -38,7 +38,6 @@ public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 				context.Fail(); // Администратор не найден
 				return;
 			}
-
 		}
 
 		context.Succeed(requirement);

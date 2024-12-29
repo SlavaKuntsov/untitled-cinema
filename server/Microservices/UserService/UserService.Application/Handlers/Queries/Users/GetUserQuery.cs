@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
+using UserService.Domain;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models.Users;
 
 namespace UserService.Application.Handlers.Queries.Users;
 
@@ -15,7 +15,7 @@ public class GetUserQuery(Guid id) : IRequest<UserModel?>
 
 		public async Task<UserModel?> Handle(GetUserQuery request, CancellationToken cancellationToken)
 		{
-			return await _usersRepository.Get(request.Id, cancellationToken);
+			return await _usersRepository.GetAsync(request.Id, cancellationToken);
 		}
 	}
 }
