@@ -1,13 +1,11 @@
-﻿using UserService.Domain.Enums;
-using UserService.Domain.Models;
+﻿using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 
 namespace UserService.Domain.Interfaces.Repositories;
 
 public interface ITokensRepository
 {
-	public Task<RefreshTokenModel?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
-
-	public Task SetorUpdateRefreshTokenAsync(Guid userId, Role role, RefreshTokenModel newRefreshToken, CancellationToken cancellationToken);
-
-	public Task DeleteRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+	Task DeleteRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+	Task<RefreshTokenEntity?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+	Task SetRefreshTokenAsync(Guid userId, Role role, RefreshTokenEntity newRefreshToken, CancellationToken cancellationToken);
 }

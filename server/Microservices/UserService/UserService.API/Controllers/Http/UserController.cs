@@ -11,9 +11,12 @@ using Swashbuckle.AspNetCore.Filters;
 
 using UserService.API.Contracts;
 using UserService.API.Contracts.Examples;
-using UserService.Application.Handlers.Commands.Tokens;
-using UserService.Application.Handlers.Commands.Users;
-using UserService.Application.Handlers.Queries.Users;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
+using UserService.Application.Handlers.Commands.Users.DeleteUser;
+using UserService.Application.Handlers.Commands.Users.UpdateUser;
+using UserService.Application.Handlers.Commands.Users.UserRegistration;
+using UserService.Application.Handlers.Queries.Users.GetAllUsers;
+using UserService.Application.Handlers.Queries.Users.Login;
 
 namespace UserService.API.Controllers.Http;
 
@@ -39,7 +42,7 @@ public class UserController : ControllerBase
 	{
 		var existUser = await _mediator.Send(new LoginQuery(request.Email, request.Password));
 
-		var authResultDto = await _mediator.Send(new GenerateAndUpdateTokensCommand(existUser.Id, existUser.Role));
+		var authResultDto = await _mediator.Send(new GenerateTokensCommand(existUser.Id, existUser.Role));
 
 		HttpContext.Response.Cookies.Append(Domain.Constants.JwtConstants.COOKIE_NAME, authResultDto.RefreshToken);
 
@@ -82,7 +85,10 @@ public class UserController : ControllerBase
 		if (userIdClaim == null)
 			throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		if (Guid.Parse(userIdClaim.Value.ToString()) != id)
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		if (userId != id)
 			throw new UnauthorizedAccessException("User cannot delete another User.");
 
 		await _mediator.Send(new DeleteUserCommand(id));

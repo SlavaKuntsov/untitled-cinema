@@ -1,8 +1,7 @@
 ﻿using System.Globalization;
 
 using FluentValidation;
-
-using UserService.Application.Handlers.Commands.Users;
+using UserService.Application.Handlers.Commands.Users.UserRegistration;
 
 namespace UserService.API.Validators.Users;
 

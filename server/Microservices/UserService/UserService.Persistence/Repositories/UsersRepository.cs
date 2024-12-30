@@ -1,41 +1,35 @@
-﻿using MapsterMapper;
+﻿using Microsoft.EntityFrameworkCore;
 
-using Microsoft.EntityFrameworkCore;
-
-using UserService.Domain;
+using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models;
-using UserService.Persistence.Entities;
 
 namespace UserService.Persistence.Repositories;
 public class UsersRepository : IUsersRepository
 {
 	private readonly UserServiceDBContext _context;
-	private readonly IMapper _mapper;
 
-	public UsersRepository(UserServiceDBContext context, IMapper mapper)
+	public UsersRepository(UserServiceDBContext context)
 	{
 		_context = context;
-		_mapper = mapper;
 	}
 
-	public async Task<UserModel?> GetAsync(Guid id, CancellationToken cancellationToken)
+	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Id == id)
-			.Select(user => _mapper.Map<UserModel>(user))
+			.Select(user => user)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
-	public async Task<UserModel?> GetAsync(string email, CancellationToken cancellationToken)
+	public async Task<UserEntity?> GetAsync(string email, CancellationToken cancellationToken)
 	{
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Email == email)
-			.Select(user => _mapper.Map<UserModel>(user))
+			.Select(user => user)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
@@ -48,64 +42,40 @@ public class UsersRepository : IUsersRepository
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
-	public async Task<IList<UserModel>> GetAsync(CancellationToken cancellationToken)
+	public async Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken)
 	{
 		var users = await _context.Users
 			.AsNoTracking()
 			.ToListAsync(cancellationToken);
 
-		return _mapper.Map<IList<UserModel>>(users) ?? [];
+		return users ?? [];
 	}
 
-	public async Task<Guid> CreateAsync(UserModel user, RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+	public async Task<Guid> CreateAsync(UserEntity user, RefreshTokenEntity refreshToken, CancellationToken cancellationToken)
 	{
-		var userEntity = _mapper.Map<UserEntity>(user);
-		var refreshTokenEntity = _mapper.Map<RefreshTokenEntity>(refreshTokenModel);
+		await _context.Users.AddAsync(user, cancellationToken);
+		await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
 
-		using var transaction = _context.Database.BeginTransaction();
-		try
-		{
-			await _context.Users.AddAsync(userEntity, cancellationToken);
-			await _context.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
-			await _context.SaveChangesAsync(cancellationToken);
-
-			transaction.Commit();
-
-			return userEntity.Id;
-		}
-		catch (Exception ex)
-		{
-			await transaction.RollbackAsync(cancellationToken);
-			throw new InvalidOperationException($"An error occurred while creating user and saving token: {ex.Message}", ex);
-		}
+		return user.Id;
 	}
 
-	public async Task<UserModel> UpdateAsync(UserModel model, CancellationToken cancellationToken)
+	public async Task<UserEntity> UpdateAsync(UserEntity entity, CancellationToken cancellationToken)
 	{
-		var entity = await _context.Users.FindAsync(model.Id, cancellationToken)
-		?? throw new InvalidOperationException("The entity was not found.");
+		var existEntity = await _context.Users.FirstAsync(u => u.Id == entity.Id, cancellationToken)
+				?? throw new NotFoundException($"User with id {entity.Id} doesn't exists");
 
-		if (entity.Role is not Role.Admin)
-		{
-			_mapper.Map(model, entity); 
-		}
-		
-		await _context.SaveChangesAsync(cancellationToken);
+		existEntity.FirstName = entity.FirstName;
+		existEntity.LastName = entity.LastName;
+		existEntity.DateOfBirth = entity.DateOfBirth;
 
-		return _mapper.Map<UserModel>(entity);
+		return existEntity!;
 	}
 
-	public async Task DeleteAsync(UserModel model, CancellationToken cancellationToken)
+	public async Task DeleteAsync(UserEntity entity, CancellationToken cancellationToken)
 	{
-		var entity = _mapper.Map<UserEntity>(model);
-		
 		var token = await _context.RefreshTokens
-			.FirstOrDefaultAsync(rt => rt.UserId == model.Id, cancellationToken);
-
-		if (entity == null)
-		{
-			throw new NotFoundException("User not found.");
-		}
+			.FirstOrDefaultAsync(rt => rt.UserId == entity.Id, cancellationToken)
+			?? throw new NotFoundException($"Refresh Token for user with id {entity.Id} not found.");
 
 		using var transaction = _context.Database.BeginTransaction();
 		try
@@ -114,8 +84,6 @@ public class UsersRepository : IUsersRepository
 			{
 				_context.Users.Remove(entity);
 				_context.RefreshTokens.Remove(token);
-
-				await _context.SaveChangesAsync(cancellationToken);
 			}
 			else if (entity.Role == Role.Admin)
 			{
@@ -124,14 +92,10 @@ public class UsersRepository : IUsersRepository
 					.CountAsync(cancellationToken);
 
 				if (adminCount == 1)
-				{
 					throw new BadRequestException("Cannot delete the last Admin");
-				}
 
 				_context.Users.Remove(entity);
 				_context.RefreshTokens.Remove(token);
-
-				await _context.SaveChangesAsync(cancellationToken);
 			}
 			transaction.Commit();
 			return;

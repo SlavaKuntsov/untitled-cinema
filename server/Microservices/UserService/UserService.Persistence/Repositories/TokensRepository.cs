@@ -1,26 +1,21 @@
-﻿using MapsterMapper;
+﻿using Microsoft.EntityFrameworkCore;
 
-using Microsoft.EntityFrameworkCore;
-
+using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Models;
-using UserService.Persistence.Entities;
 
 namespace UserService.Persistence.Repositories;
 
 public class TokensRepository : ITokensRepository
 {
 	private readonly UserServiceDBContext _context;
-	private readonly IMapper _mapper;
 
-	public TokensRepository(UserServiceDBContext context, IMapper mapper)
+	public TokensRepository(UserServiceDBContext context)
 	{
 		_context = context;
-		_mapper = mapper;
 	}
 
-	public async Task<RefreshTokenModel?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+	public async Task<RefreshTokenEntity?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
 	{
 		var entity = await _context
 			.RefreshTokens
@@ -30,10 +25,10 @@ public class TokensRepository : ITokensRepository
 		if (entity == null)
 			return null;
 
-		return _mapper.Map<RefreshTokenModel>(entity);
+		return entity;
 	}
 
-	public async Task SetorUpdateRefreshTokenAsync(Guid userId, Role role, RefreshTokenModel newRefreshToken, CancellationToken cancellationToken)
+	public async Task SetRefreshTokenAsync(Guid userId, Role role, RefreshTokenEntity newRefreshToken, CancellationToken cancellationToken)
 	{
 		var existingToken = await _context.RefreshTokens
 				.FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
@@ -45,15 +40,11 @@ public class TokensRepository : ITokensRepository
 			existingToken.CreatedAt = newRefreshToken.CreatedAt;
 
 			_context.RefreshTokens.Update(existingToken);
-			await _context.SaveChangesAsync(cancellationToken);
 			return;
 		}
 		else
 		{
-			var entity = _mapper.Map<RefreshTokenEntity>(newRefreshToken);
-
-			await _context.RefreshTokens.AddAsync(entity, cancellationToken);
-			await _context.SaveChangesAsync(cancellationToken);
+			await _context.RefreshTokens.AddAsync(newRefreshToken, cancellationToken);
 		}
 	}
 
@@ -64,9 +55,6 @@ public class TokensRepository : ITokensRepository
 			.FirstOrDefaultAsync(rt => rt.Token == refreshToken, cancellationToken);
 
 		if (token != null)
-		{
 			_context.RefreshTokens.Remove(token);
-			await _context.SaveChangesAsync(cancellationToken);
-		}
 	}
 }

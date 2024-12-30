@@ -1,6 +1,6 @@
 ﻿using UserService.Domain.Enums;
 
-namespace UserService.Persistence.Entities;
+namespace UserService.Domain.Entities;
 
 public class UserEntity
 {

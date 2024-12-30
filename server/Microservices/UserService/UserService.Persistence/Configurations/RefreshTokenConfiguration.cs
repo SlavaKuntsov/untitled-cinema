@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using UserService.Persistence.Entities;
+using UserService.Domain.Entities;
 
 namespace UserService.Persistence.Configurations;
 

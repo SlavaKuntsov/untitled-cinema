@@ -5,12 +5,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 
 using UserService.API.Extensions;
-using UserService.API.Middlewares;
 using UserService.Application.Extensions;
 using UserService.Infrastructure.Extensions;
 using UserService.Persistence.Extensions;
-
-await CommandLineParser.RunMigration(args);
 
 var builder = WebApplication.CreateBuilder(args);
 var services  = builder.Services;
@@ -27,8 +24,6 @@ app.UseAPI();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapHealthChecks(
 	"/health",

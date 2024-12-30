@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
-using UserService.Application.Handlers.Commands.Tokens;
-using UserService.Application.Handlers.Commands.Users;
-using UserService.Application.Handlers.Queries.Users;
+using UserService.Application.Handlers.Commands.Users.UserRegistration;
 
 namespace UserService.Application.Extensions;
 
@@ -12,10 +9,7 @@ public static class ApplicationExtensions
 	{
 		services.AddMediatR(cfg =>
 		{
-			cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommand.UserRegistrationCommandHandler>();
-			cfg.RegisterServicesFromAssemblyContaining<GenerateAndUpdateTokensCommand.GenerateAndUpdateTokensCommandHandler>();
-			cfg.RegisterServicesFromAssemblyContaining<LoginQuery.LoginQUeryHandler>();
-			cfg.RegisterServicesFromAssemblyContaining<GetUserQuery.GetUserQueryHandler>();
+			cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommandHandler>();
 		});
 
 		return services;

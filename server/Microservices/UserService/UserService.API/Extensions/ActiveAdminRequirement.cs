@@ -6,6 +6,5 @@ public class ActiveAdminRequirement : IAuthorizationRequirement
 {
 	public ActiveAdminRequirement() 
 	{ 
-	
 	}
 }

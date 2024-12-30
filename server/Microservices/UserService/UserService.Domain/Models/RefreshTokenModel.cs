@@ -22,29 +22,4 @@ public class RefreshTokenModel
 		IsRevoked = false;
 		UserId = userId;
 	}
-
-	//public RefreshTokenModel(Guid id, string token, DateTime expiresAt, bool isRevoked, DateTime createdAt, Guid? adminId, Guid? participantId)
-	//{
-	//	Id = id;
-	//	Token = token;
-	//	ExpiresAt = expiresAt;
-	//	IsRevoked = isRevoked;
-	//	CreatedAt = createdAt;
-	//	AdminId = adminId;
-	//	UserId = participantId;
-	//}
-
-	//public static Result<RefreshTokenModel> CreateAsync(Guid userId, Role role, string token, int refreshTokenExpirationDays)
-	//{
-	//	RefreshTokenModel model = new(
-	//		Guid.NewGuid(),
-	//		token,
-	//		DateTime.UtcNow.Add(TimeSpan.FromDays(refreshTokenExpirationDays)),
-	//		false,
-	//		DateTime.UtcNow,
-	//		role == Role.Admin ? userId : null,
-	//		role == Role.User ? userId : null);
-
-	//	return model;
-	//}
 }

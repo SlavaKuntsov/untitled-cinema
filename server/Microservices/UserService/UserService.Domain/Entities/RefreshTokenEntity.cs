@@ -1,4 +1,4 @@
-﻿namespace UserService.Persistence.Entities;
+﻿namespace UserService.Domain.Entities;
 
 public class RefreshTokenEntity
 {

@@ -2,9 +2,9 @@
 
 using Mapster;
 
-using UserService.Application.Handlers.Commands.Users;
+using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Domain;
-using UserService.Persistence.Entities;
+using UserService.Domain.Entities;
 
 namespace UserService.API.Mapping;
 

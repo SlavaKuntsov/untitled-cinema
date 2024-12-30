@@ -9,6 +9,7 @@ public static class InfrastructureExtensions
 {
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
+		services.AddScoped<ICookieService, CookieService>();
 		services.AddScoped<IPasswordHash, PasswordHash>();
 		services.AddScoped<IJwt, Jwt>();
 

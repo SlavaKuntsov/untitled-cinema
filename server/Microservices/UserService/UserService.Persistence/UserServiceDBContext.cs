@@ -2,14 +2,13 @@
 
 using Microsoft.EntityFrameworkCore;
 
-using UserService.Persistence.Entities;
+using UserService.Domain.Entities;
 
 namespace UserService.Persistence;
 
 public class UserServiceDBContext : DbContext
 {
 	public DbSet<UserEntity> Users { get; set; }
-	//public DbSet<UserDataEntity> UsersData { get; set; }
 	public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
 
 	public UserServiceDBContext(DbContextOptions<UserServiceDBContext> options) : base(options)

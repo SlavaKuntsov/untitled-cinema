@@ -6,8 +6,10 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Application.Handlers.Commands.Tokens;
-using UserService.Application.Handlers.Queries.Users;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
+using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
+using UserService.Application.Handlers.Queries.Users.GetUser;
+using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Exceptions;
 
 namespace UserService.API.Controllers.Http;
@@ -17,11 +19,13 @@ namespace UserService.API.Controllers.Http;
 public class AuthController : ControllerBase
 {
 	private readonly IMediator _mediator;
+	private readonly ICookieService _cookieService;
 	private readonly IMapper _mapper;
 
-	public AuthController(IMediator mediator, IMapper mapper)
+	public AuthController(IMediator mediator, ICookieService cookieService, IMapper mapper)
 	{
 		_mediator = mediator;
+		_cookieService = cookieService;
 		_mapper = mapper;
 	}
 
@@ -32,18 +36,13 @@ public class AuthController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> RefreshToken()
 	{
-		var refreshToken = HttpContext.Request.Cookies[Domain.Constants.JwtConstants.COOKIE_NAME];
+		var refreshToken = _cookieService.GetRefreshToken();
 
-		if (string.IsNullOrEmpty(refreshToken))
-			throw new UnauthorizedAccessException("Refresh token is missing.");
+		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken));
 
-		var userRoleDto = await _mediator.Send(new RefreshTokenCommand(refreshToken));
+		var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
 
-		var authDto = await _mediator.Send(new GenerateAndUpdateTokensCommand(userRoleDto.Id, userRoleDto.Role));
-
-		HttpContext.Response.Cookies.Append(Domain.Constants.JwtConstants.COOKIE_NAME, authDto.RefreshToken);
-
-		return Ok(authDto);
+		return Ok(accessToken);
 	}
 
 	[HttpGet(nameof(Authorize))]
@@ -59,7 +58,7 @@ public class AuthController : ControllerBase
 
 		var userId = Guid.Parse(userIdClaim.Value);
 
-		var user = await _mediator.Send(new GetUserQuery(userId))
+		var user = await _mediator.Send(new GetUserByIdQuery(userId))
 			?? throw new NotFoundException("User not found");
 
 		return Ok(_mapper.Map<UserDto>(user));
@@ -69,7 +68,7 @@ public class AuthController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public IActionResult Unauthorize()
 	{
-		HttpContext.Response.Cookies.Delete(Domain.Constants.JwtConstants.COOKIE_NAME);
+		_cookieService.DeleteRefreshToken();
 
 		return Ok();
 	}

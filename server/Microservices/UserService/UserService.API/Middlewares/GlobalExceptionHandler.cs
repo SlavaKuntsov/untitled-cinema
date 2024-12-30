@@ -1,34 +1,14 @@
-﻿using System.Text.Json;
+﻿using FluentValidation;
 
-using FluentValidation;
-
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 using UserService.Domain.Exceptions;
 
-namespace UserService.API.Middlewares;
+namespace UserService.API.ExceptionHandlers;
 
-public class GlobalExceptionMiddleware
+public class GlobalExceptionHandler : IExceptionHandler
 {
-	private readonly RequestDelegate _next;
-
-	public GlobalExceptionMiddleware(RequestDelegate next)
-	{
-		_next = next;
-	}
-
-	public async Task InvokeAsync(HttpContext context)
-	{
-		try
-		{
-			await _next(context);
-		}
-		catch (Exception exception)
-		{
-			await HandleExceptionAsync(context, exception);
-		}
-	}
-
 	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
 	{
 		{ typeof(AlreadyExistsException), (StatusCodes.Status400BadRequest, "Resource Already Exists") },
@@ -41,7 +21,7 @@ public class GlobalExceptionMiddleware
 		{ typeof(InvalidOperationException), (StatusCodes.Status400BadRequest, "Invalid Operation") },
 	};
 
-	private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+	public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
 	{
 		var (statusCode, title) = ExceptionMappings.TryGetValue(exception.GetType(), out var mapping)
 			? mapping
@@ -54,10 +34,11 @@ public class GlobalExceptionMiddleware
 			Detail = exception.Message
 		};
 
-		context.Response.ContentType = "application/json";
-		context.Response.StatusCode = statusCode;
+		httpContext.Response.ContentType = "application/json";
+		httpContext.Response.StatusCode = statusCode;
 
-		var response = JsonSerializer.Serialize(problemDetails);
-		return context.Response.WriteAsync(response);
+		await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+		return true;
 	}
 }

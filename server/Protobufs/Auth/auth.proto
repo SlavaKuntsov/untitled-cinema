@@ -2,15 +2,14 @@ syntax = "proto3";
 
 option csharp_namespace = "Protobufs.Auth";
 
-message RefreshTokenRequest {
+message AccessTokenRequest {
   string refreshToken = 1;
 }
 
-message RefreshTokenResponse {
-  string refreshToken = 1;
-  string accessToken = 2;
+message AccessTokenResponse {
+  string accessToken = 1;
 }
 
-service RefreshTokenService {
-  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+service GetAccessTokenService {
+  rpc GetAccessToken (AccessTokenRequest) returns (AccessTokenResponse);
 }

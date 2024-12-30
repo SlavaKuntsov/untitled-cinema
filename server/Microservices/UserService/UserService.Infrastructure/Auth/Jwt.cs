@@ -32,8 +32,6 @@ public class Jwt : IJwt
 			new Claim(ClaimTypes.Role, EnumExtensions.GetDescription(role))
 		};
 
-		var strr = _jwtOptions.SecretKey;
-
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
 		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

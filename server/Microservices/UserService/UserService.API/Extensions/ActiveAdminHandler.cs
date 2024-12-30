@@ -4,7 +4,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
 
-using UserService.Application.Handlers.Queries.Users;
+using UserService.Application.Handlers.Queries.Users.GetUser;
 
 namespace UserService.API.Extensions;
 
@@ -31,7 +31,7 @@ public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 
 		if (context.User.IsInRole("Admin"))
 		{
-			var admin = await _mediator.Send(new GetUserQuery(userId));
+			var admin = await _mediator.Send(new GetUserByIdQuery(userId));
 
 			if (admin == null)
 			{

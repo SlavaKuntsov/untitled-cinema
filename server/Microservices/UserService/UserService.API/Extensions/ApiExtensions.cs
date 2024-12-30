@@ -19,9 +19,10 @@ using Swashbuckle.AspNetCore.Filters;
 
 using UserService.API.Behaviors;
 using UserService.API.Contracts.Examples;
+using UserService.API.ExceptionHandlers;
 using UserService.API.Middlewares;
 using UserService.API.Validators;
-using UserService.Application.Handlers.Commands.Users;
+using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Infrastructure.Auth;
 
 namespace UserService.API.Extensions;
@@ -30,10 +31,15 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddExceptionHandler<GlobalExceptionHandler>();
+
 		services.AddGrpc(options =>
 		{
 			options.Interceptors.Add<GlobalGrpcExceptionInterceptor>();
 		});
+
+		services.AddHttpContextAccessor();
+
 		services.AddControllers();
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(options =>
@@ -68,13 +74,11 @@ public static class ApiExtensions
 		services.AddProblemDetails();
 		services.AddHealthChecks();
 
-
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
 
 		Mapper mapperConfig = new(typeAdapterConfig);
 		services.AddSingleton<IMapper>(mapperConfig);
-
 
 		JwtModel? jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
 
@@ -114,23 +118,18 @@ public static class ApiExtensions
 				};
 			});
 
-
 		services.Configure<JwtModel>(configuration.GetSection(nameof(JwtModel)));
 		services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
-
 
 		services.AddCors(options =>
 		{
 			options.AddDefaultPolicy(policy =>
 			{
-				policy.WithOrigins("http://localhost:3000");
-				policy.WithOrigins("http://localhost:5000");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
 			});
 		});
-
 
 		services.AddAuthorizationBuilder()
 			.AddPolicy("AdminOnly", policy =>
@@ -145,15 +144,14 @@ public static class ApiExtensions
 				policy.AddRequirements(new ActiveAdminRequirement());
 			});
 
-
 		services.AddScoped<IAuthorizationHandler, ActiveAdminHandler>();
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
-		//services.AddValidatorsFromAssemblyContaining<UserRegistrationCommandValidator<UserRegistrationCommand>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehavior<,>));
 
 		return services;
 	}

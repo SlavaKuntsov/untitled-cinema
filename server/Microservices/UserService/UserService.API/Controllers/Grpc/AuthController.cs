@@ -6,11 +6,12 @@ using MediatR;
 
 using Protobufs.Auth;
 
-using UserService.Application.Handlers.Commands.Tokens;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
+using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
 
 namespace UserService.API.Controllers.Grpc.Auth;
 
-public class AuthController : RefreshTokenService.RefreshTokenServiceBase
+public class AuthController : GetAccessTokenService.GetAccessTokenServiceBase
 {
 	private readonly IMediator _mediator;
 	private readonly IMapper _mapper;
@@ -21,15 +22,12 @@ public class AuthController : RefreshTokenService.RefreshTokenServiceBase
 		_mapper = mapper;
 	}
 
-	public override async Task<RefreshTokenResponse> RefreshToken(RefreshTokenRequest request, ServerCallContext context)
+	public override async Task<AccessTokenResponse> GetAccessToken(AccessTokenRequest request, ServerCallContext context)
 	{
-		if (string.IsNullOrEmpty(request.RefreshToken))
-			throw new UnauthorizedAccessException("Refresh token is missing.");
+		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(request.RefreshToken));
 
-		var userRoleDto = await _mediator.Send(new RefreshTokenCommand(request.RefreshToken));
+		var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
 
-		var authDto = await _mediator.Send(new GenerateAndUpdateTokensCommand(userRoleDto.Id, userRoleDto.Role));
-
-		return _mapper.Map<RefreshTokenResponse>(authDto);
+		return _mapper.Map<AccessTokenResponse>(accessToken);
 	}
 }
