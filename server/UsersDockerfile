@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+COPY ["server/Microservices/UserService/UserService.API/UserService.API.csproj", "server/Microservices/UserService/UserService.API/"]
+COPY ["server/Microservices/UserService/UserService.Domain/UserService.Domain.csproj", "server/Microservices/UserService/UserService.Domain/"]
+COPY ["server/Microservices/UserService/UserService.Infrastructure/UserService.Infrastructure.csproj", "server/Microservices/UserService/UserService.Infrastructure/"]
+COPY ["server/Microservices/UserService/UserService.Application/UserService.Application.csproj", "server/Microservices/UserService/UserService.Application/"]
+COPY ["server/Microservices/UserService/UserService.Persistence/UserService.Persistence.csproj", "server/Microservices/UserService/UserService.Persistence/"]
+COPY ["server/Protobufs/Protobufs.csproj", "server/Protobufs/"]
+
+RUN dotnet restore "server/Microservices/UserService/UserService.API/UserService.API.csproj"
+
+COPY . . 
+
+RUN dotnet publish "server/Microservices/UserService/UserService.API/UserService.API.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 7001
+EXPOSE 443  
+
+# COPY ./server/ApiGateway/certificates/localhost.pfx /app/localhost.pfx
+
+RUN update-ca-certificates
+
+COPY --from=build /app/publish . 
+
+ENV ASPNETCORE_URLS=https://+:7001
+
+ENTRYPOINT ["dotnet", "UserService.API.dll"]
