@@ -29,7 +29,6 @@ public class AuthController : ControllerBase
 		_mapper = mapper;
 	}
 
-	// TODO - move to GRPC
 	[HttpGet(nameof(RefreshToken))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]

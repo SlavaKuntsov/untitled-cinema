@@ -1,4 +1,6 @@
-﻿using MapsterMapper;
+﻿using Mapster;
+
+using MapsterMapper;
 
 using MediatR;
 
@@ -22,8 +24,10 @@ public class UpdateUserCommandHandler(IUsersRepository usersRepository, IMapper 
 		var existUser = await _usersRepository.GetAsync(request.Id, cancellationToken)
 				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
 
-		var updatedUser = await _usersRepository.UpdateAsync(existUser, cancellationToken);
+		request.Adapt(existUser);
 
-		return _mapper.Map<UserModel>(updatedUser);
+		_usersRepository.Update(existUser, cancellationToken);
+
+		return _mapper.Map<UserModel>(existUser);
 	}
 }

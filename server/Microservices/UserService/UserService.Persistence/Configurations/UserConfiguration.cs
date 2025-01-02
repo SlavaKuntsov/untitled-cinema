@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 
 namespace UserService.Persistence.Configurations;
 
@@ -21,7 +22,10 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 			.IsRequired();
 
 		builder.Property(u => u.Role)
-			.IsRequired();
+			.HasConversion(
+				role => role.ToString(),
+				value => Enum.Parse<Role>(value)
+			);
 
 		builder.Property(d => d.FirstName)
 			.IsRequired()
@@ -41,10 +45,6 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 				v => v.Date,
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
-
-		//builder.HasOne(u => u.Data)
-		//	.WithOne(d => d.User)
-		//	.HasForeignKey<UserDataEntity>(d => d.Id);
 
 		builder.HasOne(u => u.RefreshToken)
 			.WithOne(r => r.User)

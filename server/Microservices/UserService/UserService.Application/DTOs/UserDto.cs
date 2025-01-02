@@ -27,6 +27,4 @@ public class UserDto
 			}
 		}
 	}
-
-	//public string AccessToken { get; set; } = string.Empty;
 }

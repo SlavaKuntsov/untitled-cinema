@@ -42,6 +42,17 @@ public class UsersRepository : IUsersRepository
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
+	public async Task<IList<Guid>> GetByRole(Role role, CancellationToken cancellationToken)
+	{
+		var users = await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Role == role)
+			.Select(u => u.Id)
+			.ToListAsync(cancellationToken);
+
+		return users ?? [];
+	}
+
 	public async Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken)
 	{
 		var users = await _context.Users
@@ -59,51 +70,19 @@ public class UsersRepository : IUsersRepository
 		return user.Id;
 	}
 
-	public async Task<UserEntity> UpdateAsync(UserEntity entity, CancellationToken cancellationToken)
+	public void Update(UserEntity entity, CancellationToken cancellationToken)
 	{
-		var existEntity = await _context.Users.FirstAsync(u => u.Id == entity.Id, cancellationToken)
-				?? throw new NotFoundException($"User with id {entity.Id} doesn't exists");
-
-		existEntity.FirstName = entity.FirstName;
-		existEntity.LastName = entity.LastName;
-		existEntity.DateOfBirth = entity.DateOfBirth;
-
-		return existEntity!;
+		_context.Users.Attach(entity).State = EntityState.Modified;
 	}
 
-	public async Task DeleteAsync(UserEntity entity, CancellationToken cancellationToken)
+	public void Delete(UserEntity userEntity, RefreshTokenEntity refreshTolkenEntity)
 	{
-		var token = await _context.RefreshTokens
-			.FirstOrDefaultAsync(rt => rt.UserId == entity.Id, cancellationToken)
-			?? throw new NotFoundException($"Refresh Token for user with id {entity.Id} not found.");
+		_context.Users.Attach(userEntity);
+		_context.RefreshTokens.Attach(refreshTolkenEntity);
 
-		using var transaction = _context.Database.BeginTransaction();
-		try
-		{
-			if (entity.Role == Role.User)
-			{
-				_context.Users.Remove(entity);
-				_context.RefreshTokens.Remove(token);
-			}
-			else if (entity.Role == Role.Admin)
-			{
-				var adminCount = await _context.Users
-					.Where(u => u.Role == Role.Admin)
-					.CountAsync(cancellationToken);
+		_context.Users.Remove(userEntity);
+		_context.RefreshTokens.Remove(refreshTolkenEntity);
 
-				if (adminCount == 1)
-					throw new BadRequestException("Cannot delete the last Admin");
-
-				_context.Users.Remove(entity);
-				_context.RefreshTokens.Remove(token);
-			}
-			transaction.Commit();
-			return;
-		}
-		catch (Exception ex)
-		{
-			await transaction.RollbackAsync(cancellationToken);
-			throw new InvalidOperationException($"An error occurred while creating user and saving token: {ex.Message}", ex);
-		}
+		return;
 	}
 }
