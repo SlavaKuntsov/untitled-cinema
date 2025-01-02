@@ -21,17 +21,20 @@ public class GenerateTokensCommandHandler(ITokensRepository tokensRepository, IJ
 		var accessToken = _jwt.GenerateAccessToken(request.Id, request.Role);
 		var newRefreshToken = _jwt.GenerateRefreshToken();
 
-		var refreshTokenModel = new RefreshTokenModel(
+		var newRefreshTokenModel = new RefreshTokenModel(
 				request.Id,
 				request.Role,
 				newRefreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
-		await _tokensRepository.SetRefreshTokenAsync(
-			request.Id,
-			request.Role,
-			_mapper.Map<RefreshTokenEntity>(refreshTokenModel),
-			cancellationToken);
+		var existRefreshToken = await _tokensRepository.GetRefreshTokenAsync(request.Id, cancellationToken);
+
+		if (existRefreshToken is not null)
+			_tokensRepository.UpdateRefreshToken(existRefreshToken);
+		else
+			await _tokensRepository.AddRefreshTokenAsync(
+				_mapper.Map<RefreshTokenEntity>(newRefreshTokenModel),
+				cancellationToken);
 
 		return new AuthDto(accessToken, newRefreshToken);
 	}

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 using UserService.Domain.Exceptions;
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 		{ typeof(InvalidTokenException), (StatusCodes.Status400BadRequest, "Invalid Token") },
 		{ typeof(ValidationException), (StatusCodes.Status400BadRequest, "Invalid Data") },
 		{ typeof(InvalidOperationException), (StatusCodes.Status400BadRequest, "Invalid Operation") },
+		{ typeof(UnprocessableContentException), (StatusCodes.Status422UnprocessableEntity, "Unprocessable Content") },
 	};
 
 	public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
