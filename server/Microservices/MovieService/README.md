@@ -1,0 +1,1 @@
+dotnet ef migrations add initial -s MovieService.API -p MovieService.Persistence
