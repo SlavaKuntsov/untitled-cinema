@@ -12,7 +12,8 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+	<PackageReference Include="Google.Protobuf" Version="3.29.2" />
+	<PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
@@ -30,14 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Protobufs\Protobufs.csproj" />
     <ProjectReference Include="..\UserService.Infrastructure\UserService.Infrastructure.csproj" />
     <ProjectReference Include="..\UserService.Persistence\UserService.Persistence.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\..\..\Protobufs\Auth\auth.proto" GrpcServices="Server">
-      <Link>Protos\auth.proto</Link>
-    </Protobuf>
   </ItemGroup>
 
 </Project>

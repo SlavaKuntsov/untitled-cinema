@@ -19,7 +19,10 @@ public class AuthGrpcService : IAuthGrpcService
 
 	public async Task<bool> CheckExistAsync(Guid id, CancellationToken cancellationToken = default)
 	{
-		var request = _mapper.Map<CheckExistRequest>(id.ToString());
+		var request = new CheckExistRequest()
+		{
+			UserId = id.ToString()
+		};
 
 		var response = await _client.CheckExistAsync(request, cancellationToken: cancellationToken);
 

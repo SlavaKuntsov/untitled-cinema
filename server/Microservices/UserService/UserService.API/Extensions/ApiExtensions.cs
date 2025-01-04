@@ -160,4 +160,32 @@ public static class ApiExtensions
 	{
 		app.MapGrpcService<Controllers.Grpc.Auth.AuthController>();
 	}
+
+	public static void UseHttps(this WebApplicationBuilder builder)
+	{
+		var environment = builder.Environment;
+
+		if (environment.IsProduction())
+		{
+			var certPath = "/app/localhost.pfx";
+			var certPassword = "1";
+			builder.WebHost.ConfigureKestrel(options =>
+			{
+				options.ListenAnyIP(7001, listenOptions =>
+				{
+					listenOptions.UseHttps(certPath, certPassword);
+				});
+			});
+		}
+		else
+		{
+			builder.WebHost.ConfigureKestrel(options =>
+			{
+				options.ListenAnyIP(7001, listenOptions =>
+				{
+					listenOptions.UseHttps();
+				});
+			});
+		}
+	}
 }

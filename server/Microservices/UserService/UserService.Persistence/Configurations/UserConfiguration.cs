@@ -54,9 +54,11 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 			new UserEntity
 			{
 				Id = Guid.NewGuid(),
-				Email = "admin@gmail.com",
+				Email = "admin@email.com",
 				Password = BCrypt.Net.BCrypt.EnhancedHashPassword("qweQWE123"),
-				Role = Domain.Enums.Role.Admin
+				Role = Role.Admin,
+				FirstName = "admin",
+				LastName = "admin"
 			});
 	}
 }

@@ -36,9 +36,9 @@ public class AuthController : AuthService.AuthServiceBase
 	{
 		var user = await _mediator.Send(new GetUserByIdQuery(Guid.Parse(request.UserId)));
 
-		if (user is null)
-			return _mapper.Map<CheckExistResponse>(false);
-
-		return _mapper.Map<CheckExistResponse>(true);
+		return new CheckExistResponse
+		{
+			IsExist = user is not null
+		};
 	}
 }
