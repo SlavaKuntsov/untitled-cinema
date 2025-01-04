@@ -18,35 +18,33 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieModel>
 			.HasMaxLength(255);
 
 		builder.Property(m => m.ReleaseDate)
-			.HasColumnType("date")
+			.HasColumnType("timestamptz")
 			.HasConversion(
-				v => v.Date,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 
 		builder.Property(m => m.CreatedAt)
 			.IsRequired()
-			.HasDefaultValueSql("CURRENT_TIMESTAMP")
-			.HasColumnType("timestamp")
+			.HasColumnType("timestamptz")
 			.HasConversion(
-				v => v,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 
 		builder.Property(m => m.UpdatedAt)
 			.IsRequired()
-			.HasDefaultValueSql("CURRENT_TIMESTAMP")
-			.HasColumnType("timestamp")
+			.HasColumnType("timestamptz")
 			.HasConversion(
-				v => v,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 
 		builder.Property(m => m.Genres)
-			   .HasConversion(
-				   genres => string.Join(',', genres),
-				   genresString => genresString.Split(',', StringSplitOptions.RemoveEmptyEntries)
-			   );
+			.HasConversion(
+				genres => string.Join(',', genres),
+				genresString => genresString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+			);
 
 		builder.HasMany(m => m.Sessions)
 			   .WithOne(s => s.Movie)

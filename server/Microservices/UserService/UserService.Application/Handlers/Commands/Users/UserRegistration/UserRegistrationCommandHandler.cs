@@ -28,7 +28,7 @@ public class UserRegistrationCommandHandler(
 
 	public async Task<AuthDto> Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.DateOfBirth.CustomTryParse(out DateTime parsedDateTime))
+		if (!request.DateOfBirth.DateFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
 		var existUser = await _usersRepository.GetAsync(request.Email, cancellationToken);

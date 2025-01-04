@@ -18,17 +18,17 @@ public class SessionModelConfiguration : IEntityTypeConfiguration<SessionModel>
 
 		builder.Property(s => s.StartTime)
 			.IsRequired()
-			.HasColumnType("timestamp")
+			.HasColumnType("timestamptz")
 			.HasConversion(
-				v => v,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 
 		builder.Property(s => s.EndTime)
 			.IsRequired()
-			.HasColumnType("timestamp")
+			.HasColumnType("timestamptz")
 			.HasConversion(
-				v => v,
+				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 

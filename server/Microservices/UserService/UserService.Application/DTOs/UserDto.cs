@@ -12,11 +12,11 @@ public class UserDto
 
 	public string DateOfBirth
 	{
-		get => _dateOfBirth.ToString(UserService.Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT);
+		get => _dateOfBirth.ToString(UserService.Domain.Constants.DateTimeConstants.DATE_FORMAT);
 		set
 		{
 			if (DateTime.TryParseExact(value,
-				[UserService.Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
+				[UserService.Domain.Constants.DateTimeConstants.DATE_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
 				CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
 			{
 				_dateOfBirth = date;
@@ -27,6 +27,4 @@ public class UserDto
 			}
 		}
 	}
-
-	//public string AccessToken { get; set; } = string.Empty;
 }
