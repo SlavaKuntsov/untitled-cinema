@@ -5,7 +5,6 @@ public class CinemaHallModel
 	public Guid Id { get; private set; }
 	public string Name { get; set; } = null!;
 	public short TotalSeats { get; set; }
-	public string LayoutType { get; set; } = string.Empty;
 
 	public virtual ICollection<HallSeatModel> Seats { get; set; } = [];
 	public virtual ICollection<SessionModel> Sessions { get; set; } = [];

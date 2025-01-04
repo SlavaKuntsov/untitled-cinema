@@ -2,8 +2,6 @@
 using System.Reflection;
 using System.Text;
 
-using FluentValidation;
-
 using Mapster;
 
 using MapsterMapper;
@@ -15,15 +13,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using Swashbuckle.AspNetCore.Filters;
-
 using MovieService.API.Behaviors;
 using MovieService.API.Contracts.Examples;
 using MovieService.API.ExceptionHandlers;
-using MovieService.API.Validators;
-using MovieService.Application.Handlers.Commands.Users.UserRegistration;
 using MovieService.Infrastructure.Auth;
+
 using Protobufs.Auth;
+
+using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Extensions;
 
@@ -69,7 +66,7 @@ public static class ApiExtensions
 				}
 			});
 		});
-		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
+		services.AddSwaggerExamplesFromAssemblyOf<CreateMovieRequestExample>();
 
 		services.AddProblemDetails();
 		services.AddHealthChecks();
@@ -148,7 +145,7 @@ public static class ApiExtensions
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
+		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehavior<,>));

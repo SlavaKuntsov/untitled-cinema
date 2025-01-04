@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MovieService.Application.Handlers.Commands.Users.UserRegistration;
+
+using MovieService.Application.Handlers.Commands.Movies.Create;
 
 namespace MovieService.Application.Extensions;
 
@@ -9,7 +10,7 @@ public static class ApplicationExtensions
 	{
 		services.AddMediatR(cfg =>
 		{
-			cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommandHandler>();
+			cfg.RegisterServicesFromAssemblyContaining<CreateMovieCommandHandler>();
 		});
 
 		return services;
