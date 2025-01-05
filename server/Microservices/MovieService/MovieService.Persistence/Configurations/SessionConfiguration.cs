@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using MovieService.Domain.Models;
+using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class SessionModelConfiguration : IEntityTypeConfiguration<SessionModel>
+public class SessionModelConfiguration : IEntityTypeConfiguration<SessionEntity>
 {
-	public void Configure(EntityTypeBuilder<SessionModel> builder)
+	public void Configure(EntityTypeBuilder<SessionEntity> builder)
 	{
 		builder.ToTable("Session");
 

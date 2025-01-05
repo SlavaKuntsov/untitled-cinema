@@ -1,6 +1,4 @@
-﻿using MovieService.Domain.Models;
-
-namespace MovieService.Domain;
+﻿namespace MovieService.Domain;
 
 public class MovieModel
 {
@@ -13,8 +11,6 @@ public class MovieModel
 	public DateTime ReleaseDate { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }
-
-	public virtual ICollection<SessionModel> Sessions { get; set; } = [];
 
 	public MovieModel() { }
 

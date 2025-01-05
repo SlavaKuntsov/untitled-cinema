@@ -1,6 +1,6 @@
-﻿namespace MovieService.Domain.Models;
+﻿namespace MovieService.Domain.Entities;
 
-public class HallSeatModel
+public class HallSeatEntity
 {
 	public Guid Id { get; set; }
 	public Guid HallId { get; set; }
@@ -9,4 +9,6 @@ public class HallSeatModel
 	public bool Exists { get; set; } = true;
 	public string SeatType { get; set; } = string.Empty;
 	public decimal Price { get; set; } = 0.00m;
+
+	public virtual CinemaHallEntity CinemaHall { get; set; } = null!;
 }

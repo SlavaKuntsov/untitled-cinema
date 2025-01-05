@@ -32,6 +32,6 @@ public class UpdateMovieCommandHandler(IMoviesRepository moviesRepository, IMapp
 
 		_moviesRepository.Update(existMovie, cancellationToken);
 
-		return existMovie;
+		return _mapper.Map<MovieModel>(existMovie);
 	}
 }

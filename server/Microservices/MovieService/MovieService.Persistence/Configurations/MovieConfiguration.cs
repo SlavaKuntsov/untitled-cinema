@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using MovieService.Domain;
+using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class MovieConfiguration : IEntityTypeConfiguration<MovieModel>
+public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 {
-	public void Configure(EntityTypeBuilder<MovieModel> builder)
+	public void Configure(EntityTypeBuilder<MovieEntity> builder)
 	{
 		builder.ToTable("Movie");
 

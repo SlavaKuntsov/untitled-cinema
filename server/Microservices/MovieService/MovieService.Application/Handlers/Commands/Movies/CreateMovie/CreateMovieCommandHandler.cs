@@ -4,6 +4,7 @@ using MediatR;
 
 using MovieService.Application.Extensions;
 using MovieService.Domain;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories;
 
@@ -34,7 +35,7 @@ public class CreateMovieCommandHandler(IMoviesRepository moviesRepository, IMapp
 			dateNow,
 			dateNow);
 
-		await _moviesRepository.CreateAsync(movie, cancellationToken);
+		await _moviesRepository.CreateAsync(_mapper.Map<MovieEntity>(movie), cancellationToken);
 
 		return movie.Id;
 	}

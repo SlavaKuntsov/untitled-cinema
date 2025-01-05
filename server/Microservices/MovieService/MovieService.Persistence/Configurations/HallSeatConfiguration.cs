@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using MovieService.Domain.Models;
+using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class HallSeatModelConfiguration : IEntityTypeConfiguration<HallSeatModel>
+public class HallSeatModelConfiguration : IEntityTypeConfiguration<HallSeatEntity>
 {
-	public void Configure(EntityTypeBuilder<HallSeatModel> builder)
+	public void Configure(EntityTypeBuilder<HallSeatEntity> builder)
 	{
 		builder.ToTable("HallSeat");
 

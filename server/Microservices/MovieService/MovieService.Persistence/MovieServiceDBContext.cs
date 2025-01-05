@@ -2,17 +2,16 @@
 
 using Microsoft.EntityFrameworkCore;
 
-using MovieService.Domain;
-using MovieService.Domain.Models;
+using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence;
 
 public class MovieServiceDBContext : DbContext
 {
-	public DbSet<MovieModel> Movies { get; set; }
-	public DbSet<SessionModel> Sessions { get; set; }
-	public DbSet<CinemaHallModel> CinemaHalls { get; set; }
-	public DbSet<HallSeatModel> HallSeats { get; set; }
+	public DbSet<MovieEntity> Movies { get; set; }
+	public DbSet<SessionEntity> Sessions { get; set; }
+	public DbSet<CinemaHallEntity> CinemaHalls { get; set; }
+	public DbSet<HallSeatEntity> HallSeats { get; set; }
 
 	public MovieServiceDBContext(DbContextOptions<MovieServiceDBContext> options) : base(options)
 	{

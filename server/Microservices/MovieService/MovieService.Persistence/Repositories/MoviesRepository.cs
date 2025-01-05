@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using MovieService.Domain;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Persistence.Repositories;
@@ -14,7 +15,7 @@ public class MoviesRepository : IMoviesRepository
 		_context = context;
 	}
 
-	public async Task<MovieModel?> GetAsync(Guid id, CancellationToken cancellationToken)
+	public async Task<MovieEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
 		return await _context.Movies
 			.AsNoTracking()
@@ -22,7 +23,7 @@ public class MoviesRepository : IMoviesRepository
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
-	public async Task<IList<MovieModel>> GetAsync(CancellationToken cancellationToken)
+	public async Task<IList<MovieEntity>> GetAsync(CancellationToken cancellationToken)
 	{
 		var users = await _context.Movies
 			.AsNoTracking()
@@ -31,19 +32,19 @@ public class MoviesRepository : IMoviesRepository
 		return users ?? [];
 	}
 
-	public async Task<Guid> CreateAsync(MovieModel movie, CancellationToken cancellationToken)
+	public async Task<Guid> CreateAsync(MovieEntity movie, CancellationToken cancellationToken)
 	{
 		await _context.Movies.AddAsync(movie, cancellationToken);
 
 		return movie.Id;
 	}
 
-	public void Update(MovieModel movie, CancellationToken cancellationToken)
+	public void Update(MovieEntity movie, CancellationToken cancellationToken)
 	{
 		_context.Movies.Attach(movie).State = EntityState.Modified;
 	}
 
-	public void Delete(MovieModel movie)
+	public void Delete(MovieEntity movie)
 	{
 		_context.Movies.Attach(movie);
 		_context.Movies.Remove(movie);
