@@ -4,7 +4,7 @@ using MovieService.Domain;
 
 namespace MovieService.Application.Handlers.Commands.Movies.Create;
 
-public partial class UpdateMovieCommand(
+public class UpdateMovieCommand(
 	Guid id,
 	string title,
 	IList<string> genres,

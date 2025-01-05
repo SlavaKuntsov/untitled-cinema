@@ -24,7 +24,7 @@ public class MapsterConfig : IRegister
 	{
 		return DateTime.TryParseExact(
 			dateOfBirthString,
-			Domain.Constants.DateTimeConstants.DATE_FORMAT,
+			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out var parsedDateTime)

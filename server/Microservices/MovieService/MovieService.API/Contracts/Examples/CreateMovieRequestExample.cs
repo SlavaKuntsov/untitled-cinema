@@ -7,7 +7,7 @@ public class CreateMovieRequestExample : IExamplesProvider<CreateMovieRequest>
 	public CreateMovieRequest GetExamples()
 	{
 		return new CreateMovieRequest(
-			"Гладиатор 2",
+			"Гладиатор",
 			["боевик", "драма"],
 			"После того как его дом завоевывают тиранические императоры, возглавляющие Рим, Луций, сын Луциллы и Максимуса, вынужден выйти на арену Колизея и обратиться к своему прошлому, чтобы найти в себе силы вернуть славу Рима его народу.",
 			165,

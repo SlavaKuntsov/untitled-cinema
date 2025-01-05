@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Text;
 
+using FluentValidation;
+
 using Mapster;
 
 using MapsterMapper;
@@ -16,6 +18,9 @@ using Microsoft.OpenApi.Models;
 using MovieService.API.Behaviors;
 using MovieService.API.Contracts.Examples;
 using MovieService.API.ExceptionHandlers;
+using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
+using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+using MovieService.Application.Validators;
 using MovieService.Infrastructure.Auth;
 
 using Protobufs.Auth;
@@ -145,7 +150,8 @@ public static class ApiExtensions
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
+		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
+		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehavior<,>));

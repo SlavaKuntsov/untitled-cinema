@@ -2,7 +2,7 @@
 
 namespace MovieService.Application.Handlers.Commands.Movies.Create;
 
-public partial class CreateMovieCommand(
+public class CreateMovieCommand(
 	string title,
 	IList<string> genres,
 	string description,

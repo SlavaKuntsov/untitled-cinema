@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace MovieService.API.Validators;
+namespace MovieService.Application.Validators;
 
 public abstract class BaseCommandValidator<T> : AbstractValidator<T>
 {
