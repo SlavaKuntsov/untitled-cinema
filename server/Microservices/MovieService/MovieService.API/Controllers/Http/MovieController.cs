@@ -63,7 +63,7 @@ public class MovieController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPut(nameof(Update))]
+	[HttpPatch(nameof(Update))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
