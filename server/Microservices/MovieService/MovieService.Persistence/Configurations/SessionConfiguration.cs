@@ -5,7 +5,7 @@ using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class SessionModelConfiguration : IEntityTypeConfiguration<SessionEntity>
+public class SessionConfiguration : IEntityTypeConfiguration<SessionEntity>
 {
 	public void Configure(EntityTypeBuilder<SessionEntity> builder)
 	{
@@ -13,8 +13,13 @@ public class SessionModelConfiguration : IEntityTypeConfiguration<SessionEntity>
 
 		builder.HasKey(s => s.Id);
 
-		builder.Property(s => s.Id)
-			.ValueGeneratedOnAdd();
+		//builder.Property(p => p.Date)
+		//	.IsRequired()
+		//	.HasColumnType("date")
+		//	.HasConversion(
+		//		v => v.Date,
+		//		v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+		//	);
 
 		builder.Property(s => s.StartTime)
 			.IsRequired()
@@ -37,9 +42,14 @@ public class SessionModelConfiguration : IEntityTypeConfiguration<SessionEntity>
 			.HasForeignKey(s => s.MovieId)
 			.OnDelete(DeleteBehavior.Cascade);
 
-		builder.HasOne(s => s.CinemaHall)
+		builder.HasOne(s => s.Hall)
 			.WithMany(h => h.Sessions)
 			.HasForeignKey(s => s.HallId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasOne(s => s.Day)
+			.WithMany(h => h.Sessions)
+			.HasForeignKey(s => s.DayId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}
 }
