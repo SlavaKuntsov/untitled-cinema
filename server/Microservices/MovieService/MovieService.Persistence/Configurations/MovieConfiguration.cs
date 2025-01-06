@@ -40,15 +40,18 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
 			);
 
-		builder.Property(m => m.Genres)
-			.HasConversion(
-				genres => string.Join(',', genres),
-				genresString => genresString.Split(',', StringSplitOptions.RemoveEmptyEntries)
-			);
-
 		builder.HasMany(m => m.Sessions)
 			   .WithOne(s => s.Movie)
 			   .HasForeignKey(s => s.MovieId)
 			   .OnDelete(DeleteBehavior.Cascade);
+
+		//builder
+		//	.HasMany(m => m.Genres)
+		//	.WithMany(g => g.Movies)
+		//	.UsingEntity<Dictionary<string, object>>(
+		//		"MovieGenre",
+		//		j => j.HasOne<GenreEntity>().WithMany().HasForeignKey("GenreId"),
+		//		j => j.HasOne<MovieEntity>().WithMany().HasForeignKey("MovieId")
+		//	);
 	}
 }

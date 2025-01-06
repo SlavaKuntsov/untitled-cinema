@@ -1,4 +1,6 @@
-﻿namespace MovieService.Domain;
+﻿using MovieService.Domain.Models;
+
+namespace MovieService.Domain;
 
 public class MovieModel
 {
@@ -17,7 +19,6 @@ public class MovieModel
 	public MovieModel(
 		Guid id,
 		string title,
-		IList<string> genres,
 		string description,
 		short durationMinutes,
 		string producer,
@@ -27,7 +28,6 @@ public class MovieModel
 	{
 		Id = id;
 		Title = title;
-		Genres = genres;
 		Description = description;
 		DurationMinutes = durationMinutes;
 		Producer = producer;
