@@ -18,17 +18,24 @@ public class MoviesRepository : IMoviesRepository
 	{
 		return await _context.Movies
 			.AsNoTracking()
+			.Include(m => m.MovieGenres)
+				.ThenInclude(mg => mg.Genre)
 			.Where(m => m.Id == id)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
-	public async Task<IList<MovieEntity>> GetAsync(CancellationToken cancellationToken)
+	public IQueryable<MovieEntity> Get()
 	{
-		var movies = await _context.Movies
+		return _context.Movies
 			.AsNoTracking()
-			.ToListAsync(cancellationToken);
+			.Include(m => m.MovieGenres)
+				.ThenInclude(mg => mg.Genre)
+			.AsQueryable();
+	}
 
-		return movies ?? [];
+	public async Task<IList<MovieEntity>> ToListAsync(IQueryable<MovieEntity> query, CancellationToken cancellationToken)
+	{
+		return await query.ToListAsync(cancellationToken);
 	}
 
 	public async Task<Guid> CreateAsync(MovieEntity movie, CancellationToken cancellationToken)
@@ -49,5 +56,10 @@ public class MoviesRepository : IMoviesRepository
 		_context.Movies.Remove(movie);
 
 		return;
+	}
+
+	public IQueryable<MovieEntity> FilterByGenre(IQueryable<MovieEntity> query, string genreFilter)
+	{
+		return query.Where(m => m.MovieGenres.Any(mg => mg.Genre.Name.ToLower() == genreFilter));
 	}
 }

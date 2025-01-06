@@ -32,9 +32,21 @@ public class MovieController : ControllerBase
 
 	[HttpGet("/Movies")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetMovies()
+	public async Task<IActionResult> GetMovies(
+		[FromQuery] byte limit = 10,
+		[FromQuery] byte offset = 1,
+		[FromQuery] string? filter = null,
+		[FromQuery] string? filterValue = null,
+		[FromQuery] string sortBy = "title",
+		[FromQuery] string sortDirection = "asc")
 	{
-		var movies = await _mediator.Send(new GetAllMoviesQuery());
+		var movies = await _mediator.Send(new GetAllMoviesQuery(
+			limit,
+			offset,
+			filter,
+			filterValue,
+			sortBy,
+			sortDirection));
 
 		return Ok(movies);
 	}
