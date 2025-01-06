@@ -82,6 +82,6 @@ public class MovieController : ControllerBase
 	{
 		await _mediator.Send(new DeleteMovieCommand(id));
 
-		return Ok();
+		return NoContent();
 	}
 }

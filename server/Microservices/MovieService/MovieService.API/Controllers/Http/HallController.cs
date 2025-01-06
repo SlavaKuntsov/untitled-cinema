@@ -81,6 +81,6 @@ public class HallController : ControllerBase
 	{
 		await _mediator.Send(new DeleteHallCommand(id));
 
-		return Ok();
+		return NoContent();
 	}
 }
