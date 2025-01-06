@@ -2,8 +2,6 @@
 
 using FluentValidation;
 
-using MovieService.Application.Handlers.Commands.Movies.Create;
-
 using MovieService.Application.Validators;
 
 namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;

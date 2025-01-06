@@ -2,7 +2,7 @@
 
 using MovieService.Domain;
 
-namespace MovieService.Application.Handlers.Commands.Movies.Create;
+namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 
 public class UpdateMovieCommand(
 	Guid id,

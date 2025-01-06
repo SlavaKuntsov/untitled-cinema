@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using MovieService.Application.Handlers.Commands.Movies.Create;
+using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
 namespace MovieService.Application.Extensions;
 

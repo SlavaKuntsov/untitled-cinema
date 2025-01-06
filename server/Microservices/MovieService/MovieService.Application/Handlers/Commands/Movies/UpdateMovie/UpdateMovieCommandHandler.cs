@@ -9,7 +9,7 @@ using MovieService.Domain;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories;
 
-namespace MovieService.Application.Handlers.Commands.Movies.Create;
+namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 
 public class UpdateMovieCommandHandler(IMoviesRepository moviesRepository, IMapper mapper) : IRequestHandler<UpdateMovieCommand, MovieModel>
 {

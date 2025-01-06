@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using MovieService.Domain;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories;
 
@@ -25,11 +24,11 @@ public class MoviesRepository : IMoviesRepository
 
 	public async Task<IList<MovieEntity>> GetAsync(CancellationToken cancellationToken)
 	{
-		var users = await _context.Movies
+		var movies = await _context.Movies
 			.AsNoTracking()
 			.ToListAsync(cancellationToken);
 
-		return users ?? [];
+		return movies ?? [];
 	}
 
 	public async Task<Guid> CreateAsync(MovieEntity movie, CancellationToken cancellationToken)

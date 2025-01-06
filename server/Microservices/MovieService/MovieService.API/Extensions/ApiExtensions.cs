@@ -16,7 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 using MovieService.API.Behaviors;
-using MovieService.API.Contracts.Examples;
+using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.ExceptionHandlers;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
