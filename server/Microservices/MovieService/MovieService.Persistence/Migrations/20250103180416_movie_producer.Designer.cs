@@ -25,7 +25,7 @@ namespace MovieService.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MovieService.Domain.Models.CinemaHallModel", b =>
+            modelBuilder.Entity("MovieService.Domain.Models.HallModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace MovieService.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CinemaHall", (string)null);
+                    b.ToTable("Hall", (string)null);
                 });
 
             modelBuilder.Entity("MovieService.Domain.Models.HallSeatModel", b =>
@@ -154,18 +154,18 @@ namespace MovieService.Persistence.Migrations
 
             modelBuilder.Entity("MovieService.Domain.Models.HallSeatModel", b =>
                 {
-                    b.HasOne("MovieService.Domain.Models.CinemaHallModel", "CinemaHall")
+                    b.HasOne("MovieService.Domain.Models.HallModel", "Hall")
                         .WithMany("Seats")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CinemaHall");
+                    b.Navigation("Hall");
                 });
 
             modelBuilder.Entity("MovieService.Domain.Models.SessionModel", b =>
                 {
-                    b.HasOne("MovieService.Domain.Models.CinemaHallModel", "CinemaHall")
+                    b.HasOne("MovieService.Domain.Models.HallModel", "Hall")
                         .WithMany("Sessions")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -177,12 +177,12 @@ namespace MovieService.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CinemaHall");
+                    b.Navigation("Hall");
 
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Models.CinemaHallModel", b =>
+            modelBuilder.Entity("MovieService.Domain.Models.HallModel", b =>
                 {
                     b.Navigation("Seats");
 

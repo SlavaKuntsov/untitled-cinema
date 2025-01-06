@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieService.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieService.Persistence.Migrations
 {
     [DbContext(typeof(MovieServiceDBContext))]
-    partial class MovieServiceDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250105162216_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,26 +24,6 @@ namespace MovieService.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("MovieService.Domain.Entities.DayEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamptz");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Day", (string)null);
-                });
 
             modelBuilder.Entity("MovieService.Domain.Entities.HallEntity", b =>
                 {
@@ -144,12 +127,6 @@ namespace MovieService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("DayId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamptz");
 
@@ -163,8 +140,6 @@ namespace MovieService.Persistence.Migrations
                         .HasColumnType("timestamptz");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DayId");
 
                     b.HasIndex("HallId");
 
@@ -186,12 +161,6 @@ namespace MovieService.Persistence.Migrations
 
             modelBuilder.Entity("MovieService.Domain.Entities.SessionEntity", b =>
                 {
-                    b.HasOne("MovieService.Domain.Entities.DayEntity", "Day")
-                        .WithMany("Sessions")
-                        .HasForeignKey("DayId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MovieService.Domain.Entities.HallEntity", "Hall")
                         .WithMany("Sessions")
                         .HasForeignKey("HallId")
@@ -204,16 +173,9 @@ namespace MovieService.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Day");
-
                     b.Navigation("Hall");
 
                     b.Navigation("Movie");
-                });
-
-            modelBuilder.Entity("MovieService.Domain.Entities.DayEntity", b =>
-                {
-                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("MovieService.Domain.Entities.HallEntity", b =>

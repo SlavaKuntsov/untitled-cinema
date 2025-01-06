@@ -12,7 +12,7 @@ namespace MovieService.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CinemaHall",
+                name: "Hall",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -61,7 +61,7 @@ namespace MovieService.Persistence.Migrations
                     table.ForeignKey(
                         name: "FK_HallSeat_CinemaHall_HallId",
                         column: x => x.HallId,
-                        principalTable: "CinemaHall",
+                        principalTable: "Hall",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -82,7 +82,7 @@ namespace MovieService.Persistence.Migrations
                     table.ForeignKey(
                         name: "FK_Session_CinemaHall_HallId",
                         column: x => x.HallId,
-                        principalTable: "CinemaHall",
+                        principalTable: "Hall",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -119,7 +119,7 @@ namespace MovieService.Persistence.Migrations
                 name: "Session");
 
             migrationBuilder.DropTable(
-                name: "CinemaHall");
+                name: "Hall");
 
             migrationBuilder.DropTable(
                 name: "Movie");
