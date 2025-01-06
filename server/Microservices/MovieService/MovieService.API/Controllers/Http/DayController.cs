@@ -8,7 +8,6 @@ using MovieService.API.Contracts.RequestExamples.Days;
 using MovieService.API.Contracts.Requests.Days;
 using MovieService.Application.Handlers.Commands.Days.CreateSession;
 using MovieService.Application.Handlers.Queries.Days.GetDayByDate;
-using MovieService.Domain.Constants;
 using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
