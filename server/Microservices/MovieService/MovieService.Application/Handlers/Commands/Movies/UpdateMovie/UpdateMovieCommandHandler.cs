@@ -11,7 +11,9 @@ using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 
-public class UpdateMovieCommandHandler(IMoviesRepository moviesRepository, IMapper mapper) : IRequestHandler<UpdateMovieCommand, MovieModel>
+public class UpdateMovieCommandHandler(
+	IMoviesRepository moviesRepository,
+	IMapper mapper) : IRequestHandler<UpdateMovieCommand, MovieModel>
 {
 	private readonly IMoviesRepository _moviesRepository = moviesRepository;
 	private readonly IMapper _mapper = mapper;

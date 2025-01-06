@@ -7,7 +7,9 @@ using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 
-public class DeleteHallCommandHandler(IHallsRepository hallsRepository, IMapper mapper) : IRequestHandler<DeleteHallCommand>
+public class DeleteHallCommandHandler(
+	IHallsRepository hallsRepository,
+	IMapper mapper) : IRequestHandler<DeleteHallCommand>
 {
 	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;

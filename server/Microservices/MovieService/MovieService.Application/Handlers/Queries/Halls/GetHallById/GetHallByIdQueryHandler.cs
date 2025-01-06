@@ -7,7 +7,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Halls.GetHallById;
 
-public class GetHallByIdQueryHandler(IHallsRepository hallsRepository, IMapper mapper) : IRequestHandler<GetHallByIdQuery, HallModel?>
+public class GetHallByIdQueryHandler(
+	IHallsRepository hallsRepository,
+	IMapper mapper) : IRequestHandler<GetHallByIdQuery, HallModel?>
 {
 	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;

@@ -9,7 +9,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Halls.CreateHall;
 
-public class CreateHallCommandHandler(IHallsRepository hallsRepository, IMapper mapper) : IRequestHandler<CreateHallCommand, Guid>
+public class CreateHallCommandHandler(
+	IHallsRepository hallsRepository,
+	IMapper mapper) : IRequestHandler<CreateHallCommand, Guid>
 {
 	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;

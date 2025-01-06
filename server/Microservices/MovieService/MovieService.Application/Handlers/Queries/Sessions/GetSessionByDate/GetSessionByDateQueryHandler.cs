@@ -9,7 +9,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Sessoins.GetSessionByDate;
 
-public class GetSessionByDateQueryHandler(ISessionsRepository sessoinsRepository, IMapper mapper) : IRequestHandler<GetSessionByDateQuery, SessionModel?>
+public class GetSessionByDateQueryHandler(
+	ISessionsRepository sessoinsRepository,
+	IMapper mapper) : IRequestHandler<GetSessionByDateQuery, SessionModel?>
 {
 	private readonly ISessionsRepository _sessoinsRepository = sessoinsRepository;
 	private readonly IMapper _mapper = mapper;

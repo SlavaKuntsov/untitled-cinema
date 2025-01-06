@@ -11,7 +11,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Days.CreateSession;
 
-public class CreateDayCommandHandler(IDaysRepository daysRepository, IMapper mapper) : IRequestHandler<CreateDayCommand, Guid>
+public class CreateDayCommandHandler(
+	IDaysRepository daysRepository,
+	IMapper mapper) : IRequestHandler<CreateDayCommand, Guid>
 {
 	private readonly IDaysRepository _daysRepository = daysRepository;
 	private readonly IMapper _mapper = mapper;

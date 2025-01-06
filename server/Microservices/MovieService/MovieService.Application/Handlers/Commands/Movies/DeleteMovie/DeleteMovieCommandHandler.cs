@@ -7,7 +7,9 @@ using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 
-public class DeleteMovieCommandHandler(IMoviesRepository moviesRepository, IMapper mapper) : IRequestHandler<DeleteMovieCommand>
+public class DeleteMovieCommandHandler(
+	IMoviesRepository moviesRepository,
+	IMapper mapper) : IRequestHandler<DeleteMovieCommand>
 {
 	private readonly IMoviesRepository _moviesRepository = moviesRepository;
 	private readonly IMapper _mapper = mapper;

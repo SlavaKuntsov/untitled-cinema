@@ -7,7 +7,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
 
-public class GetAllSessionsQueryHandler(ISessionsRepository sessoinsRepository, IMapper mapper) : IRequestHandler<GetAllSessionsQuery, IList<SessionModel>>
+public class GetAllSessionsQueryHandler(
+	ISessionsRepository sessoinsRepository,
+	IMapper mapper) : IRequestHandler<GetAllSessionsQuery, IList<SessionModel>>
 {
 	private readonly ISessionsRepository _sessoinsRepository = sessoinsRepository;
 	private readonly IMapper _mapper = mapper;

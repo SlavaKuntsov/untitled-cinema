@@ -9,7 +9,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Days.GetDayByDate;
 
-public class GetDayByDateQueryHandler(IDaysRepository daysRepository, IMapper mapper) : IRequestHandler<GetDayByDateQuery, DayModel?>
+public class GetDayByDateQueryHandler(
+	IDaysRepository daysRepository,
+	IMapper mapper) : IRequestHandler<GetDayByDateQuery, DayModel?>
 {
 	private readonly IDaysRepository _daysRepository = daysRepository;
 	private readonly IMapper _mapper = mapper;

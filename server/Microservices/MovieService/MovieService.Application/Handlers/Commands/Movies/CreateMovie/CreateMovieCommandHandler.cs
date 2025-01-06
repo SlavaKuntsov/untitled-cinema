@@ -9,7 +9,9 @@ using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
-public class CreateMovieCommandHandler(IMoviesRepository moviesRepository, IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
+public class CreateMovieCommandHandler(
+	IMoviesRepository moviesRepository,
+	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
     private readonly IMoviesRepository _moviesRepository = moviesRepository;
     private readonly IMapper _mapper = mapper;

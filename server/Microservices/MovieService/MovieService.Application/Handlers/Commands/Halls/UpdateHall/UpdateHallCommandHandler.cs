@@ -10,7 +10,9 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 
-public class UpdateHallCommandHandler(IHallsRepository hallsRepository, IMapper mapper) : IRequestHandler<UpdateHallCommand, HallModel>
+public class UpdateHallCommandHandler(
+	IHallsRepository hallsRepository,
+	IMapper mapper) : IRequestHandler<UpdateHallCommand, HallModel>
 {
 	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;

@@ -7,7 +7,9 @@ using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
-public class GetAllMoviesQueryHandler(IMoviesRepository moviesRepository, IMapper mapper) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
+public class GetAllMoviesQueryHandler(
+	IMoviesRepository moviesRepository,
+	IMapper mapper) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
 {
 	private readonly IMoviesRepository _moviesRepository = moviesRepository;
 	private readonly IMapper _mapper = mapper;
