@@ -27,7 +27,7 @@ public class DayController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpGet("/Day/{date}")]
+	[HttpGet("/Days/{date}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetDay([FromRoute] string date)
 	{
@@ -37,7 +37,7 @@ public class DayController : ControllerBase
 		return Ok(day);
 	}
 
-	[HttpPost(nameof(Create))]
+	[HttpPost("/Days")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateDayRequest), typeof(CreateDayRequestExample))]

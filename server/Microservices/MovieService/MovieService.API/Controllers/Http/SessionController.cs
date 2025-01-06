@@ -4,17 +4,12 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Sessions;
-using MovieService.API.Contracts.Requests.Movies;
 using MovieService.API.Contracts.Requests.Sessions;
-using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
-using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
 using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
 using MovieService.Application.Handlers.Queries.Sessoins.GetSessionByDate;
-using MovieService.Domain.Constants;
 using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -43,7 +38,7 @@ public class SessionController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpGet("/Session/{date}")]
+	[HttpGet("/Sessions/{date}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetSession([FromRoute] string date)
 	{
@@ -53,7 +48,7 @@ public class SessionController : ControllerBase
 		return Ok(session);
 	}
 
-	[HttpPost(nameof(Fill))]
+	[HttpPost("/Sessions")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(FillSessionRequest), typeof(FillSessionRequestExample))]
@@ -78,7 +73,7 @@ public class SessionController : ControllerBase
 	//	return Ok(movie);
 	//}
 
-	[HttpDelete(nameof(Delete) + "/{id:Guid}")]
+	[HttpDelete("/Sessions/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	//[Authorize(Policy = "AdminOnly")]

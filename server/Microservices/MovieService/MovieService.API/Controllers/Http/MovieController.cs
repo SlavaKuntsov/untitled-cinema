@@ -15,8 +15,6 @@ using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace MovieService.API.Controllers.Http;
 
 [ApiController]
@@ -41,7 +39,7 @@ public class MovieController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpGet("/Movie/{id:Guid}")]
+	[HttpGet("/Movies/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetMovie([FromRoute] Guid id)
 	{
@@ -51,7 +49,7 @@ public class MovieController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpPost(nameof(Create))]
+	[HttpPost("/Movies")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateMovieRequest), typeof(CreateMovieRequestExample))]
@@ -63,7 +61,7 @@ public class MovieController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch(nameof(Update))]
+	[HttpPatch("/Movies")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,7 +74,7 @@ public class MovieController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete(nameof(Delete) + "/{id:Guid}")]
+	[HttpDelete("/Movies/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	//[Authorize(Policy = "AdminOnly")]

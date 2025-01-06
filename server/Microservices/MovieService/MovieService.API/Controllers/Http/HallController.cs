@@ -41,7 +41,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpGet("/Hall/{id:Guid}")]
+	[HttpGet("/Halls/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetMovie([FromRoute] Guid id)
 	{
@@ -51,7 +51,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpPost(nameof(Create))]
+	[HttpPost("/Halls")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
@@ -62,7 +62,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch(nameof(Update))]
+	[HttpPatch("/Halls")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,7 +74,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete(nameof(Delete) + "/{id:Guid}")]
+	[HttpDelete("/Halls/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
