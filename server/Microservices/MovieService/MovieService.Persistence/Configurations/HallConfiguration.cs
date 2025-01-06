@@ -5,16 +5,13 @@ using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class CinemaHallModelConfiguration : IEntityTypeConfiguration<CinemaHallEntity>
+public class HallConfiguration : IEntityTypeConfiguration<HallEntity>
 {
-	public void Configure(EntityTypeBuilder<CinemaHallEntity> builder)
+	public void Configure(EntityTypeBuilder<HallEntity> builder)
 	{
-		builder.ToTable("CinemaHall");
+		builder.ToTable("Hall");
 
 		builder.HasKey(h => h.Id);
-
-		builder.Property(h => h.Id)
-			.ValueGeneratedOnAdd();
 
 		builder.Property(h => h.Name)
 			.IsRequired()
@@ -24,12 +21,12 @@ public class CinemaHallModelConfiguration : IEntityTypeConfiguration<CinemaHallE
 			.IsRequired();
 
 		builder.HasMany(h => h.Seats)
-			.WithOne(s => s.CinemaHall)
+			.WithOne(s => s.Hall)
 			.HasForeignKey(s => s.HallId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder.HasMany(h => h.Sessions)
-			.WithOne(s => s.CinemaHall)
+			.WithOne(s => s.Hall)
 			.HasForeignKey(s => s.HallId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}

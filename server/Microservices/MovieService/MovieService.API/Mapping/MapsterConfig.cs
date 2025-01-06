@@ -2,8 +2,10 @@
 
 using Mapster;
 
-using MovieService.Application.Handlers.Commands.Movies.Create;
+using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
+using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Domain;
+using MovieService.Domain.Models;
 
 namespace MovieService.API.Mapping;
 
@@ -18,6 +20,10 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.DurationMinutes, src => src.DurationMinutes)
 			.Map(dest => dest.Producer, src => src.Producer)
 			.Map(dest => dest.ReleaseDate, src => ParseDateOrDefault(src.ReleaseDate));
+
+		config.NewConfig<UpdateHallCommand, HallModel>()
+			.Map(dest => dest.Name, src => src.Name)
+			.Map(dest => dest.TotalSeats, src => src.TotalSeats);
 	}
 
 	private static DateTime ParseDateOrDefault(string dateOfBirthString)

@@ -1,6 +1,6 @@
 ﻿namespace MovieService.Domain.Entities;
 
-public class CinemaHallEntity
+public class HallEntity
 {
 	public Guid Id { get; private set; }
 	public string Name { get; set; } = null!;
