@@ -22,14 +22,6 @@ public class SessionsRepository : ISessionsRepository
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
-	public async Task<SessionEntity?> GetAsync(DateTime date, CancellationToken cancellationToken)
-	{
-		return await _context.Sessions
-			.AsNoTracking()
-			.Where(m => m.Date == date)
-			.FirstOrDefaultAsync(cancellationToken);
-	}
-
 	public async Task<IList<SessionEntity>> GetAsync(CancellationToken cancellationToken)
 	{
 		var sessions = await _context.Sessions
@@ -37,6 +29,16 @@ public class SessionsRepository : ISessionsRepository
 			.ToListAsync(cancellationToken);
 
 		return sessions ?? [];
+	}
+
+	public IQueryable<SessionEntity> Get()
+	{
+		return _context.Sessions.AsQueryable();
+	}
+
+	public async Task<List<SessionEntity>> ToListAsync(IQueryable<SessionEntity> query, CancellationToken cancellationToken)
+	{
+		return await query.ToListAsync(cancellationToken);
 	}
 
 	public async Task<IList<SessionEntity>> GetOverlappingAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)

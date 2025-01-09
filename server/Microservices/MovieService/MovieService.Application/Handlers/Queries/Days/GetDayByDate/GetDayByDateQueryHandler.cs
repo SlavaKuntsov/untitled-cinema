@@ -21,8 +21,8 @@ public class GetDayByDateQueryHandler(
 		if (!request.Date.DateFormatTryParse(out DateTime parsedDate))
 			throw new BadRequestException("Invalid date format.");
 
-		var movie = await _daysRepository.GetAsync(parsedDate, cancellationToken);
+		var day = await _daysRepository.GetAsync(parsedDate, cancellationToken);
 
-		return _mapper.Map<DayModel>(movie);
+		return _mapper.Map<DayModel>(day);
 	}
 }

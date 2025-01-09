@@ -1,4 +1,6 @@
-﻿using MapsterMapper;
+﻿using System.Globalization;
+
+using MapsterMapper;
 
 using MediatR;
 
@@ -9,7 +11,6 @@ using MovieService.API.Contracts.Requests.Sessions;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
 using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
-using MovieService.Application.Handlers.Queries.Sessoins.GetSessionByDate;
 using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -31,21 +32,19 @@ public class SessionController : ControllerBase
 
 	[HttpGet("/Sessions")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetSessions()
+	public async Task<IActionResult> GetSessions(
+		[FromQuery] byte limit = 10,
+		[FromQuery] byte offset = 1,
+		[FromQuery] string? date = null,
+		[FromQuery] string? hall = null)
 	{
-		var movies = await _mediator.Send(new GetAllSessionsQuery());
+		var movies = await _mediator.Send(new GetAllSessionsQuery(
+			limit,
+			offset,
+			date,
+			hall));
 
 		return Ok(movies);
-	}
-
-	[HttpGet("/Sessions/{date}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetSession([FromRoute] string date)
-	{
-		var session = await _mediator.Send(new GetSessionByDateQuery(date))
-			?? throw new NotFoundException($"Session '{date}' not found");
-
-		return Ok(session);
 	}
 
 	[HttpPost("/Sessions")]
