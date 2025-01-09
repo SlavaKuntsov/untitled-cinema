@@ -11,6 +11,6 @@ public class FillSessionRequestExample : IExamplesProvider<FillSessionRequest>
 		return new FillSessionRequest(
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			"06-01-2025 09:00");
+			"05-01-2025 09:00");
 	}
 }

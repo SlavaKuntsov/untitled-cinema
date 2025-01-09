@@ -15,11 +15,13 @@ public class FillSessionCommandHandler(
 	ISessionsRepository sessionsRepository,
 	IDaysRepository daysRepository,
 	IMoviesRepository movieRepository,
+	IHallsRepository hallsRepository,
 	IMapper mapper) : IRequestHandler<FillSessionCommand, Guid>
 {
 	private readonly ISessionsRepository _sessionsRepository = sessionsRepository;
 	private readonly IDaysRepository _daysRepository = daysRepository;
-	private readonly IMoviesRepository _movieRepository = movieRepository;
+	private readonly IMoviesRepository _moviesRepository = movieRepository;
+	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(FillSessionCommand request, CancellationToken cancellationToken)
@@ -32,8 +34,11 @@ public class FillSessionCommandHandler(
 		var day = await _daysRepository.GetAsync(date, cancellationToken)
 			?? throw new NotFoundException($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' doesn't exists");
 
-		var movie = await _movieRepository.GetAsync(request.MovieId, cancellationToken)
+		var movie = await _moviesRepository.GetAsync(request.MovieId, cancellationToken)
 			?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
+
+		var hall = await _hallsRepository.GetAsync(request.HallId, cancellationToken)
+			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
 
@@ -42,9 +47,6 @@ public class FillSessionCommandHandler(
 
 		if (calculateEndTime > day.EndTime)
 			throw new UnprocessableContentException("Session end time cannot be later than the end of the day.");
-
-		parsedStartTime = DateTime.SpecifyKind(parsedStartTime, DateTimeKind.Local).ToUniversalTime();
-		calculateEndTime = DateTime.SpecifyKind(calculateEndTime, DateTimeKind.Local).ToUniversalTime();
 
 		var sameExistSessions = await _sessionsRepository.GetOverlappingAsync(
 			parsedStartTime,

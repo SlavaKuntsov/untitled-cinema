@@ -39,9 +39,6 @@ public class CreateDayCommandHandler(
 		if (existDay is not null)
 			throw new AlreadyExistsException($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' already exist.");
 
-		parsedStartTime = DateTime.SpecifyKind(parsedStartTime, DateTimeKind.Local).ToUniversalTime();
-		parsedEndTime = DateTime.SpecifyKind(parsedEndTime, DateTimeKind.Local).ToUniversalTime();
-
 		var day = new DayModel(
 			Guid.NewGuid(),
 			parsedStartTime,

@@ -6,7 +6,6 @@ public class SessionEntity
 	public Guid MovieId { get; set; }
 	public Guid HallId { get; set; }
 	public Guid DayId { get; set; }
-	public DateTime Date { get; set; }
 	public DateTime StartTime { get; set; }
 	public DateTime EndTime { get; set; }
 

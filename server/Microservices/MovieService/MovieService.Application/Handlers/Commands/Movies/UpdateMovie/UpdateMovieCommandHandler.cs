@@ -23,8 +23,6 @@ public class UpdateMovieCommandHandler(
 		if (!request.ReleaseDate.DateTimeFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		parsedDateTime = DateTime.SpecifyKind(parsedDateTime, DateTimeKind.Local).ToUniversalTime();
-
 		var existMovie = await _moviesRepository.GetAsync(request.Id, cancellationToken)
 				?? throw new NotFoundException($"Movie with id {request.Id} doesn't exists");
 

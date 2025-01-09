@@ -1,4 +1,6 @@
-﻿using MapsterMapper;
+﻿using System.Diagnostics;
+
+using MapsterMapper;
 
 using MediatR;
 
@@ -29,8 +31,9 @@ public class DayController : ControllerBase
 
 	[HttpGet("/Days/{date}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetDay([FromRoute] string date)
+	public async Task<IActionResult> GetDay([FromRoute] string date = "05-01-2025")
 	{
+		// TODO - возможно добавить range Для даты от - до
 		var day = await _mediator.Send(new GetDayByDateQuery(date))
 			?? throw new NotFoundException(message: $"Day '{date}' not found");
 

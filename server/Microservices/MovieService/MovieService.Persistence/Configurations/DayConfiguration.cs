@@ -13,14 +13,6 @@ public class DayConfiguration : IEntityTypeConfiguration<DayEntity>
 
 		builder.HasKey(h => h.Id);
 
-		//builder.Property(p => p.Date)
-		//	.IsRequired()
-		//	.HasColumnType("date")
-		//	.HasConversion(
-		//		v => v.Date,
-		//		v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-		//	);
-
 		builder.Property(s => s.StartTime)
 			.IsRequired()
 			.HasColumnType("timestamptz")

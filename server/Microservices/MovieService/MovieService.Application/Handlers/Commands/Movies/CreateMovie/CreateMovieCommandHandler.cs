@@ -25,8 +25,6 @@ public class CreateMovieCommandHandler(
 		if (!request.ReleaseDate.DateTimeFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		parsedDateTime = DateTime.SpecifyKind(parsedDateTime, DateTimeKind.Local).ToUniversalTime();
-
 		DateTime dateNow = DateTime.UtcNow;
 
 		var movie = new MovieModel(

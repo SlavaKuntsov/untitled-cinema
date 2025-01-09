@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
@@ -21,6 +22,7 @@ using MovieService.API.ExceptionHandlers;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Application.Validators;
+using MovieService.Domain.Constants;
 using MovieService.Infrastructure.Auth;
 
 using Protobufs.Auth;
@@ -42,7 +44,12 @@ public static class ApiExtensions
 
 		services.AddHttpContextAccessor();
 
-		services.AddControllers();
+		services.AddControllers()
+			.AddJsonOptions(options =>
+			{
+				options.JsonSerializerOptions.Converters.Add(
+					new Infrastructure.DateTime.DateTimeConverter(DateTimeConstants.DATE_TIME_FORMAT));
+			});
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(options =>
 		{
