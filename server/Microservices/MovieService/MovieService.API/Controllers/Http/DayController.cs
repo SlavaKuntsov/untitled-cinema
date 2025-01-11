@@ -40,7 +40,6 @@ public class DayController : ControllerBase
 	[HttpGet("/Days/{date}")]
 	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
 	{
-		// TODO - возможно добавить range Для даты от - до
 		var day = await _mediator.Send(new GetDayByDateQuery(date))
 			?? throw new NotFoundException(message: $"Day '{date}' not found");
 

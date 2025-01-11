@@ -20,27 +20,22 @@ namespace MovieService.API.Behaviors
 			{
 				var context = new ValidationContext<TRequest>(request);
 
-				// Асинхронная валидация всех валидаторов
 				var validationResults = await Task.WhenAll(
 					_validators.Select(v => v.ValidateAsync(context, cancellationToken))
 				);
 
-				// Сбор всех ошибок валидации
 				var failures = validationResults
 					.SelectMany(result => result.Errors)
 					.Where(f => f != null)
 					.ToList();
 
-				// Если есть ошибки валидации
 				if (failures.Any())
 				{
-					// Формирование единого сообщения об ошибках
 					var errorMessages = failures.Select(f => f.ErrorMessage).ToList();
 					throw new ValidationException($"Validation failed: {string.Join("; ", errorMessages)}");
 				}
 			}
 
-			// Продолжение обработки запроса
 			return await next();
 		}
 	}
