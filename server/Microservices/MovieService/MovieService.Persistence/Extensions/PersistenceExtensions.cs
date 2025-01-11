@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Persistence.Repositories;
+using MovieService.Persistence.Repositories.UnitOfWork;
 
 namespace MovieService.Persistence.Extensions;
 
@@ -20,6 +22,8 @@ public static class PersistenceExtensions
 		{
 			options.UseNpgsql(connectionString);
 		});
+
+		services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 		services.AddScoped<IMoviesRepository, MoviesRepository>();
 		services.AddScoped<IHallsRepository, HallsRepository>();

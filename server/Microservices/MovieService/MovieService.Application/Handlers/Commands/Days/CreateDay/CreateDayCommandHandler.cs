@@ -6,16 +6,16 @@ using MovieService.Application.Extensions;
 using MovieService.Domain.Constants;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
-using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Days.CreateSession;
 
 public class CreateDayCommandHandler(
-	IDaysRepository daysRepository,
+	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<CreateDayCommand, Guid>
 {
-	private readonly IDaysRepository _daysRepository = daysRepository;
+	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(CreateDayCommand request, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ public class CreateDayCommandHandler(
 
 		var date = parsedStartTime.Date;
 
-		var existDay = await _daysRepository.GetAsync(date, cancellationToken);
+		var existDay = await _unitOfWork.DaysRepository.GetAsync(date, cancellationToken);
 
 		if (existDay is not null)
 			throw new AlreadyExistsException($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' already exist.");
@@ -44,7 +44,9 @@ public class CreateDayCommandHandler(
 			parsedStartTime,
 			parsedEndTime);
 
-		await _daysRepository.CreateAsync(_mapper.Map<DayEntity>(day), cancellationToken);
+		await _unitOfWork.DaysRepository.CreateAsync(_mapper.Map<DayEntity>(day), cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return day.Id;
 	}

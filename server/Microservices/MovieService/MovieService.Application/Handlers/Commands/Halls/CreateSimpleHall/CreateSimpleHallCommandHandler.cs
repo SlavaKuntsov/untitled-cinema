@@ -4,16 +4,16 @@ using MediatR;
 
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
-using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
 
 public class CreateSimpleHallCommandHandler(
-	IHallsRepository hallsRepository,
+	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<CreateSimpleHallCommand, Guid>
 {
-	private readonly IHallsRepository _hallsRepository = hallsRepository;
+	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(CreateSimpleHallCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public class CreateSimpleHallCommandHandler(
 			throw new InvalidOperationException(
 				$"The number of seats ({seatCount}) does not match the specified total seats ({request.TotalSeats}).");
 
-		var existHall = await _hallsRepository.GetAsync(request.Name, cancellationToken);
+		var existHall = await _unitOfWork.HallsRepository.GetAsync(request.Name, cancellationToken);
 
 		if (existHall is not null)
 			throw new AlreadyExistsException($"Hall with name '{request.Name}' already exist.");
@@ -42,7 +42,9 @@ public class CreateSimpleHallCommandHandler(
 			request.TotalSeats,
 			seats);
 
-		await _hallsRepository.CreateAsync(_mapper.Map<HallEntity>(hall), cancellationToken);
+		await _unitOfWork.HallsRepository.CreateAsync(_mapper.Map<HallEntity>(hall), cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return hall.Id;
 	}

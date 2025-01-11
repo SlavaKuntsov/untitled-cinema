@@ -3,26 +3,26 @@
 using MediatR;
 
 using MovieService.Domain;
-using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
 public class GetAllMoviesQueryHandler(
-	IMoviesRepository moviesRepository,
+	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
 {
-	private readonly IMoviesRepository _moviesRepository = moviesRepository;
+	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<IList<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
 	{
-		var query = _moviesRepository.Get();
+		var query = _unitOfWork.MoviesRepository.Get();
 
 		if (!string.IsNullOrWhiteSpace(request.Filter) && !string.IsNullOrWhiteSpace(request.FilterValue))
 		{
 			query = request.Filter!.ToLower() switch
 			{
-				"genre" => _moviesRepository.FilterByGenre(query, request.FilterValue.ToLower()),
+				"genre" => _unitOfWork.MoviesRepository.FilterByGenre(query, request.FilterValue.ToLower()),
 				"producer" => query.Where(m => m.Producer.ToLower().Contains(request.FilterValue.ToLower())),
 				_ => throw new InvalidOperationException($"Invalid filter field '{request.Filter}'.")
 			};
@@ -55,7 +55,7 @@ public class GetAllMoviesQueryHandler(
 			.Skip((request.Offset - 1) * request.Limit)
 			.Take(request.Limit);
 
-		var movies = await _moviesRepository.ToListAsync(query, cancellationToken);
+		var movies = await _unitOfWork.MoviesRepository.ToListAsync(query, cancellationToken);
 
 		return _mapper.Map<IList<MovieModel>>(movies);
 	}

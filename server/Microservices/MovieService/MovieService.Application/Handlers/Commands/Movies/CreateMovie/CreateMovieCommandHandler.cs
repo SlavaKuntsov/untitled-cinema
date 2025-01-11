@@ -6,18 +6,16 @@ using MovieService.Application.Extensions;
 using MovieService.Domain;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
-using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
 public class CreateMovieCommandHandler(
-	IMoviesRepository moviesRepository,
-	IMovieGenresRepository movieGenresRepository,
+	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
-	private readonly IMoviesRepository _moviesRepository = moviesRepository;
-	private readonly IMovieGenresRepository _movieGenresRepository = movieGenresRepository;
+	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ public class CreateMovieCommandHandler(
 
 		foreach (var genreName in request.Genres)
 		{
-			var existingGenre = await _movieGenresRepository.GetByNameAsync(genreName, cancellationToken);
+			var existingGenre = await _unitOfWork.MovieGenresRepository.GetByNameAsync(genreName, cancellationToken);
 
 			if (existingGenre == null)
 			{
@@ -49,7 +47,7 @@ public class CreateMovieCommandHandler(
 
 				var genreEntity = _mapper.Map<GenreEntity>(genre);
 
-				await _movieGenresRepository.AddAsync(genreEntity, cancellationToken);
+				await _unitOfWork.MovieGenresRepository.AddAsync(genreEntity, cancellationToken);
 				genreEntities.Add(genreEntity);
 			}
 			else
@@ -67,7 +65,9 @@ public class CreateMovieCommandHandler(
 			Genre = genre
 		}).ToList();
 
-		await _moviesRepository.CreateAsync(movieEntity, cancellationToken);
+		await _unitOfWork.MoviesRepository.CreateAsync(movieEntity, cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return movie.Id;
 	}

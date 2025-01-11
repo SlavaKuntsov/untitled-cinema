@@ -160,7 +160,6 @@ public static class ApiExtensions
 		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehavior<,>));
 
 		return services;
 	}

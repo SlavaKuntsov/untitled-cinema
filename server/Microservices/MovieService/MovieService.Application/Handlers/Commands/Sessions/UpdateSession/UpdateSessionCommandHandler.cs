@@ -7,27 +7,21 @@ using MediatR;
 using MovieService.Application.Extensions;
 using MovieService.Domain.Constants;
 using MovieService.Domain.Exceptions;
-using MovieService.Domain.Interfaces.Repositories;
+using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 
 public class UpdateSessionCommandHandler(
-	ISessionsRepository sessionsRepository,
-	IDaysRepository daysRepository,
-	IMoviesRepository movieRepository,
-	IHallsRepository hallsRepository,
+	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<UpdateSessionCommand, SessionModel>
 {
-	private readonly ISessionsRepository _sessionsRepository = sessionsRepository;
-	private readonly IDaysRepository _daysRepository = daysRepository;
-	private readonly IMoviesRepository _moviesRepository = movieRepository;
-	private readonly IHallsRepository _hallsRepository = hallsRepository;
+	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<SessionModel> Handle(UpdateSessionCommand request, CancellationToken cancellationToken)
 	{
-		var existSession = await _sessionsRepository.GetAsync(request.Id, cancellationToken)
+		var existSession = await _unitOfWork.SessionsRepository.GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Session with id {request.Id} doesn't exists");
 
 		if (!request.StartTime.DateTimeFormatTryParse(out DateTime parsedStartTime))
@@ -35,13 +29,13 @@ public class UpdateSessionCommandHandler(
 
 		var date = parsedStartTime.Date;
 
-		var day = await _daysRepository.GetAsync(date, cancellationToken)
+		var day = await _unitOfWork.DaysRepository.GetAsync(date, cancellationToken)
 			?? throw new NotFoundException($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' doesn't exists");
 
-		var movie = await _moviesRepository.GetAsync(request.MovieId, cancellationToken)
+		var movie = await _unitOfWork.MoviesRepository.GetAsync(request.MovieId, cancellationToken)
 			?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
 
-		var hall = await _hallsRepository.GetAsync(request.HallId, cancellationToken)
+		var hall = await _unitOfWork.HallsRepository.GetAsync(request.HallId, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
@@ -52,7 +46,7 @@ public class UpdateSessionCommandHandler(
 		if (calculateEndTime > day.EndTime)
 			throw new UnprocessableContentException("Session end time cannot be later than the end of the day.");
 
-		var sameExistSessions = await _sessionsRepository.GetOverlappingAsync(
+		var sameExistSessions = await _unitOfWork.SessionsRepository.GetOverlappingAsync(
 			parsedStartTime,
 			calculateEndTime,
 			cancellationToken);
@@ -66,7 +60,9 @@ public class UpdateSessionCommandHandler(
 
 		request.Adapt(existSession);
 
-		_sessionsRepository.Update(existSession, cancellationToken);
+		_unitOfWork.SessionsRepository.Update(existSession, cancellationToken);
+
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return _mapper.Map<SessionModel>(existSession);
 	}
