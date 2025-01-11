@@ -5,16 +5,13 @@ using MovieService.Domain.Entities;
 
 namespace MovieService.Persistence.Configurations;
 
-public class HallSeatModelConfiguration : IEntityTypeConfiguration<HallSeatEntity>
+public class HallSeatConfiguration : IEntityTypeConfiguration<HallSeatEntity>
 {
 	public void Configure(EntityTypeBuilder<HallSeatEntity> builder)
 	{
 		builder.ToTable("HallSeat");
 
 		builder.HasKey(s => s.Id);
-
-		builder.Property(s => s.Id)
-			.ValueGeneratedOnAdd();
 
 		builder.Property(s => s.SeatRow)
 			.IsRequired();

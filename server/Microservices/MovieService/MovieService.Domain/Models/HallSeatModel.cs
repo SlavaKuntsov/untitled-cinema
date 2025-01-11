@@ -9,4 +9,8 @@ public class HallSeatModel
 	public bool Exists { get; set; } = true;
 	public string SeatType { get; set; } = string.Empty;
 	public decimal Price { get; set; } = 0.00m;
+
+	public HallSeatModel()
+	{
+	}
 }

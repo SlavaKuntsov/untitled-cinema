@@ -31,8 +31,7 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpGet("/Movies")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetMovies(
+	public async Task<IActionResult> Get(
 		[FromQuery] byte limit = 10,
 		[FromQuery] byte offset = 1,
 		[FromQuery] string? filter = null,
@@ -52,8 +51,7 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpGet("/Movies/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetMovie([FromRoute] Guid id)
+	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var movies = await _mediator.Send(new GetMovieByIdQuery(id))
 			?? throw new NotFoundException($"Movie with id '{id.ToString()}' not found");
@@ -62,8 +60,6 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpPost("/Movies")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateMovieRequest), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Create([FromBody] CreateMovieCommand request)
@@ -74,9 +70,6 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpPatch("/Movies")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(UpdateMovieRequest), typeof(UpdateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request)
@@ -87,8 +80,6 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpDelete("/Movies/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{

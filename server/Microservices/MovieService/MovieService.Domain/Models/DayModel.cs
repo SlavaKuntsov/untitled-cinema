@@ -6,6 +6,10 @@ public class DayModel
 	public DateTime StartTime { get; set; }
 	public DateTime EndTime { get; set; }
 
+	public DayModel()
+	{
+	}
+
 	public DayModel(
 		Guid id,
 		DateTime startTime,

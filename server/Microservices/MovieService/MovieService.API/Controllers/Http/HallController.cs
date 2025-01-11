@@ -43,8 +43,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpGet("/Halls/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var halls = await _mediator.Send(new GetHallByIdQuery(id))
@@ -54,9 +52,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPost("/Halls")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
 	{
@@ -66,9 +61,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPost("/Halls")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateHallCommand request)
 	{
@@ -78,9 +70,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPatch("/Halls")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(UpdateHallRequest), typeof(UpdateHallRequestExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request)
 	{
@@ -90,8 +79,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpDelete("/Halls/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
 		await _mediator.Send(new DeleteHallCommand(id));

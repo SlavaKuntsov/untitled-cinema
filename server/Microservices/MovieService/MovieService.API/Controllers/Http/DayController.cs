@@ -30,8 +30,7 @@ public class DayController : ControllerBase
 	}
 
 	[HttpGet("/Days/{date}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetDay([FromRoute] string date = "05-01-2025")
+	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
 	{
 		// TODO - возможно добавить range Для даты от - до
 		var day = await _mediator.Send(new GetDayByDateQuery(date))
@@ -41,8 +40,6 @@ public class DayController : ControllerBase
 	}
 
 	[HttpPost("/Days")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateDayRequest), typeof(CreateDayRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateDayCommand request)
 	{

@@ -31,8 +31,7 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpGet("/Sessions")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetSessions(
+	public async Task<IActionResult> Get(
 		[FromQuery] byte limit = 10,
 		[FromQuery] byte offset = 1,
 		[FromQuery] string? date = null,
@@ -48,8 +47,6 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpPost("/Sessions")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(FillSessionRequest), typeof(FillSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
@@ -73,8 +70,6 @@ public class SessionController : ControllerBase
 	//}
 
 	[HttpDelete("/Sessions/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
