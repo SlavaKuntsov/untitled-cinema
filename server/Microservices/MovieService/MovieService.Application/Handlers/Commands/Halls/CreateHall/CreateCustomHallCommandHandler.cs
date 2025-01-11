@@ -9,17 +9,23 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Halls.CreateHall;
 
-public class CreateHallCommandHandler(
+public class CreateCustomHallCommandHandler(
 	IHallsRepository hallsRepository,
-	IMapper mapper) : IRequestHandler<CreateHallCommand, Guid>
+	IMapper mapper) : IRequestHandler<CreateCustomHallCommand, Guid>
 {
 	private readonly IHallsRepository _hallsRepository = hallsRepository;
 	private readonly IMapper _mapper = mapper;
 
-	public async Task<Guid> Handle(CreateHallCommand request, CancellationToken cancellationToken)
+	public async Task<Guid> Handle(CreateCustomHallCommand request, CancellationToken cancellationToken)
 	{
-		var seatCount = request.Seats.Sum(row =>
-			row.Count(seat => seat == 1 || seat == 0));
+		foreach (var row in request.Seats)
+		{
+			if (row.Any(seat => seat != -1 && seat != 0))
+				throw new InvalidOperationException(
+					"Seats can only contain values -1 (non-existent seat) or 0 (available seat).");
+		}
+
+		var seatCount = request.Seats.Sum(row => row.Count(seat => seat == 0));
 
 		if (seatCount != request.TotalSeats)
 			throw new InvalidOperationException(

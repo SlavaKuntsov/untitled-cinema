@@ -6,9 +6,14 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Sessions;
+using MovieService.API.Contracts.Requests.Movies;
 using MovieService.API.Contracts.Requests.Sessions;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
+using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
+using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
 using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
 using MovieService.Domain.Exceptions;
@@ -56,24 +61,21 @@ public class SessionController : ControllerBase
 		return Ok(movie);
 	}
 
-	//[HttpPatch(nameof(Update))]
-	//[ProducesResponseType(StatusCodes.Status200OK)]
-	//[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	//[ProducesResponseType(StatusCodes.Status404NotFound)]
-	//[SwaggerRequestExample(typeof(UpdateMovieRequest), typeof(UpdateMovieRequestExample))]
-	////[Authorize(Policy = "AdminOnly")]
-	//public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request)
-	//{
-	//	var movie = await _mediator.Send(request);
+	[HttpPatch("/Sessions")]
+	[SwaggerRequestExample(typeof(UpdateSessionRequest), typeof(UpdateSessionRequestExample))]
+	//[Authorize(Policy = "AdminOnly")]
+	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request)
+	{
+		var movie = await _mediator.Send(request);
 
-	//	return Ok(movie);
-	//}
+		return Ok(movie);
+	}
 
 	[HttpDelete("/Sessions/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
-		await _mediator.Send(new DeleteMovieCommand(id));
+		await _mediator.Send(new DeleteSessionCommand(id));
 
 		return NoContent();
 	}

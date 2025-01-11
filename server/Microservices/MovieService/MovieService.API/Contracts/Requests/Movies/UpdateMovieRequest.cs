@@ -1,7 +1,7 @@
 ﻿namespace MovieService.API.Contracts.Requests.Movies;
 
 public record UpdateMovieRequest(
-    Guid id,
+    Guid Id,
     string Title,
     IList<string> Genres,
     string Description,

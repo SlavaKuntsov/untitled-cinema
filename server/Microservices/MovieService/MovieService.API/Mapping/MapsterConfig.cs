@@ -5,6 +5,7 @@ using Mapster;
 
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Domain;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Models;
@@ -21,13 +22,19 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.Description, src => src.Description)
 			.Map(dest => dest.DurationMinutes, src => src.DurationMinutes)
 			.Map(dest => dest.Producer, src => src.Producer)
-			.Map(dest => dest.ReleaseDate, src => ParseDateOrDefault(src.ReleaseDate));
+			.Map(dest => dest.ReleaseDate, src => ParseDateTimeOrDefault(src.ReleaseDate));
 
 		config.NewConfig<UpdateHallCommand, HallEntity>()
 			 .Map(dest => dest.Id, src => src.Id)
 			 .Map(dest => dest.Name, src => src.Name)
 			 .Map(dest => dest.TotalSeats, src => src.TotalSeats)
-			.Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.Seats));
+			 .Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.Seats));
+
+		config.NewConfig<UpdateSessionCommand, SessionEntity>()
+			 .Map(dest => dest.Id, src => src.Id)
+			 .Map(dest => dest.MovieId, src => src.MovieId)
+			 .Map(dest => dest.HallId, src => src.HallId)
+			 .Map(dest => dest.StartTime, src => ParseDateTimeOrDefault(src.StartTime));
 
 		config.NewConfig<MovieModel, MovieEntity>()
 			.Map(dest => dest.MovieGenres, src => new List<MovieGenreEntity>());
@@ -43,10 +50,10 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.SeatsArray));
 	}
 
-	private static DateTime ParseDateOrDefault(string dateOfBirthString)
+	private static DateTime ParseDateTimeOrDefault(string date)
 	{
 		return DateTime.TryParseExact(
-			dateOfBirthString,
+			date,
 			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,

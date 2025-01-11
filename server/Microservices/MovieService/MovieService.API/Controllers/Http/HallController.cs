@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts;
 using MovieService.API.Contracts.Examples.Movies;
+using MovieService.API.Contracts.RequestExamples.Halls;
 using MovieService.API.Contracts.Requests.Halls;
 using MovieService.Application.Handlers.Commands.Halls.CreateHall;
 using MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
@@ -51,8 +52,8 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpPost("/Halls")]
-	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
+	[HttpPost("/Halls/Simple")]
+	[SwaggerRequestExample(typeof(CreateSimpleHallRequest), typeof(CreateSimpleHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
 	{
 		var movie = await _mediator.Send(requests);
@@ -60,9 +61,9 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPost("/Halls")]
-	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
-	public async Task<IActionResult> Create([FromBody] CreateHallCommand request)
+	[HttpPost("/Halls/Custom")]
+	[SwaggerRequestExample(typeof(CreateCustomHallRequest), typeof(CreateCustomHallRequestExample))]
+	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request)
 	{
 		var movie = await _mediator.Send(request);
 

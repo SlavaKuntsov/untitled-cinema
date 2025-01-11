@@ -2,7 +2,7 @@
 
 namespace MovieService.Application.Handlers.Commands.Halls.CreateHall;
 
-public class CreateHallCommand(
+public class CreateCustomHallCommand(
 	string name,
 	short totalSeats,
 	int[][] seats) : IRequest<Guid>
