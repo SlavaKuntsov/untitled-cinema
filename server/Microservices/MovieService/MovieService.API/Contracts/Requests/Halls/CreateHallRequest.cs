@@ -2,4 +2,5 @@
 
 public record CreateHallRequest(
     string Name,
-    short TotalSeats);
+    short TotalSeats,
+    int[][] Seats);

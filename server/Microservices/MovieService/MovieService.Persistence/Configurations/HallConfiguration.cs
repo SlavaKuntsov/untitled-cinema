@@ -20,6 +20,10 @@ public class HallConfiguration : IEntityTypeConfiguration<HallEntity>
 		builder.Property(h => h.TotalSeats)
 			.IsRequired();
 
+		builder.Property(h => h.SeatsArrayJson)
+			.HasColumnType("jsonb")
+			.IsRequired();
+
 		builder.HasMany(h => h.Seats)
 			.WithOne(s => s.Hall)
 			.HasForeignKey(s => s.HallId)

@@ -199,7 +199,7 @@ namespace MovieService.Persistence.Migrations
             modelBuilder.Entity("MovieService.Domain.Entities.HallSeatEntity", b =>
                 {
                     b.HasOne("MovieService.Domain.Entities.HallEntity", "Hall")
-                        .WithMany("Seats")
+                        .WithMany("SeatsArray")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -265,7 +265,7 @@ namespace MovieService.Persistence.Migrations
 
             modelBuilder.Entity("MovieService.Domain.Entities.HallEntity", b =>
                 {
-                    b.Navigation("Seats");
+                    b.Navigation("SeatsArray");
 
                     b.Navigation("Sessions");
                 });

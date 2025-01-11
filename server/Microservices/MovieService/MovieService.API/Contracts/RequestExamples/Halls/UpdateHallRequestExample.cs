@@ -10,6 +10,11 @@ public class UpdateHallRequestExample : IExamplesProvider<UpdateHallRequest>
 		return new UpdateHallRequest(
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			"Большой зал 2",
-			230);
+			230,
+			[
+				[1, 1, 1],
+				[1, 0, 0],
+				[-1, 1, -1]
+			]);
 	}
 }

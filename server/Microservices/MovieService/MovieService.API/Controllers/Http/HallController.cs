@@ -8,6 +8,7 @@ using MovieService.API.Contracts;
 using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.Requests.Halls;
 using MovieService.Application.Handlers.Commands.Halls.CreateHall;
+using MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
 using MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Queries.Halls.GetAllHalls;
@@ -34,7 +35,7 @@ public class HallController : ControllerBase
 
 	[HttpGet("/Halls")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetHalls()
+	public async Task<IActionResult> Get()
 	{
 		var halls = await _mediator.Send(new GetAllHallsQuery());
 
@@ -43,7 +44,8 @@ public class HallController : ControllerBase
 
 	[HttpGet("/Halls/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public async Task<IActionResult> GetMovie([FromRoute] Guid id)
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var halls = await _mediator.Send(new GetHallByIdQuery(id))
 			?? throw new NotFoundException($"Hall with id '{id.ToString()}' not found");
@@ -54,6 +56,19 @@ public class HallController : ControllerBase
 	[HttpPost("/Halls")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
+	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
+	{
+		var movie = await _mediator.Send(requests);
+
+		return Ok(movie);
+	}
+
+	[HttpPost("/Halls")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(CreateHallRequest), typeof(CreateHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateHallCommand request)
 	{

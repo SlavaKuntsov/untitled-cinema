@@ -3,4 +3,5 @@
 public record UpdateHallRequest(
     Guid id,
     string Name,
-    short TotalSeats);
+    short TotalSeats,
+	int[][] Seats);

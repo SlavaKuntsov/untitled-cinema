@@ -8,7 +8,12 @@ public class CreateHallRequestExample : IExamplesProvider<CreateHallRequest>
 	public CreateHallRequest GetExamples()
 	{
 		return new CreateHallRequest(
-			"Больщой зал",
-			220);
+			"Большой зал",
+			220,
+			[
+				[1, 0, 1],
+				[1, 0, 0],
+				[-1, 1, -1]
+			]);
 	}
 }

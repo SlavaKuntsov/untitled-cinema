@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieService.Persistence.Migrations
 {
     [DbContext(typeof(MovieServiceDBContext))]
-    [Migration("20250106042445_date_table")]
-    partial class date_table
+    [Migration("20250110130548_seats_array_int_json")]
+    partial class seats_array_int_json
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,9 +31,6 @@ namespace MovieService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
-
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamptz");
 
@@ -43,6 +40,21 @@ namespace MovieService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Day", (string)null);
+                });
+
+            modelBuilder.Entity("MovieService.Domain.Entities.GenreEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genre", (string)null);
                 });
 
             modelBuilder.Entity("MovieService.Domain.Entities.HallEntity", b =>
@@ -55,6 +67,10 @@ namespace MovieService.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<string>("SeatsArrayJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<short>("TotalSeats")
                         .HasColumnType("smallint");
@@ -117,10 +133,6 @@ namespace MovieService.Persistence.Migrations
                     b.Property<short>("DurationMinutes")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("Genres")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Producer")
                         .IsRequired()
                         .HasColumnType("text");
@@ -141,14 +153,26 @@ namespace MovieService.Persistence.Migrations
                     b.ToTable("Movie", (string)null);
                 });
 
+            modelBuilder.Entity("MovieService.Domain.Entities.MovieGenreEntity", b =>
+                {
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("GenreId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MovieId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("MovieGenre", (string)null);
+                });
+
             modelBuilder.Entity("MovieService.Domain.Entities.SessionEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
 
                     b.Property<Guid>("DayId")
                         .HasColumnType("uuid");
@@ -187,6 +211,25 @@ namespace MovieService.Persistence.Migrations
                     b.Navigation("Hall");
                 });
 
+            modelBuilder.Entity("MovieService.Domain.Entities.MovieGenreEntity", b =>
+                {
+                    b.HasOne("MovieService.Domain.Entities.GenreEntity", "Genre")
+                        .WithMany("MovieGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MovieService.Domain.Entities.MovieEntity", "Movie")
+                        .WithMany("MovieGenres")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("Movie");
+                });
+
             modelBuilder.Entity("MovieService.Domain.Entities.SessionEntity", b =>
                 {
                     b.HasOne("MovieService.Domain.Entities.DayEntity", "Day")
@@ -219,6 +262,11 @@ namespace MovieService.Persistence.Migrations
                     b.Navigation("Sessions");
                 });
 
+            modelBuilder.Entity("MovieService.Domain.Entities.GenreEntity", b =>
+                {
+                    b.Navigation("MovieGenres");
+                });
+
             modelBuilder.Entity("MovieService.Domain.Entities.HallEntity", b =>
                 {
                     b.Navigation("SeatsArray");
@@ -228,6 +276,8 @@ namespace MovieService.Persistence.Migrations
 
             modelBuilder.Entity("MovieService.Domain.Entities.MovieEntity", b =>
                 {
+                    b.Navigation("MovieGenres");
+
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
