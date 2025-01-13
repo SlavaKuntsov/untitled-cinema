@@ -1,14 +1,14 @@
-﻿using MovieService.API.Contracts.Requests.Sessions;
+﻿using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
 
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts.RequestExamples.Sessions;
 
-public class FillSessionRequestExample : IExamplesProvider<FillSessionRequest>
+public class FillSessionRequestExample : IExamplesProvider<FillSessionCommand>
 {
-	public FillSessionRequest GetExamples()
+	public FillSessionCommand GetExamples()
 	{
-		return new FillSessionRequest(
+		return new FillSessionCommand(
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			"05-01-2025 09:00");

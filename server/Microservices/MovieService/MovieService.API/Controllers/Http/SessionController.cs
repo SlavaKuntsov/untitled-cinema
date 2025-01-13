@@ -1,22 +1,12 @@
-﻿using System.Globalization;
-
-using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Sessions;
-using MovieService.API.Contracts.Requests.Movies;
-using MovieService.API.Contracts.Requests.Sessions;
-using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
-using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
 using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -27,12 +17,10 @@ namespace MovieService.API.Controllers.Http;
 public class SessionController : ControllerBase
 {
 	private readonly IMediator _mediator;
-	private readonly IMapper _mapper;
 
-	public SessionController(IMediator mediator, IMapper mapper)
+	public SessionController(IMediator mediator)
 	{
 		_mediator = mediator;
-		_mapper = mapper;
 	}
 
 	[HttpGet("/Sessions")]
@@ -52,7 +40,7 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpPost("/Sessions")]
-	[SwaggerRequestExample(typeof(FillSessionRequest), typeof(FillSessionRequestExample))]
+	[SwaggerRequestExample(typeof(FillSessionCommand), typeof(FillSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
 	{
@@ -62,7 +50,7 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpPatch("/Sessions")]
-	[SwaggerRequestExample(typeof(UpdateSessionRequest), typeof(UpdateSessionRequestExample))]
+	[SwaggerRequestExample(typeof(UpdateSessionCommand), typeof(UpdateSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request)
 	{

@@ -1,13 +1,14 @@
-﻿using MovieService.API.Contracts.Requests.Halls;
+﻿using MovieService.Application.Handlers.Commands.Halls.CreateHall;
+
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts;
 
-public class CreateCustomHallRequestExample : IExamplesProvider<CreateCustomHallRequest>
+public class CreateCustomHallRequestExample : IExamplesProvider<CreateCustomHallCommand>
 {
-	public CreateCustomHallRequest GetExamples()
+	public CreateCustomHallCommand GetExamples()
 	{
-		return new CreateCustomHallRequest(
+		return new CreateCustomHallCommand(
 			"Большой зал",
 			10,
 			[

@@ -1,13 +1,10 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts;
 using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Halls;
-using MovieService.API.Contracts.Requests.Halls;
 using MovieService.Application.Handlers.Commands.Halls.CreateHall;
 using MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
 using MovieService.Application.Handlers.Commands.Halls.DeleteHall;
@@ -26,12 +23,10 @@ namespace MovieService.API.Controllers.Http;
 public class HallController : ControllerBase
 {
 	private readonly IMediator _mediator;
-	private readonly IMapper _mapper;
 
-	public HallController(IMediator mediator, IMapper mapper)
+	public HallController(IMediator mediator)
 	{
 		_mediator = mediator;
-		_mapper = mapper;
 	}
 
 	[HttpGet("/Halls")]
@@ -53,7 +48,7 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPost("/Halls/Simple")]
-	[SwaggerRequestExample(typeof(CreateSimpleHallRequest), typeof(CreateSimpleHallRequestExample))]
+	[SwaggerRequestExample(typeof(CreateSimpleHallCommand), typeof(CreateSimpleHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
 	{
 		var movie = await _mediator.Send(requests);
@@ -62,7 +57,7 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPost("/Halls/Custom")]
-	[SwaggerRequestExample(typeof(CreateCustomHallRequest), typeof(CreateCustomHallRequestExample))]
+	[SwaggerRequestExample(typeof(CreateCustomHallCommand), typeof(CreateCustomHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request)
 	{
 		var movie = await _mediator.Send(request);
@@ -71,7 +66,7 @@ public class HallController : ControllerBase
 	}
 
 	[HttpPatch("/Halls")]
-	[SwaggerRequestExample(typeof(UpdateHallRequest), typeof(UpdateHallRequestExample))]
+	[SwaggerRequestExample(typeof(UpdateHallCommand), typeof(UpdateHallRequestExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request)
 	{
 		var movie = await _mediator.Send(request);

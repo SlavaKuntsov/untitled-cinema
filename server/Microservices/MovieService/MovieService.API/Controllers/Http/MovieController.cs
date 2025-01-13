@@ -1,11 +1,8 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts.Examples.Movies;
-using MovieService.API.Contracts.Requests.Movies;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
@@ -22,12 +19,10 @@ namespace MovieService.API.Controllers.Http;
 public class MovieController : ControllerBase
 {
 	private readonly IMediator _mediator;
-	private readonly IMapper _mapper;
 
-	public MovieController(IMediator mediator, IMapper mapper)
+	public MovieController(IMediator mediator)
 	{
 		_mediator = mediator;
-		_mapper = mapper;
 	}
 
 	[HttpGet("/Movies")]
@@ -60,7 +55,7 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpPost("/Movies")]
-	[SwaggerRequestExample(typeof(CreateMovieRequest), typeof(CreateMovieRequestExample))]
+	[SwaggerRequestExample(typeof(CreateMovieCommand), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Create([FromBody] CreateMovieCommand request)
 	{
@@ -70,7 +65,7 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpPatch("/Movies")]
-	[SwaggerRequestExample(typeof(UpdateMovieRequest), typeof(UpdateMovieRequestExample))]
+	[SwaggerRequestExample(typeof(UpdateMovieCommand), typeof(UpdateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request)
 	{

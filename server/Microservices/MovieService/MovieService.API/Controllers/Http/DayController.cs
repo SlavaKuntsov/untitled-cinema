@@ -1,11 +1,8 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts.RequestExamples.Days;
-using MovieService.API.Contracts.Requests.Days;
 using MovieService.Application.Handlers.Commands.Days.CreateSession;
 using MovieService.Application.Handlers.Commands.Days.DeleteDay;
 using MovieService.Application.Handlers.Queries.Days.GetAllDays;
@@ -21,12 +18,10 @@ namespace MovieService.API.Controllers.Http;
 public class DayController : ControllerBase
 {
 	private readonly IMediator _mediator;
-	private readonly IMapper _mapper;
 
-	public DayController(IMediator mediator, IMapper mapper)
+	public DayController(IMediator mediator)
 	{
 		_mediator = mediator;
-		_mapper = mapper;
 	}
 
 	[HttpGet("/Days")]
@@ -47,7 +42,7 @@ public class DayController : ControllerBase
 	}
 
 	[HttpPost("/Days")]
-	[SwaggerRequestExample(typeof(CreateDayRequest), typeof(CreateDayRequestExample))]
+	[SwaggerRequestExample(typeof(CreateDayCommand), typeof(CreateDayRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateDayCommand request)
 	{
 		var movie = await _mediator.Send(request);

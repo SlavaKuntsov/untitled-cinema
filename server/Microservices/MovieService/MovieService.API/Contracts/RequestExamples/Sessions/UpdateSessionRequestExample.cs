@@ -1,15 +1,14 @@
-﻿using MovieService.API.Contracts.Requests.Movies;
-using MovieService.API.Contracts.Requests.Sessions;
+﻿using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts.RequestExamples.Sessions;
 
-public class UpdateSessionRequestExample : IExamplesProvider<UpdateSessionRequest>
+public class UpdateSessionRequestExample : IExamplesProvider<UpdateSessionCommand>
 {
-	public UpdateSessionRequest GetExamples()
+	public UpdateSessionCommand GetExamples()
 	{
-		return new UpdateSessionRequest(
+		return new UpdateSessionCommand(
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),

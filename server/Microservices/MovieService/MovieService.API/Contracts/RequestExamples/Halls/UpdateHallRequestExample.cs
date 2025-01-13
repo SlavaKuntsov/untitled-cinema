@@ -1,13 +1,14 @@
-﻿using MovieService.API.Contracts.Requests.Halls;
+﻿using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
+
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts.Examples.Movies;
 
-public class UpdateHallRequestExample : IExamplesProvider<UpdateHallRequest>
+public class UpdateHallRequestExample : IExamplesProvider<UpdateHallCommand>
 {
-	public UpdateHallRequest GetExamples()
+	public UpdateHallCommand GetExamples()
 	{
-		return new UpdateHallRequest(
+		return new UpdateHallCommand(
 			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
 			"Большой зал 2",
 			230,

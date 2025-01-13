@@ -1,13 +1,14 @@
-﻿using MovieService.API.Contracts.Requests.Halls;
+﻿using MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
+
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts.RequestExamples.Halls;
 
-public class CreateSimpleHallRequestExample : IExamplesProvider<CreateSimpleHallRequest>
+public class CreateSimpleHallRequestExample : IExamplesProvider<CreateSimpleHallCommand>
 {
-	public CreateSimpleHallRequest GetExamples()
+	public CreateSimpleHallCommand GetExamples()
 	{
-		return new CreateSimpleHallRequest(
+		return new CreateSimpleHallCommand(
 			"Большой зал",
 			50,
 			5,
