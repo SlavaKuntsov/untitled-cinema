@@ -8,6 +8,6 @@ public class HallEntity
 	public string SeatsArrayJson { get; set; } = "[]";
 
 
-	public virtual ICollection<HallSeatEntity> Seats { get; set; } = [];
+	public virtual ICollection<SeatEntity> Seats { get; set; } = [];
 	public virtual ICollection<SessionEntity> Sessions { get; set; } = [];
 }

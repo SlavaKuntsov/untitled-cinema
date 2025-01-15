@@ -2,6 +2,8 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 
+using MovieService.Application.Interfaces.Caching;
+
 namespace MovieService.Infrastructure.Caching;
 
 public class RedisCacheService : IRedisCacheService

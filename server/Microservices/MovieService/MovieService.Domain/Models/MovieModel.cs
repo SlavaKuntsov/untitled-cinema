@@ -1,6 +1,4 @@
-﻿using MovieService.Domain.Models;
-
-namespace MovieService.Domain;
+﻿namespace MovieService.Domain;
 
 public class MovieModel
 {
@@ -8,13 +6,14 @@ public class MovieModel
 	public string Title { get; set; } = null!;
 	public IList<string> Genres { get; set; } = [];
 	public string Description { get; set; } = string.Empty;
+	public decimal Price { get; set; } = 0.00m;
 	public short DurationMinutes { get; set; }
 	public string Producer { get; set; } = null!;
 	public DateTime ReleaseDate { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }
 
-	public MovieModel() 
+	public MovieModel()
 	{
 	}
 
@@ -22,6 +21,7 @@ public class MovieModel
 		Guid id,
 		string title,
 		string description,
+		decimal price,
 		short durationMinutes,
 		string producer,
 		DateTime releaseDate,
@@ -31,6 +31,7 @@ public class MovieModel
 		Id = id;
 		Title = title;
 		Description = description;
+		Price = price;
 		DurationMinutes = durationMinutes;
 		Producer = producer;
 		ReleaseDate = releaseDate;

@@ -80,7 +80,7 @@ namespace MovieService.Persistence.Migrations
                     b.ToTable("Hall", (string)null);
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.HallSeatEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.SeatEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,10 +99,10 @@ namespace MovieService.Persistence.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasDefaultValue(0.00m);
 
-                    b.Property<int>("SeatColumn")
+                    b.Property<int>("Column")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SeatRow")
+                    b.Property<int>("Row")
                         .HasColumnType("integer");
 
                     b.Property<string>("SeatType")
@@ -200,7 +200,7 @@ namespace MovieService.Persistence.Migrations
                     b.ToTable("Session", (string)null);
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.HallSeatEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.SeatEntity", b =>
                 {
                     b.HasOne("MovieService.Domain.Entities.HallEntity", "Hall")
                         .WithMany("SeatsArray")

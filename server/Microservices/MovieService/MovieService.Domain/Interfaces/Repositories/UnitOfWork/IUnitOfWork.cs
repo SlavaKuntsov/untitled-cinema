@@ -6,7 +6,7 @@ public interface IUnitOfWork : IDisposable
 
 	public IDaysRepository DaysRepository { get; }
 	public IHallsRepository HallsRepository { get; }
-	public IHallSeatsRepository HallSeatsRepository { get; }
+	public ISeatsRepository SeatsRepository { get; }
 	public IMovieGenresRepository MovieGenresRepository { get; }
 	public IMoviesRepository MoviesRepository { get; }
 	public ISessionsRepository SessionsRepository { get; }

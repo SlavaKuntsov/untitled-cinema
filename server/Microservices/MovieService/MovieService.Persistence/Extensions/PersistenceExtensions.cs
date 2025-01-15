@@ -27,7 +27,7 @@ public static class PersistenceExtensions
 
 		services.AddScoped<IMoviesRepository, MoviesRepository>();
 		services.AddScoped<IHallsRepository, HallsRepository>();
-		services.AddScoped<IHallSeatsRepository, HallSeatsRepository>();
+		services.AddScoped<ISeatsRepository, SeatsRepository>();
 		services.AddScoped<ISessionsRepository, SessionsRepository>();
 		services.AddScoped<IDaysRepository, DaysRepository>();
 		services.AddScoped<IMovieGenresRepository, MovieGenresRepository>();

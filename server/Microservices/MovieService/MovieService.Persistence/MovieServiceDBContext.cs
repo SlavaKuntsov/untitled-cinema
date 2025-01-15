@@ -13,7 +13,8 @@ public class MovieServiceDBContext : DbContext
 	public DbSet<GenreEntity> MovieGenres { get; set; }
 	public DbSet<SessionEntity> Sessions { get; set; }
 	public DbSet<HallEntity> Halls { get; set; }
-	public DbSet<HallSeatEntity> HallSeats { get; set; }
+	public DbSet<SeatEntity> Seats { get; set; }
+	public DbSet<SeatTypeEntity> SeatTypes { get; set; }
 	public DbSet<DayEntity> Days { get; set; }
 
 	public MovieServiceDBContext(DbContextOptions<MovieServiceDBContext> options) : base(options)

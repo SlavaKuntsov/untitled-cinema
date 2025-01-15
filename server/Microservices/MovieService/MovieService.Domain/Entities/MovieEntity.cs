@@ -5,6 +5,7 @@ public class MovieEntity
 	public Guid Id { get; set; }
 	public string Title { get; set; } = null!;
 	public string Description { get; set; } = string.Empty;
+	public decimal Price { get; set; } = 0.00m;
 	public short DurationMinutes { get; set; }
 	public string Producer { get; set; } = null!;
 	public DateTime ReleaseDate { get; set; }
