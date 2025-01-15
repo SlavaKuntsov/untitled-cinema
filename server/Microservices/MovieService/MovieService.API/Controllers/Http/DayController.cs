@@ -36,7 +36,7 @@ public class DayController : ControllerBase
 	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
 	{
 		var day = await _mediator.Send(new GetDayByDateQuery(date))
-			?? throw new NotFoundException(message: $"Day '{date}' not found");
+			?? throw new NotFoundException(message: $"Day '{date}' not found.");
 
 		return Ok(day);
 	}

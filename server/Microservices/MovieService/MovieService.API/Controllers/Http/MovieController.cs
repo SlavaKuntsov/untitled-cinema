@@ -49,7 +49,7 @@ public class MovieController : ControllerBase
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var movies = await _mediator.Send(new GetMovieByIdQuery(id))
-			?? throw new NotFoundException($"Movie with id '{id.ToString()}' not found");
+			?? throw new NotFoundException($"Movie with id '{id.ToString()}' not found.");
 
 		return Ok(movies);
 	}

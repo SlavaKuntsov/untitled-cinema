@@ -62,4 +62,17 @@ public class MoviesRepository : IMoviesRepository
 	{
 		return query.Where(m => m.MovieGenres.Any(mg => mg.Genre.Name.ToLower() == genreFilter));
 	}
+
+	public async Task<GenreEntity?> GetGenreByNameAsync(string name, CancellationToken cancellationToken)
+	{
+		return await _context.Genres
+			.AsNoTracking()
+			.Where(m => m.Name.ToLower() == name.ToLower())
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
+	public async Task AddGenreAsync(GenreEntity genre, CancellationToken cancellationToken)
+	{
+		await _context.Genres.AddAsync(genre, cancellationToken);
+	}
 }

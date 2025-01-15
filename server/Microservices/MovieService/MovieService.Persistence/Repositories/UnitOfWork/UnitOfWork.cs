@@ -10,7 +10,6 @@ public class UnitOfWork : IUnitOfWork
 	public IDaysRepository DaysRepository { get; }
 	public IHallsRepository HallsRepository { get; }
 	public ISeatsRepository SeatsRepository { get; }
-	public IMovieGenresRepository MovieGenresRepository { get; }
 	public IMoviesRepository MoviesRepository { get; }
 	public ISessionsRepository SessionsRepository { get; }
 
@@ -19,7 +18,6 @@ public class UnitOfWork : IUnitOfWork
 		IDaysRepository daysRepository,
 		IHallsRepository hallsRepository,
 		ISeatsRepository seatsRepository,
-		IMovieGenresRepository movieGenresRepository,
 		IMoviesRepository moviesRepository,
 		ISessionsRepository sessionsRepository)
 	{
@@ -28,7 +26,6 @@ public class UnitOfWork : IUnitOfWork
 		DaysRepository = daysRepository;
 		HallsRepository = hallsRepository;
 		SeatsRepository = seatsRepository;
-		MovieGenresRepository = movieGenresRepository;
 		MoviesRepository = moviesRepository;
 		SessionsRepository = sessionsRepository;
 	}

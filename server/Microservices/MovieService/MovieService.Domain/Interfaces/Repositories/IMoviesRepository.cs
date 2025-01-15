@@ -11,4 +11,6 @@ public interface IMoviesRepository
 	IQueryable<MovieEntity> Get();
 	Task<IList<MovieEntity>> ToListAsync(IQueryable<MovieEntity> query, CancellationToken cancellationToken);
 	IQueryable<MovieEntity> FilterByGenre(IQueryable<MovieEntity> query, string genreFilter);
+	Task<GenreEntity?> GetGenreByNameAsync(string name, CancellationToken cancellationToken);
+	Task AddGenreAsync(GenreEntity genre, CancellationToken cancellationToken);
 }
