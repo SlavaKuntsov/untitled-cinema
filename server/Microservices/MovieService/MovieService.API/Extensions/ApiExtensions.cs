@@ -161,6 +161,12 @@ public static class ApiExtensions
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+		services.AddStackExchangeRedisCache(options =>
+		{
+			options.Configuration = configuration["RedisCacheOptions:Configuration"];
+			options.InstanceName = configuration["RedisCacheOptions:InstanceName"];
+		});
+
 		return services;
 	}
 
