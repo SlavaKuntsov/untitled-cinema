@@ -13,6 +13,10 @@ public class SessionConfiguration : IEntityTypeConfiguration<SessionEntity>
 
 		builder.HasKey(s => s.Id);
 
+		builder.Property(st => st.PriceModifier)
+			.HasColumnType("decimal(5, 2)")
+			.IsRequired();
+
 		builder.Property(s => s.StartTime)
 			.IsRequired()
 			.HasColumnType("timestamptz")

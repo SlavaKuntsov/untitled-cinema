@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieService.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieService.Persistence.Migrations
 {
     [DbContext(typeof(MovieServiceDBContext))]
-    partial class MovieServiceDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250115222348_seatTypes_and_price")]
+    partial class seatTypes_and_price
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,6 +142,11 @@ namespace MovieService.Persistence.Migrations
 
                     b.Property<int>("Column")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Exists")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<Guid>("HallId")
                         .HasColumnType("uuid");

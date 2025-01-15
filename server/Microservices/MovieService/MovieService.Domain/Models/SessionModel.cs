@@ -6,6 +6,7 @@ public class SessionModel
 	public Guid MovieId { get; set; }
 	public Guid HallId { get; set; }
 	public Guid DayId { get; set; }
+	public decimal PriceModifier { get; set; } = 1;
 	public DateTime StartTime { get; set; }
 	public DateTime EndTime { get; set; }
 
@@ -18,6 +19,7 @@ public class SessionModel
 		Guid movieId,
 		Guid hallId,
 		Guid dayId,
+		decimal priceModifier,
 		DateTime startTime,
 		DateTime endTime)
 	{
@@ -25,6 +27,7 @@ public class SessionModel
 		MovieId = movieId;
 		HallId = hallId;
 		DayId = dayId;
+		PriceModifier = priceModifier;
 		StartTime = startTime;
 		EndTime = endTime;
 	}

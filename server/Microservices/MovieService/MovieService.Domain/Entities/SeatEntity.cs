@@ -9,7 +9,6 @@ public class SeatEntity
 	public Guid SeatTypeId { get; set; }
 	public int Row { get; set; }
 	public int Column { get; set; }
-	public bool Exists { get; set; } = true;
 
 	public virtual HallEntity Hall { get; set; } = null!;
 	public virtual SeatTypeEntity SeatType { get; set; } = null!;

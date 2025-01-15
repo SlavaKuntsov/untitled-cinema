@@ -19,9 +19,6 @@ public class SeatConfiguration : IEntityTypeConfiguration<SeatEntity>
 		builder.Property(s => s.Column)
 			.IsRequired();
 
-		builder.Property(s => s.Exists)
-			.HasDefaultValue(true);
-
 		builder.HasOne(s => s.SeatType)
 			.WithMany(st => st.Seats)
 			.HasForeignKey(s => s.SeatTypeId)

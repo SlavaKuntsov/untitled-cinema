@@ -7,8 +7,6 @@ public class SeatModel
 	public Guid SeatTypeId { get; set; }
 	public int Row { get; set; }
 	public int Column { get; set; }
-	public bool Exists { get; set; } = true;
-
 
 	public SeatModel()
 	{
