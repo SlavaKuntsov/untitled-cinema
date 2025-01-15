@@ -5,6 +5,8 @@ using Mapster;
 
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+using MovieService.Application.Handlers.Commands.Seats.UpdateSeat;
+using MovieService.Application.Handlers.Commands.Seats.UpdateSeatType;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Domain;
 using MovieService.Domain.Entities;
@@ -35,6 +37,18 @@ public class MapsterConfig : IRegister
 			 .Map(dest => dest.MovieId, src => src.MovieId)
 			 .Map(dest => dest.HallId, src => src.HallId)
 			 .Map(dest => dest.StartTime, src => ParseDateTimeOrDefault(src.StartTime));
+
+		config.NewConfig<UpdateSeatTypeCommand, SeatTypeEntity>()
+			 .Map(dest => dest.Id, src => src.Id)
+			 .Map(dest => dest.Name, src => src.Name)
+			 .Map(dest => dest.PriceModifier, src => src.PriceModifier);
+
+		config.NewConfig<UpdateSeatCommand, SeatEntity>()
+			 .Map(dest => dest.Id, src => src.Id)
+			 .Map(dest => dest.HallId, src => src.HallId)
+			 .Map(dest => dest.SeatTypeId, src => src.SeatTypeId)
+			 .Map(dest => dest.Row, src => src.Row)
+			 .Map(dest => dest.Column, src => src.Column);
 
 		config.NewConfig<MovieModel, MovieEntity>()
 			.Map(dest => dest.MovieGenres, src => new List<MovieGenreEntity>());

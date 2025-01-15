@@ -29,6 +29,7 @@ public class CreateMovieCommandHandler(
 			Guid.NewGuid(),
 			request.Title,
 			request.Description,
+			request.Price,
 			request.DurationMinutes,
 			request.Producer,
 			parsedDateTime,
@@ -39,7 +40,7 @@ public class CreateMovieCommandHandler(
 
 		foreach (var genreName in request.Genres)
 		{
-			var existingGenre = await _unitOfWork.MovieGenresRepository.GetByNameAsync(genreName, cancellationToken);
+			var existingGenre = await _unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
 
 			if (existingGenre == null)
 			{
@@ -47,7 +48,7 @@ public class CreateMovieCommandHandler(
 
 				var genreEntity = _mapper.Map<GenreEntity>(genre);
 
-				await _unitOfWork.MovieGenresRepository.AddAsync(genreEntity, cancellationToken);
+				await _unitOfWork.MoviesRepository.AddGenreAsync(genreEntity, cancellationToken);
 				genreEntities.Add(genreEntity);
 			}
 			else

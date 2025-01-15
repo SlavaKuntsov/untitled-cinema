@@ -30,7 +30,6 @@ public class HallController : ControllerBase
 	}
 
 	[HttpGet("/Halls")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<IActionResult> Get()
 	{
 		var halls = await _mediator.Send(new GetAllHallsQuery());
@@ -42,7 +41,7 @@ public class HallController : ControllerBase
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var halls = await _mediator.Send(new GetHallByIdQuery(id))
-			?? throw new NotFoundException($"Hall with id '{id.ToString()}' not found");
+			?? throw new NotFoundException($"Hall with id '{id.ToString()}' not found.");
 
 		return Ok(halls);
 	}

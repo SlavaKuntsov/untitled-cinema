@@ -6,6 +6,7 @@ using MovieService.API.Contracts.RequestExamples.Sessions;
 using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
+using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
 using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -44,6 +45,7 @@ public class SessionController : ControllerBase
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
 	{
+		// TODO - maybe create session by all name instead of hall id
 		var movie = await _mediator.Send(request);
 
 		return Ok(movie);
@@ -66,5 +68,13 @@ public class SessionController : ControllerBase
 		await _mediator.Send(new DeleteSessionCommand(id));
 
 		return NoContent();
+	}
+
+	[HttpGet("/Sessions/Seats/{sessionId:Guid}")]
+	public async Task<IActionResult> Get([FromRoute] Guid sessionId)
+	{
+		var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(sessionId));
+
+		return Ok(seats);
 	}
 }

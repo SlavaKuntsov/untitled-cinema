@@ -4,7 +4,7 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
 
-public partial class GetAllSessionsQuery(
+public class GetAllSessionsQuery(
 	byte limit,
 	byte offset,
 	string? date,

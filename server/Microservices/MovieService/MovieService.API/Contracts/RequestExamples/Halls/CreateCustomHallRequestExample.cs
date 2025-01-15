@@ -10,11 +10,12 @@ public class CreateCustomHallRequestExample : IExamplesProvider<CreateCustomHall
 	{
 		return new CreateCustomHallCommand(
 			"Большой зал",
-			10,
+			14,
 			[
-				[-1, 0, 0, -1],
+				[1, 1, 1, 1],
+				[2, 3, 3, 2],
 				[0, 0, 0, 0],
-				[0, 0, 0, 0]
+				[-1, 0, 0, -1]
 			]);
 	}
 }

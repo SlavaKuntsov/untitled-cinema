@@ -26,7 +26,7 @@ public class HallsRepository : IHallsRepository
 	{
 		return await _context.Halls
 			.AsNoTracking()
-			.Where(m => m.Name == name)
+			.Where(m => m.Name.ToLower() == name.ToLower())
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 

@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Enums;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -20,12 +21,12 @@ public class CreateCustomHallCommandHandler(
 	{
 		foreach (var row in request.Seats)
 		{
-			if (row.Any(seat => seat != -1 && seat != 0))
-				throw new InvalidOperationException(
-					"Seats can only contain values -1 (non-existent seat) or 0 (available seat).");
+			if (row.Any(seat => !Enum.IsDefined(typeof(SeatType), seat)))
+				throw new InvalidOperationException("Seats can only contain valid values from the SeatType enumeration.");
 		}
 
-		var seatCount = request.Seats.Sum(row => row.Count(seat => seat == 0));
+		var seatCount = request.Seats.Sum(row =>
+			row.Count(seat => seat != (int)SeatType.None));
 
 		if (seatCount != request.TotalSeats)
 			throw new InvalidOperationException(

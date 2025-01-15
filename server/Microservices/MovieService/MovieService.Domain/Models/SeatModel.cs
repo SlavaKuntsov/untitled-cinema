@@ -11,4 +11,18 @@ public class SeatModel
 	public SeatModel()
 	{
 	}
+
+	public SeatModel(
+		Guid id,
+		Guid hallId,
+		Guid seatTypeId,
+		int row,
+		int column)
+	{
+		Id = id;
+		HallId = hallId;
+		SeatTypeId = seatTypeId;
+		Row = row;
+		Column = column;
+	}
 }

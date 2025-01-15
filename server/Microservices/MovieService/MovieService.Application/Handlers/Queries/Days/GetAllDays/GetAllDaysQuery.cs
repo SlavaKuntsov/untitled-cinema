@@ -4,7 +4,6 @@ using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Days.GetAllDays;
 
-public partial class GetAllDaysQuery() : IRequest<IList<DayModel>>
+public class GetAllDaysQuery() : IRequest<IList<DayModel>>
 {
-
 }

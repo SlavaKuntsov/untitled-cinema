@@ -9,4 +9,11 @@ public class SeatTypeModel
 	public SeatTypeModel()
 	{
 	}
+
+	public SeatTypeModel(Guid id, string name, decimal priceModifier)
+	{
+		Id = id;
+		Name = name;
+		PriceModifier = priceModifier;
+	}
 }

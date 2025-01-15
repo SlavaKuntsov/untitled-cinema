@@ -20,6 +20,7 @@ public class DeleteSessionCommandHandler(
 				?? throw new NotFoundException($"Session with id {request.Id} doesn't exists");
 
 		_unitOfWork.SessionsRepository.Delete(movie);
+		_unitOfWork.SeatsRepository.DeleteBySessionId(request.Id);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

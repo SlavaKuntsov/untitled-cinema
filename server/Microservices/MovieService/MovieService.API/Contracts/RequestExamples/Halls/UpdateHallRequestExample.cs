@@ -13,9 +13,10 @@ public class UpdateHallRequestExample : IExamplesProvider<UpdateHallCommand>
 			"Большой зал 2",
 			230,
 			[
-				[1, 1, 1],
-				[1, 0, 0],
-				[-1, 1, -1]
+				[0, 0, 0, 0],
+				[0, 0, 0, 0],
+				[0, 0, 0, 0],
+				[-1, 0, 0, -1]
 			]);
 	}
 }

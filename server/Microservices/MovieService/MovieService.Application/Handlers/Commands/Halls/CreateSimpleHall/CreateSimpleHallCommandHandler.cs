@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Enums;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -33,7 +34,7 @@ public class CreateSimpleHallCommandHandler(
 
 		for (var i = 0; i < request.Rows; i++)
 		{
-			seats[i] = Enumerable.Repeat(0, request.Columns).ToArray();
+			seats[i] = Enumerable.Repeat((int)SeatType.Standart, request.Columns).ToArray();
 		}
 
 		var hall = new HallModel(

@@ -4,7 +4,7 @@ using MovieService.Domain;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
-public partial class GetAllMoviesQuery(
+public class GetAllMoviesQuery(
 	byte limit,
 	byte offset,
 	string? filter,

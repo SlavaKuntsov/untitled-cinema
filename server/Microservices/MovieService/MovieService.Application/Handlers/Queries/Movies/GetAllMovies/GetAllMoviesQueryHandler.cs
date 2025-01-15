@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
@@ -9,13 +10,23 @@ namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
 public class GetAllMoviesQueryHandler(
 	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
+	IMapper mapper,
+	IRedisCacheService redisCacheService) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
 	public async Task<IList<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
 	{
+		string cacheKey = 
+			$"movies_{request.Filter}_{request.FilterValue}_{request.SortBy}_{request.SortDirection}_{request.Offset}_{request.Limit}";
+
+		var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
+
+		if (cachedMovies != null)
+			return cachedMovies;
+
 		var query = _unitOfWork.MoviesRepository.Get();
 
 		if (!string.IsNullOrWhiteSpace(request.Filter) && !string.IsNullOrWhiteSpace(request.FilterValue))
@@ -57,6 +68,10 @@ public class GetAllMoviesQueryHandler(
 
 		var movies = await _unitOfWork.MoviesRepository.ToListAsync(query, cancellationToken);
 
-		return _mapper.Map<IList<MovieModel>>(movies);
+		var movieModels = _mapper.Map<IList<MovieModel>>(movies);
+
+		await _redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
+
+		return movieModels;
 	}
 }
