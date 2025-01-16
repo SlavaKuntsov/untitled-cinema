@@ -4,15 +4,19 @@ using Microsoft.Extensions.Caching.Distributed;
 
 using MovieService.Application.Interfaces.Caching;
 
+using StackExchange.Redis;
+
 namespace MovieService.Infrastructure.Caching;
 
 public class RedisCacheService : IRedisCacheService
 {
 	private readonly IDistributedCache _distributedCache;
+	private readonly IConnectionMultiplexer _redis;
 
-	public RedisCacheService(IDistributedCache distributedCache)
+	public RedisCacheService(IDistributedCache distributedCache, IConnectionMultiplexer redis)
 	{
 		_distributedCache = distributedCache;
+		_redis = redis;
 	}
 
 	public async Task<T> GetValueAsync<T>(string key)
@@ -35,5 +39,17 @@ public class RedisCacheService : IRedisCacheService
 		var data = JsonSerializer.Serialize(value);
 
 		await _distributedCache.SetStringAsync(key, data, options);
+	}
+
+	public async Task RemoveValuesByPatternAsync(string pattern)
+	{
+		var db = _redis.GetDatabase();
+		var server = _redis.GetServer(_redis.GetEndPoints().First());
+		var keys = server.Keys(pattern: pattern);
+
+		foreach (var key in keys)
+		{
+			await db.KeyDeleteAsync(key);
+		}
 	}
 }

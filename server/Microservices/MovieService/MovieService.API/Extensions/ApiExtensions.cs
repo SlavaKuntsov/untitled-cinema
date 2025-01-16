@@ -26,6 +26,8 @@ using MovieService.Infrastructure.Auth;
 
 using Protobufs.Auth;
 
+using StackExchange.Redis;
+
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Extensions;
@@ -35,6 +37,8 @@ public static class ApiExtensions
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
+		services.AddHealthChecks();
 
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
@@ -78,9 +82,6 @@ public static class ApiExtensions
 			});
 		});
 		services.AddSwaggerExamplesFromAssemblyOf<CreateMovieRequestExample>();
-
-		services.AddProblemDetails();
-		services.AddHealthChecks();
 
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
@@ -163,8 +164,16 @@ public static class ApiExtensions
 
 		services.AddStackExchangeRedisCache(options =>
 		{
-			options.Configuration = configuration["RedisCacheOptions:Configuration"];
-			options.InstanceName = configuration["RedisCacheOptions:InstanceName"];
+			options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
+			options.InstanceName = string.Empty;
+		});
+
+		services.AddSingleton<IConnectionMultiplexer>(sp =>
+		{
+			var configuration =
+				ConfigurationOptions.Parse(
+					Environment.GetEnvironmentVariable("REDIS_CONFIGURATION"), true);
+			return ConnectionMultiplexer.Connect(configuration);
 		});
 
 		return services;

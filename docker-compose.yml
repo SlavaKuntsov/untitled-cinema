@@ -39,6 +39,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - REDIS_CONFIGURATION=redis:6379
     volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
 
