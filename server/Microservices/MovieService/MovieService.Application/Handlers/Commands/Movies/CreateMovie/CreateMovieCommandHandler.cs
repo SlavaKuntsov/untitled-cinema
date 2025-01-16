@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Application.Extensions;
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -13,9 +14,11 @@ namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
 public class CreateMovieCommandHandler(
 	IUnitOfWork unitOfWork,
+	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
@@ -62,13 +65,14 @@ public class CreateMovieCommandHandler(
 		movieEntity.MovieGenres = genreEntities.Select(genre => new MovieGenreEntity
 		{
 			MovieId = movieEntity.Id,
-			GenreId = genre.Id,
-			Genre = genre
+			GenreId = genre.Id
 		}).ToList();
 
 		await _unitOfWork.MoviesRepository.CreateAsync(movieEntity, cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return movie.Id;
 	}

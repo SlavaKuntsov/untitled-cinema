@@ -5,6 +5,7 @@ using MapsterMapper;
 using MediatR;
 
 using MovieService.Application.Extensions;
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -13,9 +14,11 @@ namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 
 public class UpdateMovieCommandHandler(
 	IUnitOfWork unitOfWork,
+	//IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<UpdateMovieCommand, MovieModel>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
+	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<MovieModel> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -24,7 +27,7 @@ public class UpdateMovieCommandHandler(
 			throw new BadRequestException("Invalid date format.");
 
 		var existMovie = await _unitOfWork.MoviesRepository.GetAsync(request.Id, cancellationToken)
-				?? throw new NotFoundException($"Movie with id {request.Id} doesn't exists");
+				?? throw new NotFoundException($"Movie with id '{request.Id}' doesn't exists");
 
 		existMovie.UpdatedAt = DateTime.UtcNow;
 
@@ -33,6 +36,8 @@ public class UpdateMovieCommandHandler(
 		_unitOfWork.MoviesRepository.Update(existMovie, cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		//await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return _mapper.Map<MovieModel>(existMovie);
 	}
