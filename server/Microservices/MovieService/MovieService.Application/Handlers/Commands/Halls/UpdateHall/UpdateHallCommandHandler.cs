@@ -20,7 +20,7 @@ public class UpdateHallCommandHandler(
 	public async Task<HallModel> Handle(UpdateHallCommand request, CancellationToken cancellationToken)
 	{
 		var existHall = await _unitOfWork.HallsRepository.GetAsync(request.Id, cancellationToken)
-				?? throw new NotFoundException($"Hall with id {request.Id} doesn't exists");
+			?? throw new NotFoundException($"Hall with id {request.Id} doesn't exists");
 
 		request.Adapt(existHall);
 

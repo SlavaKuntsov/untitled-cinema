@@ -75,4 +75,33 @@ public class MoviesRepository : IMoviesRepository
 	{
 		await _context.Genres.AddAsync(genre, cancellationToken);
 	}
+
+	public async Task<GenreEntity?> GetGenreAsync(Guid id, CancellationToken cancellationToken)
+	{
+		return await _context.Genres
+			.Where(m => m.Id == id)
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
+	public async Task<IList<GenreEntity>> GetGenresAsync(CancellationToken cancellationToken)
+	{
+		var genres = await _context.Genres
+			.AsNoTracking()
+			.ToListAsync(cancellationToken);
+
+		return genres ?? [];
+	}
+
+	public void Update(GenreEntity genre, CancellationToken cancellationToken)
+	{
+		_context.Genres.Attach(genre).State = EntityState.Modified;
+	}
+
+	public void Delete(GenreEntity genre)
+	{
+		_context.Genres.Attach(genre);
+		_context.Genres.Remove(genre);
+
+		return;
+	}
 }
