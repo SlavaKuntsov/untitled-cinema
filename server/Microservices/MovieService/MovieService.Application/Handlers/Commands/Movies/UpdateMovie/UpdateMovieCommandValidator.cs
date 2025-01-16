@@ -35,20 +35,7 @@ public class UpdateMovieCommandValidator : BaseCommandValidator<UpdateMovieComma
 
 		RuleFor(x => x.ReleaseDate)
 			.NotEmpty().WithMessage("Release date is required.")
-			.Must(BeAValidDate)
+			.Must(GeneralValidator.BeAValidDate)
 			.WithMessage($"Release date must be a valid date with '{Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT}' format.");
-	}
-
-	private bool BeAValidDate(string? dateOfBirth)
-	{
-		if (string.IsNullOrWhiteSpace(dateOfBirth))
-			return false;
-
-		return DateTime.TryParseExact(
-			dateOfBirth,
-			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
-			CultureInfo.InvariantCulture,
-			DateTimeStyles.None,
-			out _);
 	}
 }
