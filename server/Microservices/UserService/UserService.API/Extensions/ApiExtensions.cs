@@ -32,6 +32,8 @@ public static class ApiExtensions
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
+		services.AddHealthChecks();
 
 		services.AddGrpc(options =>
 		{
@@ -70,9 +72,6 @@ public static class ApiExtensions
 			});
 		});
 		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
-
-		services.AddProblemDetails();
-		services.AddHealthChecks();
 
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());

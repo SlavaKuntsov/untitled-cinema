@@ -24,6 +24,8 @@ var app = builder.Build();
 
 app.UseAPI();
 
+app.UseExceptionHandler();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

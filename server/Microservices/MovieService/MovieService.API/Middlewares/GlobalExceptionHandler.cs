@@ -1,6 +1,9 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics;
+
+using FluentValidation;
 
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
 using MovieService.Domain.Exceptions;
@@ -9,6 +12,13 @@ namespace MovieService.API.ExceptionHandlers;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
+	private readonly IProblemDetailsService _problemDetailsService;
+
+	public GlobalExceptionHandler(IProblemDetailsService problemDetailsService)
+	{
+		_problemDetailsService = problemDetailsService;
+	}
+
 	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
 	{
 		{ typeof(AlreadyExistsException), (StatusCodes.Status400BadRequest, "Resource Already Exists") },
@@ -28,18 +38,26 @@ public class GlobalExceptionHandler : IExceptionHandler
 			? mapping
 			: (StatusCodes.Status500InternalServerError, "Internal Server Error");
 
-		var problemDetails = new ProblemDetails
-		{
-			Status = statusCode,
-			Title = title,
-			Detail = exception.Message
-		};
+		Activity? activity = httpContext.Features.Get<IHttpActivityFeature>()?.Activity;
 
-		httpContext.Response.ContentType = "application/json";
 		httpContext.Response.StatusCode = statusCode;
 
-		await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
-
-		return true;
+		return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+		{
+			HttpContext = httpContext,
+			Exception = exception,
+			ProblemDetails = new ProblemDetails
+			{
+				Status = statusCode,
+				Title = title,
+				Detail = exception.Message,
+				Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
+				Extensions = new Dictionary<string, object?>
+				{
+					{ "requestId", httpContext.TraceIdentifier },
+					{ "traceId", activity?.Id }
+				}
+			}
+		});
 	}
 }
