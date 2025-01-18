@@ -6,6 +6,7 @@ using MediatR;
 
 using MovieService.Application.Extensions;
 using MovieService.Domain.Constants;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -21,7 +22,7 @@ public class UpdateSessionCommandHandler(
 
 	public async Task<SessionModel> Handle(UpdateSessionCommand request, CancellationToken cancellationToken)
 	{
-		var existSession = await _unitOfWork.SessionsRepository.GetAsync(request.Id, cancellationToken)
+		var existSession = await _unitOfWork.Repository<SessionEntity>().GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Session with id {request.Id} doesn't exists");
 
 		if (!request.StartTime.DateTimeFormatTryParse(out DateTime parsedStartTime))
@@ -35,7 +36,7 @@ public class UpdateSessionCommandHandler(
 		var movie = await _unitOfWork.MoviesRepository.GetAsync(request.MovieId, cancellationToken)
 			?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
 
-		var hall = await _unitOfWork.HallsRepository.GetAsync(request.HallId, cancellationToken)
+		var hall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
@@ -60,7 +61,7 @@ public class UpdateSessionCommandHandler(
 
 		request.Adapt(existSession);
 
-		_unitOfWork.SessionsRepository.Update(existSession, cancellationToken);
+		_unitOfWork.Repository<SessionEntity>().Update(existSession);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

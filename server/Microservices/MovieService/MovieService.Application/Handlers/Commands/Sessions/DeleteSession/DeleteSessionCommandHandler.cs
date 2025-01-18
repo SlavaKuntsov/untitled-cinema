@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
@@ -16,10 +17,10 @@ public class DeleteSessionCommandHandler(
 
 	public async Task Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _unitOfWork.SessionsRepository.GetAsync(request.Id, cancellationToken)
+		var movie = await _unitOfWork.Repository<SessionEntity>().GetAsync(request.Id, cancellationToken)
 				?? throw new NotFoundException($"Session with id {request.Id} doesn't exists");
 
-		_unitOfWork.SessionsRepository.Delete(movie);
+		_unitOfWork.Repository<SessionEntity>().Delete(movie);
 		_unitOfWork.SeatsRepository.DeleteBySessionId(request.Id);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);

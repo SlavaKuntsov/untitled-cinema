@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
@@ -16,10 +17,10 @@ public class DeleteGenreCommandHandler(
 
 	public async Task Handle(DeleteGenreCommand request, CancellationToken cancellationToken)
 	{
-		var genre = await _unitOfWork.MoviesRepository.GetGenreAsync(request.Id, cancellationToken)
+		var genre = await _unitOfWork.Repository<GenreEntity>().GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Genre with id {request.Id} doesn't exists");
 
-		_unitOfWork.MoviesRepository.Delete(genre);
+		_unitOfWork.Repository<GenreEntity>().Delete(genre);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

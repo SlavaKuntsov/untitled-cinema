@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -15,7 +16,7 @@ public class GetAllGenresQueryHandler(
 
 	public async Task<IList<GenreModel>> Handle(GetAllGenresQuery request, CancellationToken cancellationToken)
 	{
-		var genres = await _unitOfWork.MoviesRepository.GetGenresAsync(cancellationToken);
+		var genres = await _unitOfWork.Repository<GenreEntity>().GetAsync(cancellationToken);
 
 		return _mapper.Map<IList<GenreModel>>(genres);
 	}

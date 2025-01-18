@@ -44,7 +44,7 @@ public class CreateDayCommandHandler(
 			parsedStartTime,
 			parsedEndTime);
 
-		await _unitOfWork.DaysRepository.CreateAsync(_mapper.Map<DayEntity>(day), cancellationToken);
+		await _unitOfWork.Repository<DayEntity>().CreateAsync(_mapper.Map<DayEntity>(day), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

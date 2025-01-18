@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -16,7 +17,7 @@ public class GetHallByIdQueryHandler(
 
 	public async Task<HallModel?> Handle(GetHallByIdQuery request, CancellationToken cancellationToken)
 	{
-		var hall = await _unitOfWork.HallsRepository.GetAsync(request.Id, cancellationToken);
+		var hall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.Id, cancellationToken);
 
 		return _mapper.Map<HallModel>(hall);
 	}

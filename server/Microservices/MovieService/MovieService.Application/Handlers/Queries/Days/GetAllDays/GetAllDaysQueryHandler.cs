@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -16,7 +17,7 @@ public class GetAllDaysQueryHandler(
 
 	public async Task<IList<DayModel>> Handle(GetAllDaysQuery request, CancellationToken cancellationToken)
 	{
-		var halls = await _unitOfWork.DaysRepository.GetAsync(cancellationToken);
+		var halls = await _unitOfWork.Repository<DayEntity>().GetAsync(cancellationToken);
 
 		return _mapper.Map<IList<DayModel>>(halls);
 	}

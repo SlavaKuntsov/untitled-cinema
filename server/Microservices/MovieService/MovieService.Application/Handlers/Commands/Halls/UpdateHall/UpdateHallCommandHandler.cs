@@ -4,6 +4,7 @@ using MapsterMapper;
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -19,12 +20,12 @@ public class UpdateHallCommandHandler(
 
 	public async Task<HallModel> Handle(UpdateHallCommand request, CancellationToken cancellationToken)
 	{
-		var existHall = await _unitOfWork.HallsRepository.GetAsync(request.Id, cancellationToken)
+		var existHall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.Id} doesn't exists");
 
 		request.Adapt(existHall);
 
-		_unitOfWork.HallsRepository.Update(existHall, cancellationToken);
+		_unitOfWork.Repository<HallEntity>().Update(existHall);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -9,4 +9,5 @@ public interface IUnitOfWork : IDisposable
 	public ISeatsRepository SeatsRepository { get; }
 	public IMoviesRepository MoviesRepository { get; }
 	public ISessionsRepository SessionsRepository { get; }
+	IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class;
 }

@@ -14,23 +14,6 @@ public class SessionsRepository : ISessionsRepository
 		_context = context;
 	}
 
-	public async Task<SessionEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
-	{
-		return await _context.Sessions
-			.AsNoTracking()
-			.Where(m => m.Id == id)
-			.FirstOrDefaultAsync(cancellationToken);
-	}
-
-	public async Task<IList<SessionEntity>> GetAsync(CancellationToken cancellationToken)
-	{
-		var sessions = await _context.Sessions
-			.AsNoTracking()
-			.ToListAsync(cancellationToken);
-
-		return sessions ?? [];
-	}
-
 	public IQueryable<SessionEntity> Get()
 	{
 		return _context.Sessions.AsQueryable();
@@ -52,25 +35,5 @@ public class SessionsRepository : ISessionsRepository
 			.ToListAsync(cancellationToken);
 
 		return sessions ?? [];
-	}
-
-	public async Task<Guid> CreateAsync(SessionEntity session, CancellationToken cancellationToken)
-	{
-		await _context.Sessions.AddAsync(session, cancellationToken);
-
-		return session.Id;
-	}
-
-	public void Update(SessionEntity session, CancellationToken cancellationToken)
-	{
-		_context.Sessions.Attach(session).State = EntityState.Modified;
-	}
-
-	public void Delete(SessionEntity session)
-	{
-		_context.Sessions.Attach(session);
-		_context.Sessions.Remove(session);
-
-		return;
 	}
 }
