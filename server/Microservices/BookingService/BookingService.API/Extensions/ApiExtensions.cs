@@ -2,7 +2,10 @@
 using System.Reflection;
 using System.Text;
 
-using FluentValidation;
+using BookingService.API.Behaviors;
+using BookingService.API.ExceptionHandlers;
+using BookingService.Domain.Constants;
+using BookingService.Infrastructure.Auth;
 
 using Mapster;
 
@@ -15,21 +18,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using BookingService.API.Behaviors;
-using BookingService.API.Contracts.Examples.Movies;
-using BookingService.API.ExceptionHandlers;
-using BookingService.Application.Handlers.Commands.Movies.CreateMovie;
-using BookingService.Application.Handlers.Commands.Movies.UpdateMovie;
-using BookingService.Application.Validators;
-using BookingService.Domain.Constants;
-using BookingService.Infrastructure.Auth;
-
 using Protobufs.Auth;
 
-using StackExchange.Redis;
-
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.AspNetCore.Http;
 
 namespace BookingService.API.Extensions;
 
@@ -87,7 +78,6 @@ public static class ApiExtensions
 				}
 			});
 		});
-		services.AddSwaggerExamplesFromAssemblyOf<CreateMovieRequestExample>();
 
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
@@ -163,24 +153,7 @@ public static class ApiExtensions
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
-		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
-
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-		services.AddStackExchangeRedisCache(options =>
-		{
-			options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
-			options.InstanceName = string.Empty;
-		});
-
-		services.AddSingleton<IConnectionMultiplexer>(sp =>
-		{
-			var configuration =
-				ConfigurationOptions.Parse(
-					Environment.GetEnvironmentVariable("REDIS_CONFIGURATION"), true);
-			return ConnectionMultiplexer.Connect(configuration);
-		});
 
 		return services;
 	}

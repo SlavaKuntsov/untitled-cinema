@@ -1,0 +1,1 @@
+dotnet ef migrations add initial -s BookingService.API -p BookingService.Persistence

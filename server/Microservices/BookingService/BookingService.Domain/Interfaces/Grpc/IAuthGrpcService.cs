@@ -1,4 +1,4 @@
-﻿namespace MovieService.Domain.Interfaces.Grpc;
+﻿namespace BookingService.Domain.Interfaces.Grpc;
 
 public interface IAuthGrpcService
 {

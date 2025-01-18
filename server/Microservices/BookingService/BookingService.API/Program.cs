@@ -1,4 +1,7 @@
 using BookingService.API.Extensions;
+using BookingService.Application.Extensions;
+using BookingService.Infrastructure.Extensions;
+using BookingService.Persistence.Extensions;
 
 using HealthChecks.UI.Client;
 
@@ -14,10 +17,10 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.UseHttps();
 
-services.AddAPI(configuration);
-	//.AddApplication()
-	//.AddInfrastructure()
-	//.AddPersistence(configuration);
+services.AddAPI(configuration)
+	.AddApplication()
+	.AddInfrastructure()
+	.AddPersistence(configuration);
 
 var app = builder.Build();
 
