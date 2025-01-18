@@ -2,6 +2,7 @@ services:
 
   api-gateway:
     container_name: api-gateway
+    restart: unless-stopped
     build:
       context: ./server/ApiGateway
       dockerfile: Dockerfile
@@ -17,31 +18,33 @@ services:
 
   user-service:
     container_name: user-service
+    restart: unless-stopped
     build:
       context: .
       dockerfile: server/UsersDockerfile
     ports:
-      - "${APP_PORT}:{APP_PORT}" 
+      - "7001:7001"
     environment:
       - APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
-      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - CONNECTION_STRING=Host=user-postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
     volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
 
 
   movie-service:
     container_name: movie-service
+    restart: unless-stopped
     build:
       context: .
       dockerfile: server/MoviesDockerfile
     ports:
-      - "${APP_PORT}:{APP_PORT}" 
+      - "7002:7002"
     environment:
       - APP_PORT=7002
       - USERS_APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
-      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - CONNECTION_STRING=Host=movie-postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
       - REDIS_CONFIGURATION=redis:6379
     volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
@@ -49,71 +52,86 @@ services:
 
   booking-service:
     container_name: booking-service
+    restart: unless-stopped
     build:
       context: .
       dockerfile: server/BookingsDockerfile
     ports:
-      - "${APP_PORT}:{APP_PORT}" 
+      - "7003:7003"
     environment:
       - APP_PORT=7003
       - USERS_APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
-      - CONNECTION_STRING=mongodb://root:password@mongodb:27017/CinemaBookings
+      - CONNECTION_STRING=mongodb://root:password@mongodb:27017/CinemaBookings/?authSource=admin&authMechanism=SCRAM-SHA-1
       - DATABASE_NAME=CinemaBookings
       - REDIS_CONFIGURATION=redis:6379
     volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx
 
 
-  postgres:
-    container_name: postgres
+  user-postgres:
+    container_name: user-postgres
     image: postgres:latest
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1
+      POSTGRES_DB: cinema_users
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    restart: always
+      - user-postgres-data:/var/lib/postgresql/data
+
+
+  movie-postgres:
+    container_name: movie-postgres
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_DB: cinema_movies
+    ports:
+      - "5434:5432"
+    volumes:
+      - movie-postgres-data:/var/lib/postgresql/data
 
 
   mongodb:
     container_name: mongodb
     image: mongo:latest
+    restart: unless-stopped
     environment:
     - MONGO_INITDB_ROOT_USERNAME=root
     - MONGO_INITDB_ROOT_PASSWORD=password
     - MONGO_INITDB_DATABASE=admin
-    volumes:
-      - ./docker_data/mongodb:/data/db
+    command: ["mongod", "--auth"]
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
-    restart: always
+      - mongo-data:/data/db
 
 
   redis:
     container_name: redis
     image: redis:latest
-    restart: always
+    restart: unless-stopped
     environment:
       REDIS_PASSWORD: 1
     ports:
       - 6379:6379
 
 
-  rabbitmq:
-    container_name: rabbit-mq
-    image: rabbitmq:3-management-alpine
-    ports:
-      - 5672:5672
-      - 15672:15672
-    restart: unless-stopped
+  # rabbitmq:
+  #   container_name: rabbit-mq
+  #   image: rabbitmq:3-management-alpine
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
     
 
 volumes:
-  postgres-data:
-  mongo_data:
+  user-postgres-data:
+  movie-postgres-data:
+  mongo-data:
