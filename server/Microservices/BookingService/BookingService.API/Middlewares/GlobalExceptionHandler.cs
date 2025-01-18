@@ -1,9 +1,11 @@
-﻿using FluentValidation;
+﻿using BookingService.Domain.Exceptions;
+
+using FluentValidation;
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-using BookingService.Domain.Exceptions;
+using MongoDB.Bson;
 
 namespace BookingService.API.ExceptionHandlers;
 
@@ -18,6 +20,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 		{ typeof(UnauthorizedAccessException), (StatusCodes.Status401Unauthorized, "Unauthorized") },
 		{ typeof(InvalidTokenException), (StatusCodes.Status400BadRequest, "Invalid Token") },
 		{ typeof(ValidationException), (StatusCodes.Status400BadRequest, "Invalid Data") },
+		{ typeof(BsonSerializationException), (StatusCodes.Status400BadRequest, "Invalid Database Data") },
 		{ typeof(InvalidOperationException), (StatusCodes.Status400BadRequest, "Invalid Operation") },
 		{ typeof(UnprocessableContentException), (StatusCodes.Status422UnprocessableEntity, "Unprocessable Content") },
 	};

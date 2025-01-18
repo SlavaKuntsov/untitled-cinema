@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BookingService.Domain.Interfaces.Repositories;
+using BookingService.Persistence.Repositories;
 
-using MongoDB.Driver;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BookingService.Persistence.Extensions;
 
@@ -10,20 +11,20 @@ public static class PersistenceExtensions
 	public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
 	{
 		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+		var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
 
 		if (string.IsNullOrEmpty(connectionString))
+		{
 			connectionString = configuration.GetConnectionString("BookingServiceDBContext");
+			databaseName = configuration["MongoDb:DatabaseName"];
+		}
 
-		services.AddSingleton<IMongoClient, MongoClient>(sp =>
+		services.AddSingleton(sp =>
 		{
-			return new MongoClient(connectionString);
+			return new BookingServiceDBContext(connectionString!, databaseName!);
 		});
 
-		services.AddScoped(sp =>
-		{
-			var client = sp.GetRequiredService<IMongoClient>();
-			return client.GetDatabase(configuration["MongoDb:DatabaseName"]);
-		});
+		services.AddScoped<IBookingsRepository, BookingsRepository>();
 
 		return services;
 	}
