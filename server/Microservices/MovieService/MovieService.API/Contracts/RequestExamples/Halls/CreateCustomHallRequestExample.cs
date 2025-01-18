@@ -9,9 +9,9 @@ public class CreateCustomHallRequestExample : IExamplesProvider<CreateCustomHall
 	public CreateCustomHallCommand GetExamples()
 	{
 		return new CreateCustomHallCommand(
-			"Большой зал",
-			14,
-			[
+			name: "Большой зал",
+			totalSeats: 14,
+			seats: [
 				[1, 1, 1, 1],
 				[2, 3, 3, 2],
 				[0, 0, 0, 0],

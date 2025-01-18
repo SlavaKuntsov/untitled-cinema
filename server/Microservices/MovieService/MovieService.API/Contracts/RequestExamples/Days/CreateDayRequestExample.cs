@@ -9,7 +9,7 @@ public class CreateDayRequestExample : IExamplesProvider<CreateDayCommand>
 	public CreateDayCommand GetExamples()
 	{
 		return new CreateDayCommand(
-			"05-01-2025 09:00",
-			"05-01-2025 21:00");
+			startTime: "05-01-2025 09:00",
+			endTime: "05-01-2025 21:00");
 	}
 }

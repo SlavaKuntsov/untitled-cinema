@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Movies;
+using MovieService.API.Contracts.Requests;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.DeleteGenre;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
@@ -30,21 +31,15 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpGet("/Movies")]
-	public async Task<IActionResult> Get(
-		[FromQuery] byte limit = 10,
-		[FromQuery] byte offset = 1,
-		[FromQuery] string? filter = null,
-		[FromQuery] string? filterValue = null,
-		[FromQuery] string sortBy = "title",
-		[FromQuery] string sortDirection = "asc")
+	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request)
 	{
 		var movies = await _mediator.Send(new GetAllMoviesQuery(
-			limit,
-			offset,
-			filter,
-			filterValue,
-			sortBy,
-			sortDirection));
+			request.Limit,
+			request.Offset,
+			request.Filter,
+			request.FilterValue,
+			request.SortBy,
+			request.SortDirection));
 
 		return Ok(movies);
 	}

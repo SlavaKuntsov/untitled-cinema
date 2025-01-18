@@ -9,10 +9,10 @@ public class UpdateSeatCommandExample : IExamplesProvider<UpdateSeatCommand>
 	public UpdateSeatCommand GetExamples()
 	{
 		return new UpdateSeatCommand(
-			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			2,
-			2);
+			id: Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
+			hallId: Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
+			seatTypeId: Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
+			row: 2,
+			column: 2);
 	}
 }
