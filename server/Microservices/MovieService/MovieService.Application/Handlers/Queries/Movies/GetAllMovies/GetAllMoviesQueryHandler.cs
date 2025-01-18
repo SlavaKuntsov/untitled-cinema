@@ -19,8 +19,13 @@ public class GetAllMoviesQueryHandler(
 
 	public async Task<IList<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
 	{
-		string cacheKey =
-			$"movies_{request.Filter}_{request.FilterValue}_{request.SortBy}_{request.SortDirection}_{request.Offset}_{request.Limit}";
+		string cacheKey = @$"movies_
+			{request.Filter}_
+			{request.FilterValue}_
+			{request.SortBy}_
+			{request.SortDirection}_
+			{request.Offset}_
+			{request.Limit}";
 
 		var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
 
