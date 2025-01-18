@@ -48,7 +48,7 @@ public class CreateCustomHallCommandHandler(
 			request.TotalSeats,
 			request.Seats);
 
-		await _unitOfWork.HallsRepository.CreateAsync(_mapper.Map<HallEntity>(hall), cancellationToken);
+		await _unitOfWork.Repository<HallEntity>().CreateAsync(_mapper.Map<HallEntity>(hall), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

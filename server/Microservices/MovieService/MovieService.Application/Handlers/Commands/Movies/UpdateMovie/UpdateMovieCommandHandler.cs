@@ -7,6 +7,7 @@ using MediatR;
 using MovieService.Application.Extensions;
 using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
@@ -14,11 +15,11 @@ namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 
 public class UpdateMovieCommandHandler(
 	IUnitOfWork unitOfWork,
-	//IRedisCacheService redisCacheService,
+	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<UpdateMovieCommand, MovieModel>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<MovieModel> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -33,11 +34,11 @@ public class UpdateMovieCommandHandler(
 
 		request.Adapt(existMovie);
 
-		_unitOfWork.MoviesRepository.Update(existMovie, cancellationToken);
+		_unitOfWork.Repository<MovieEntity>().Update(existMovie);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		//await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
+		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return _mapper.Map<MovieModel>(existMovie);
 	}

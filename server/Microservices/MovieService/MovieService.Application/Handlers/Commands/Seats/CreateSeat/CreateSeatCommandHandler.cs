@@ -48,7 +48,7 @@ public class CreateSeatCommandHandler(
 			request.Row,
 			request.Column);
 
-		await _unitOfWork.SeatsRepository.CreateAsync(_mapper.Map<SeatEntity>(seat), cancellationToken);
+		await _unitOfWork.Repository<SeatEntity>().CreateAsync(_mapper.Map<SeatEntity>(seat), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

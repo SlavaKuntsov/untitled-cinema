@@ -52,7 +52,7 @@ public class CreateMovieCommandHandler(
 
 				var genreEntity = _mapper.Map<GenreEntity>(genre);
 
-				await _unitOfWork.MoviesRepository.AddGenreAsync(genreEntity, cancellationToken);
+				await _unitOfWork.Repository<GenreEntity>().CreateAsync(genreEntity, cancellationToken);
 				genreEntities.Add(genreEntity);
 			}
 			else
@@ -69,7 +69,7 @@ public class CreateMovieCommandHandler(
 			GenreId = genre.Id
 		}).ToList();
 
-		await _unitOfWork.MoviesRepository.CreateAsync(movieEntity, cancellationToken);
+		await _unitOfWork.Repository<MovieEntity>().CreateAsync(movieEntity, cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -33,7 +33,7 @@ public class FillSessionCommandHandler(
 		var movie = await _unitOfWork.MoviesRepository.GetAsync(request.MovieId, cancellationToken)
 			?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
 
-		var hall = await _unitOfWork.HallsRepository.GetAsync(request.HallId, cancellationToken)
+		var hall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
@@ -94,7 +94,7 @@ public class FillSessionCommandHandler(
 			}
 		}
 
-		await _unitOfWork.SessionsRepository.CreateAsync(_mapper.Map<SessionEntity>(session), cancellationToken);
+		await _unitOfWork.Repository<SessionEntity>().CreateAsync(_mapper.Map<SessionEntity>(session), cancellationToken);
 		await _unitOfWork.SeatsRepository.CreateRangeAsync(_mapper.Map<IList<SeatEntity>>(seats), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);

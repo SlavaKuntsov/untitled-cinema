@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -16,7 +17,7 @@ public class GetSeatByIdQueryHandler(
 
 	public async Task<SeatModel> Handle(GetSeatByIdQuery request, CancellationToken cancellationToken)
 	{
-		var seat = await _unitOfWork.SeatsRepository.GetAsync(request.Id, cancellationToken);
+		var seats = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken);
 
 		return _mapper.Map<SeatModel>(seat);
 	}

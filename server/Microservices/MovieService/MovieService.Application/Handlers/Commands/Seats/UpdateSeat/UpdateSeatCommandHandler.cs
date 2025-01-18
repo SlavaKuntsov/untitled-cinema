@@ -4,6 +4,7 @@ using MapsterMapper;
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -19,12 +20,12 @@ public class UpdateSeatCommandHandler(
 
 	public async Task<SeatModel> Handle(UpdateSeatCommand request, CancellationToken cancellationToken)
 	{
-		var existSeat = await _unitOfWork.SeatsRepository.GetAsync(request.Id, cancellationToken)
+		var existSeat = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken)
 				?? throw new NotFoundException($"Seat with id '{request.Id}' doesn't exists");
 
 		request.Adapt(existSeat);
 
-		_unitOfWork.SeatsRepository.Update(existSeat, cancellationToken);
+		_unitOfWork.Repository<SeatEntity>().Update(existSeat);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

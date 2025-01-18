@@ -4,6 +4,7 @@ using MapsterMapper;
 
 using MediatR;
 
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -19,12 +20,12 @@ public class UpdateGenreCommandHandler(
 
 	public async Task<GenreModel> Handle(UpdateGenreCommand request, CancellationToken cancellationToken)
 	{
-		var existGenre = await _unitOfWork.MoviesRepository.GetGenreAsync(request.Id, cancellationToken)
+		var existGenre = await _unitOfWork.Repository<GenreEntity>().GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Genre with id {request.Id} doesn't exists");
 
 		request.Adapt(existGenre);
 
-		_unitOfWork.MoviesRepository.Update(existGenre, cancellationToken);
+		_unitOfWork.Repository<GenreEntity>().Update(existGenre);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

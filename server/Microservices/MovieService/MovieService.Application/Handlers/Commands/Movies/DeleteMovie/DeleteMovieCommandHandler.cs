@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Application.Interfaces.Caching;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
@@ -22,7 +23,7 @@ public class DeleteMovieCommandHandler(
 		var movie = await _unitOfWork.MoviesRepository.GetAsync(request.Id, cancellationToken)
 				?? throw new NotFoundException($"Movie with id {request.Id} doesn't exists");
 
-		_unitOfWork.MoviesRepository.Delete(movie);
+		_unitOfWork.Repository<MovieEntity>().Delete(movie);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

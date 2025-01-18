@@ -29,7 +29,7 @@ public class CreateSeatTypeCommandHandler(
 			request.Name,
 			request.PriceModifier);
 
-		await _unitOfWork.SeatsRepository.CreateTypeAsync(_mapper.Map<SeatTypeEntity>(seatType), cancellationToken);
+		await _unitOfWork.Repository<SeatTypeEntity>().CreateAsync(_mapper.Map<SeatTypeEntity>(seatType), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 

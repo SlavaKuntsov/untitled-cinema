@@ -14,14 +14,6 @@ public class SeatsRepository : ISeatsRepository
 		_context = context;
 	}
 
-	public async Task<SeatEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
-	{
-		return await _context.Seats
-			.AsNoTracking()
-			.Where(m => m.Id == id)
-			.FirstOrDefaultAsync(cancellationToken);
-	}
-
 	public async Task<SeatEntity?> GetAsync(int row, int column, CancellationToken cancellationToken)
 	{
 		return await _context.Seats
@@ -39,14 +31,6 @@ public class SeatsRepository : ISeatsRepository
 			.ToListAsync(cancellationToken);
 
 		return seats ?? [];
-	}
-
-	public async Task<SeatTypeEntity?> GetTypeAsync(Guid id, CancellationToken cancellationToken)
-	{
-		return await _context.SeatTypes
-			.AsNoTracking()
-			.Where(m => m.Id == id)
-			.FirstOrDefaultAsync(cancellationToken);
 	}
 
 	public async Task<SeatTypeEntity?> GetTypeAsync(string name, CancellationToken cancellationToken)
@@ -67,48 +51,6 @@ public class SeatsRepository : ISeatsRepository
 	public async Task CreateRangeAsync(IList<SeatEntity> seats, CancellationToken cancellationToken)
 	{
 		await _context.Seats.AddRangeAsync(seats, cancellationToken);
-	}
-
-	public async Task<IList<SeatTypeEntity>> GetTypesAsync(CancellationToken cancellationToken)
-	{
-		var types = await _context.SeatTypes
-			.AsNoTracking()
-			.ToListAsync(cancellationToken);
-
-		return types ?? [];
-	}
-
-	public async Task<Guid> CreateTypeAsync(SeatTypeEntity seatType, CancellationToken cancellationToken)
-	{
-		await _context.SeatTypes.AddAsync(seatType, cancellationToken);
-
-		return seatType.Id;
-	}
-
-	public void Update(SeatEntity seat, CancellationToken cancellationToken)
-	{
-		_context.Seats.Attach(seat).State = EntityState.Modified;
-	}
-
-	public void Delete(SeatEntity seat)
-	{
-		_context.Seats.Attach(seat);
-		_context.Seats.Remove(seat);
-
-		return;
-	}
-
-	public void Update(SeatTypeEntity seatType, CancellationToken cancellationToken)
-	{
-		_context.SeatTypes.Attach(seatType).State = EntityState.Modified;
-	}
-
-	public void Delete(SeatTypeEntity seatType)
-	{
-		_context.SeatTypes.Attach(seatType);
-		_context.SeatTypes.Remove(seatType);
-
-		return;
 	}
 
 	public void DeleteBySessionId(Guid id)

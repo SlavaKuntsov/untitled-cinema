@@ -30,6 +30,7 @@ public static class PersistenceExtensions
 		services.AddScoped<ISeatsRepository, SeatsRepository>();
 		services.AddScoped<ISessionsRepository, SessionsRepository>();
 		services.AddScoped<IDaysRepository, DaysRepository>();
+		services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 		return services;
 	}
