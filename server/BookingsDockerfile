@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+COPY ["server/Microservices/BookingService/BookingService.API/BookingService.API.csproj", "server/Microservices/BookingService/BookingService.API/"]
+COPY ["server/Microservices/BookingService/BookingService.Domain/BookingService.Domain.csproj", "server/Microservices/BookingService/BookingService.Domain/"]
+COPY ["server/Microservices/BookingService/BookingService.Infrastructure/BookingService.Infrastructure.csproj", "server/Microservices/BookingService/BookingService.Infrastructure/"]
+COPY ["server/Microservices/BookingService/BookingService.Application/BookingService.Application.csproj", "server/Microservices/BookingService/BookingService.Application/"]
+COPY ["server/Microservices/BookingService/BookingService.Persistence/BookingService.Persistence.csproj", "server/Microservices/BookingService/BookingService.Persistence/"]
+COPY ["server/Protobufs/Protobufs.csproj", "server/Protobufs/"]
+
+RUN dotnet restore "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj"
+
+COPY . . 
+
+RUN dotnet publish "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 7002
+EXPOSE 443  
+
+# COPY ./server/ApiGateway/certificates/localhost.pfx /app/localhost.pfx
+
+RUN update-ca-certificates
+
+COPY --from=build /app/publish . 
+
+ENV ASPNETCORE_URLS=https://+:7003
+
+ENTRYPOINT ["dotnet", "BookingService.API.dll"]

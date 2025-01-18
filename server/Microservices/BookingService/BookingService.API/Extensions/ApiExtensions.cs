@@ -15,22 +15,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using MovieService.API.Behaviors;
-using MovieService.API.Contracts.Examples.Movies;
-using MovieService.API.ExceptionHandlers;
-using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
-using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
-using MovieService.Application.Validators;
-using MovieService.Domain.Constants;
-using MovieService.Infrastructure.Auth;
+using BookingService.API.Behaviors;
+using BookingService.API.Contracts.Examples.Movies;
+using BookingService.API.ExceptionHandlers;
+using BookingService.Application.Handlers.Commands.Movies.CreateMovie;
+using BookingService.Application.Handlers.Commands.Movies.UpdateMovie;
+using BookingService.Application.Validators;
+using BookingService.Domain.Constants;
+using BookingService.Infrastructure.Auth;
 
 using Protobufs.Auth;
 
 using StackExchange.Redis;
 
 using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.Http;
 
-namespace MovieService.API.Extensions;
+namespace BookingService.API.Extensions;
 
 public static class ApiExtensions
 {
@@ -40,9 +41,14 @@ public static class ApiExtensions
 		services.AddProblemDetails();
 		services.AddHealthChecks();
 
+		var port = Environment.GetEnvironmentVariable("PORT");
+
+		if (string.IsNullOrEmpty(port))
+			port = configuration.GetValue<string>("ApplicationSettings:Port");
+
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
-			options.Address = new Uri("https://localhost:7001");
+			options.Address = new Uri($"https://localhost:{port}");
 		});
 
 		services.AddHttpContextAccessor();
@@ -157,8 +163,8 @@ public static class ApiExtensions
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
+		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
+		//services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 

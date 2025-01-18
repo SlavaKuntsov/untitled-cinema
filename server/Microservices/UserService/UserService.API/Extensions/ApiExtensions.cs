@@ -165,13 +165,21 @@ public static class ApiExtensions
 	{
 		var environment = builder.Environment;
 
+		var portString = Environment.GetEnvironmentVariable("PORT");
+
+		if (string.IsNullOrEmpty(portString))
+			portString = builder.Configuration.GetValue<string>("ApplicationSettings:Port");
+
+		if (!int.TryParse(portString, out int port))
+			throw new InvalidOperationException($"Invalid port value: {portString}");
+
 		if (environment.IsProduction())
 		{
 			var certPath = "/app/localhost.pfx";
 			var certPassword = "1";
 			builder.WebHost.ConfigureKestrel(options =>
 			{
-				options.ListenAnyIP(7001, listenOptions =>
+				options.ListenAnyIP(port, listenOptions =>
 				{
 					listenOptions.UseHttps(certPath, certPassword);
 				});
@@ -181,7 +189,7 @@ public static class ApiExtensions
 		{
 			builder.WebHost.ConfigureKestrel(options =>
 			{
-				options.ListenAnyIP(7001, listenOptions =>
+				options.ListenAnyIP(port, listenOptions =>
 				{
 					listenOptions.UseHttps();
 				});

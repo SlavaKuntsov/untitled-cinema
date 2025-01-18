@@ -21,8 +21,9 @@ services:
       context: .
       dockerfile: server/UsersDockerfile
     ports:
-      - "7001:7001"
+      - "${APP_PORT}:{APP_PORT}" 
     environment:
+      - APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
     volumes:
@@ -35,8 +36,9 @@ services:
       context: .
       dockerfile: server/MoviesDockerfile
     ports:
-      - "7002:7002"
+      - "${APP_PORT}:{APP_PORT}" 
     environment:
+      - APP_PORT=7002
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
       - REDIS_CONFIGURATION=redis:6379
@@ -54,6 +56,19 @@ services:
 #       - postgres
 #       - redis
 #       - rabbitmq
+  booking-service:
+    container_name: booking-service
+    build:
+      context: .
+      dockerfile: server/BookingsDockerfile
+    ports:
+      - "${APP_PORT}:{APP_PORT}" 
+    environment:
+      - APP_PORT=7003
+      - ASPNETCORE_ENVIRONMENT=Production
+      - REDIS_CONFIGURATION=redis:6379
+    volumes:
+      - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx
 
 
   postgres:

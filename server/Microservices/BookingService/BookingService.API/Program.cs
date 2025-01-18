@@ -1,35 +1,54 @@
+using BookingService.API.Extensions;
 
-namespace BookingService.API;
+using HealthChecks.UI.Client;
 
-public class Program
-{
-	public static void Main(string[] args)
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
+
+var builder = WebApplication.CreateBuilder(args);
+var services  = builder.Services;
+var configuration = builder.Configuration;
+
+builder.Configuration.AddEnvironmentVariables();
+
+builder.UseHttps();
+
+services.AddAPI(configuration);
+	//.AddApplication()
+	//.AddInfrastructure()
+	//.AddPersistence(configuration);
+
+var app = builder.Build();
+
+app.UseExceptionHandler();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapHealthChecks(
+	"/health",
+	new HealthCheckOptions
 	{
-		var builder = WebApplication.CreateBuilder(args);
+		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+	});
 
-		// Add services to the container.
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+	MinimumSameSitePolicy = SameSiteMode.None,
+	HttpOnly = HttpOnlyPolicy.Always,
+	Secure = CookieSecurePolicy.Always
+});
+app.UseHttpsRedirection();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+	ForwardedHeaders = ForwardedHeaders.All
+});
+app.UseCors();
 
-		builder.Services.AddControllers();
-		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen();
+app.UseAuthentication();
+app.UseAuthorization();
 
-		var app = builder.Build();
+app.MapControllers();
 
-		// Configure the HTTP request pipeline.
-		if (app.Environment.IsDevelopment())
-		{
-			app.UseSwagger();
-			app.UseSwaggerUI();
-		}
-
-		app.UseHttpsRedirection();
-
-		app.UseAuthorization();
-
-
-		app.MapControllers();
-
-		app.Run();
-	}
-}
+app.Run();
