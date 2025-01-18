@@ -9,10 +9,10 @@ public class UpdateHallRequestExample : IExamplesProvider<UpdateHallCommand>
 	public UpdateHallCommand GetExamples()
 	{
 		return new UpdateHallCommand(
-			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			"Большой зал 2",
-			230,
-			[
+			id: Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
+			name: "Большой зал 2",
+			totalSeats: 230,
+			seats: [
 				[0, 0, 0, 0],
 				[0, 0, 0, 0],
 				[0, 0, 0, 0],

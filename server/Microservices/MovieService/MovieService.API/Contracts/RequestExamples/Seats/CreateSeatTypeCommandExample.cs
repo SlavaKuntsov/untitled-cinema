@@ -9,7 +9,7 @@ public class CreateSeatTypeCommandExample : IExamplesProvider<CreateSeatTypeComm
 	public CreateSeatTypeCommand GetExamples()
 	{
 		return new CreateSeatTypeCommand(
-			"Комфорт",
-			1);
+			name: "Комфорт",
+			priceModifier: 1);
 	}
 }

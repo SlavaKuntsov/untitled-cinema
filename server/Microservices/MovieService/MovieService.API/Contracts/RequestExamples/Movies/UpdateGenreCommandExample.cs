@@ -9,7 +9,7 @@ public class UpdateGenreCommandExample : IExamplesProvider<UpdateGenreCommand>
 	public UpdateGenreCommand GetExamples()
 	{
 		return new UpdateGenreCommand(
-			Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
-			"Комфорт");
+			id: Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
+			name: "Комфорт");
 	}
 }

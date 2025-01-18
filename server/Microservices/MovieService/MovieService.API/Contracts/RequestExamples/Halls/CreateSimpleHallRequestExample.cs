@@ -9,9 +9,9 @@ public class CreateSimpleHallRequestExample : IExamplesProvider<CreateSimpleHall
 	public CreateSimpleHallCommand GetExamples()
 	{
 		return new CreateSimpleHallCommand(
-			"Большой зал",
-			50,
-			5,
-			10);
+			name: "Большой зал",
+			totalSeats: 50,
+			rows: 5,
+			columns: 10);
 	}
 }

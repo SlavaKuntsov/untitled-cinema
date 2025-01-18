@@ -9,9 +9,9 @@ public class CreateSeatCommandExample : IExamplesProvider<CreateSeatCommand>
 	public CreateSeatCommand GetExamples()
 	{
 		return new CreateSeatCommand(
-			"Большой зал",
-			"Комфорт",
-			2,
-			2);
+			hall: "Большой зал",
+			seatType: "Комфорт",
+			row: 2,
+			column: 2);
 	}
 }

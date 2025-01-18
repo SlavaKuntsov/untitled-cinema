@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 using MovieService.API.Contracts.RequestExamples.Sessions;
+using MovieService.API.Contracts.Requests;
 using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
@@ -26,16 +27,13 @@ public class SessionController : ControllerBase
 
 	[HttpGet("/Sessions")]
 	public async Task<IActionResult> Get(
-		[FromQuery] byte limit = 10,
-		[FromQuery] byte offset = 1,
-		[FromQuery] string? date = null,
-		[FromQuery] string? hall = null)
+		[FromQuery] GetSessionsRequest request)
 	{
 		var movies = await _mediator.Send(new GetAllSessionsQuery(
-			limit,
-			offset,
-			date,
-			hall));
+			request.Limit,
+			request.Offset,
+			request.Date,
+			request.Hall));
 
 		return Ok(movies);
 	}
