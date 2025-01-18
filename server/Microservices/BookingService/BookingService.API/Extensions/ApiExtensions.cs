@@ -32,14 +32,14 @@ public static class ApiExtensions
 		services.AddProblemDetails();
 		services.AddHealthChecks();
 
-		var port = Environment.GetEnvironmentVariable("PORT");
+		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
 
-		if (string.IsNullOrEmpty(port))
-			port = configuration.GetValue<string>("ApplicationSettings:Port");
+		if (string.IsNullOrEmpty(usersPort))
+			usersPort = configuration.GetValue<string>("ApplicationSettings:UsersPort");
 
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
-			options.Address = new Uri($"https://localhost:{port}");
+			options.Address = new Uri($"https://localhost:{usersPort}");
 		});
 
 		services.AddHttpContextAccessor();

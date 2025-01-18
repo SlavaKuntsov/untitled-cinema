@@ -39,6 +39,7 @@ services:
       - "${APP_PORT}:{APP_PORT}" 
     environment:
       - APP_PORT=7002
+      - USERS_APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
       - REDIS_CONFIGURATION=redis:6379
@@ -55,6 +56,7 @@ services:
       - "${APP_PORT}:{APP_PORT}" 
     environment:
       - APP_PORT=7003
+      - USERS_APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=mongodb://root:password@mongodb:27017/CinemaBookings
       - DATABASE_NAME=CinemaBookings

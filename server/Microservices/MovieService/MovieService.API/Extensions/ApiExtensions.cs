@@ -40,9 +40,14 @@ public static class ApiExtensions
 		services.AddProblemDetails();
 		services.AddHealthChecks();
 
+		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
+
+		if (string.IsNullOrEmpty(usersPort))
+			usersPort = configuration.GetValue<string>("ApplicationSettings:UsersPort");
+
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
-			options.Address = new Uri("https://localhost:7001");
+			options.Address = new Uri($"https://localhost:{usersPort}");
 		});
 
 		services.AddHttpContextAccessor();
