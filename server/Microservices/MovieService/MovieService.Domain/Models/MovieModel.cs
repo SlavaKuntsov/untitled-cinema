@@ -9,6 +9,7 @@ public class MovieModel
 	public decimal Price { get; set; } = 0.00m;
 	public short DurationMinutes { get; set; }
 	public string Producer { get; set; } = null!;
+	public byte AgeLimit { get; set; }
 	public DateTime ReleaseDate { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }
@@ -24,6 +25,7 @@ public class MovieModel
 		decimal price,
 		short durationMinutes,
 		string producer,
+		byte ageLimit,
 		DateTime releaseDate,
 		DateTime createdAt,
 		DateTime updatedAt)
@@ -34,6 +36,7 @@ public class MovieModel
 		Price = price;
 		DurationMinutes = durationMinutes;
 		Producer = producer;
+		AgeLimit = ageLimit;
 		ReleaseDate = releaseDate;
 		CreatedAt = createdAt;
 		UpdatedAt = updatedAt;

@@ -24,6 +24,9 @@ public class CreateMovieCommandValidator : BaseCommandValidator<CreateMovieComma
 		RuleFor(x => Convert.ToInt32(x.DurationMinutes))
 			.GreaterThan(0).WithMessage("Duration must be greater than zero.");
 
+		RuleFor(x => Convert.ToInt32(x.AgeLimit))
+			.GreaterThan(0).WithMessage("Age Limit must be greater than zero.");
+
 		RuleFor(x => x.Producer)
 			.NotEmpty().WithMessage("Producer is required.")
 			.MaximumLength(50).WithMessage("Producer must not exceed 50 characters.");

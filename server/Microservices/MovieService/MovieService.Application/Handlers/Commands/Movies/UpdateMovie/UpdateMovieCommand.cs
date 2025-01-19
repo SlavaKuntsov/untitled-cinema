@@ -11,6 +11,7 @@ public class UpdateMovieCommand(
 	string description,
 	short durationMinutes,
 	string producer,
+	byte ageLimit,
 	string releaseDate) : IRequest<MovieModel>
 {
 	public Guid Id { get; private set; } = id;
@@ -19,5 +20,6 @@ public class UpdateMovieCommand(
 	public string Description { get; private set; } = description;
 	public short DurationMinutes { get; private set; } = durationMinutes;
 	public string Producer { get; private set; } = producer;
+	public byte AgeLimit { get; private set; } = ageLimit;
 	public string ReleaseDate { get; private set; } = releaseDate;
 }

@@ -24,6 +24,7 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.Description, src => src.Description)
 			.Map(dest => dest.DurationMinutes, src => src.DurationMinutes)
 			.Map(dest => dest.Producer, src => src.Producer)
+			.Map(dest => dest.AgeLimit, src => src.AgeLimit)
 			.Map(dest => dest.ReleaseDate, src => ParseDateTimeOrDefault(src.ReleaseDate));
 
 		config.NewConfig<UpdateHallCommand, HallEntity>()
