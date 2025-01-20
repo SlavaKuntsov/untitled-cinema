@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BookingService.Application.Extensions;
 
@@ -8,7 +10,7 @@ public static class ApplicationExtensions
 	{
 		services.AddMediatR(cfg =>
 		{
-			//cfg.RegisterServicesFromAssemblyContaining<CreateMovieCommandHandler>();
+			cfg.RegisterServicesFromAssemblyContaining<CreateBookingCommandHandler>();
 		});
 
 		return services;

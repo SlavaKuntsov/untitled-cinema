@@ -20,8 +20,6 @@ using Microsoft.OpenApi.Models;
 
 using Protobufs.Auth;
 
-using Swashbuckle.AspNetCore.Filters;
-
 namespace BookingService.API.Extensions;
 
 public static class ApiExtensions
@@ -53,7 +51,6 @@ public static class ApiExtensions
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(options =>
 		{
-			options.ExampleFilters();
 			options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
 			{
 				Name = "Authorization",
