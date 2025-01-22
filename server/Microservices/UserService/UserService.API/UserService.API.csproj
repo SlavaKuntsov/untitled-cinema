@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Protobufs\Protobufs.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
     <ProjectReference Include="..\UserService.Infrastructure\UserService.Infrastructure.csproj" />
     <ProjectReference Include="..\UserService.Persistence\UserService.Persistence.csproj" />
   </ItemGroup>

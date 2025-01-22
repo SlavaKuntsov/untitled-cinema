@@ -2,13 +2,13 @@
 
 public class SessionModel
 {
-	public Guid Id { get; set; }
-	public Guid MovieId { get; set; }
-	public Guid HallId { get; set; }
-	public Guid DayId { get; set; }
-	public decimal PriceModifier { get; set; } = 1;
-	public DateTime StartTime { get; set; }
-	public DateTime EndTime { get; set; }
+	public Guid Id { get; private set; }
+	public Guid MovieId { get; private set; }
+	public Guid HallId { get; private set; }
+	public Guid DayId { get; private set; }
+	public decimal PriceModifier { get; private set; } = 1;
+	public DateTime StartTime { get; private set; }
+	public DateTime EndTime { get; private set; }
 
 	public SessionModel()
 	{

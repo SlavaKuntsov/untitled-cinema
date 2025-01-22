@@ -3,9 +3,9 @@
 public class HallModel
 {
 	public Guid Id { get; private set; }
-	public string Name { get; set; } = null!;
-	public short TotalSeats { get; set; }
-	public int[][] SeatsArray { get; set; } = [];
+	public string Name { get; private set; } = null!;
+	public short TotalSeats { get; private set; }
+	public int[][] SeatsArray { get; private set; } = [];
 
 	public HallModel()
 	{

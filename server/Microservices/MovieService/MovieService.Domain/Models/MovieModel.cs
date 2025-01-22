@@ -2,17 +2,17 @@
 
 public class MovieModel
 {
-	public Guid Id { get; set; }
-	public string Title { get; set; } = null!;
-	public IList<string> Genres { get; set; } = [];
-	public string Description { get; set; } = string.Empty;
-	public decimal Price { get; set; } = 0.00m;
-	public short DurationMinutes { get; set; }
-	public string Producer { get; set; } = null!;
-	public byte AgeLimit { get; set; }
-	public DateTime ReleaseDate { get; set; }
-	public DateTime CreatedAt { get; set; }
-	public DateTime UpdatedAt { get; set; }
+	public Guid Id { get; private set; }
+	public string Title { get; private set; } = null!;
+	public IList<string> Genres { get; private set; } = [];
+	public string Description { get; private set; } = string.Empty;
+	public decimal Price { get; private set; } = 0.00m;
+	public short DurationMinutes { get; private set; }
+	public string Producer { get; private set; } = null!;
+	public byte AgeLimit { get; private set; }
+	public DateTime ReleaseDate { get; private set; }
+	public DateTime CreatedAt { get; private set; }
+	public DateTime UpdatedAt { get; private set; }
 
 	public MovieModel()
 	{

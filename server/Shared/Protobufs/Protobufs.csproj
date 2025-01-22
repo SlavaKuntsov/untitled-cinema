@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Movie\**" />
+    <EmbeddedResource Remove="Movie\**" />
+    <None Remove="Movie\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.29.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.57.0" />
@@ -18,6 +24,5 @@
 
 	<ItemGroup>
 		<Protobuf Include="Auth\auth.proto" GrpcServices="Both" />
-		<Protobuf Include="Movie\movie.proto" GrpcServices="Both" />
 	</ItemGroup>
 </Project>

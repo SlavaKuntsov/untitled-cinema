@@ -2,9 +2,9 @@
 
 public class DayModel
 {
-	public Guid Id { get; set; }
-	public DateTime StartTime { get; set; }
-	public DateTime EndTime { get; set; }
+	public Guid Id { get; private set; }
+	public DateTime StartTime { get; private set; }
+	public DateTime EndTime { get; private set; }
 
 	public DayModel()
 	{

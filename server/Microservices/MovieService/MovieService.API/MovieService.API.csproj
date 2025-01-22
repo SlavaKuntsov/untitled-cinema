@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Protobufs\Protobufs.csproj" />
+	  <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
 	  <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj" />
 	  <ProjectReference Include="..\MovieService.Infrastructure\MovieService.Infrastructure.csproj" />
 	  <ProjectReference Include="..\MovieService.Persistence\MovieService.Persistence.csproj" />

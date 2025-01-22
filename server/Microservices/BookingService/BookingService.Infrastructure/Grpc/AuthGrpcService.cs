@@ -1,7 +1,5 @@
 ﻿using BookingService.Domain.Interfaces.Grpc;
 
-using MapsterMapper;
-
 using Protobufs.Auth;
 
 namespace BookingService.Infrastructure.Grpc;
@@ -9,12 +7,10 @@ namespace BookingService.Infrastructure.Grpc;
 public class AuthGrpcService : IAuthGrpcService
 {
 	private readonly AuthService.AuthServiceClient _client;
-	private readonly IMapper _mapper;
 
-	public AuthGrpcService(AuthService.AuthServiceClient client, IMapper mapper)
+	public AuthGrpcService(AuthService.AuthServiceClient client)
 	{
 		_client = client;
-		_mapper = mapper;
 	}
 
 	public async Task<bool> CheckExistAsync(Guid id, CancellationToken cancellationToken = default)

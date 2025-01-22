@@ -13,6 +13,7 @@ public static class InfrastructureExtensions
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
 		services.AddScoped<IAuthGrpcService, AuthGrpcService>();
+
 		BsonSerializer.RegisterSerializer(new BookingStatusSerialization());
 		BsonSerializer.RegisterSerializationProvider(new GuidSerialization());
 

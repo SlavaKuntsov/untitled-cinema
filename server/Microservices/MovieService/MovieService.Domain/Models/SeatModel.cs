@@ -2,11 +2,11 @@
 
 public class SeatModel
 {
-	public Guid Id { get; set; }
-	public Guid HallId { get; set; }
-	public Guid SeatTypeId { get; set; }
-	public int Row { get; set; }
-	public int Column { get; set; }
+	public Guid Id { get; private set; }
+	public Guid HallId { get; private set; }
+	public Guid SeatTypeId { get; private set; }
+	public int Row { get; private set; }
+	public int Column { get; private set; }
 
 	public SeatModel()
 	{
