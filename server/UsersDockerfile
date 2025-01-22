@@ -7,7 +7,7 @@ COPY ["server/Microservices/UserService/UserService.Domain/UserService.Domain.cs
 COPY ["server/Microservices/UserService/UserService.Infrastructure/UserService.Infrastructure.csproj", "server/Microservices/UserService/UserService.Infrastructure/"]
 COPY ["server/Microservices/UserService/UserService.Application/UserService.Application.csproj", "server/Microservices/UserService/UserService.Application/"]
 COPY ["server/Microservices/UserService/UserService.Persistence/UserService.Persistence.csproj", "server/Microservices/UserService/UserService.Persistence/"]
-COPY ["server/Protobufs/Protobufs.csproj", "server/Protobufs/"]
+COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
 
 RUN dotnet restore "server/Microservices/UserService/UserService.API/UserService.API.csproj"
 
@@ -19,8 +19,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 7001
 EXPOSE 443  
-
-# COPY ./server/ApiGateway/certificates/localhost.pfx /app/localhost.pfx
 
 RUN update-ca-certificates
 

@@ -7,7 +7,7 @@ COPY ["server/Microservices/BookingService/BookingService.Domain/BookingService.
 COPY ["server/Microservices/BookingService/BookingService.Infrastructure/BookingService.Infrastructure.csproj", "server/Microservices/BookingService/BookingService.Infrastructure/"]
 COPY ["server/Microservices/BookingService/BookingService.Application/BookingService.Application.csproj", "server/Microservices/BookingService/BookingService.Application/"]
 COPY ["server/Microservices/BookingService/BookingService.Persistence/BookingService.Persistence.csproj", "server/Microservices/BookingService/BookingService.Persistence/"]
-COPY ["server/Protobufs/Protobufs.csproj", "server/Protobufs/"]
+COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
 
 RUN dotnet restore "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj"
 
@@ -19,8 +19,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 7002
 EXPOSE 443  
-
-# COPY ./server/ApiGateway/certificates/localhost.pfx /app/localhost.pfx
 
 RUN update-ca-certificates
 

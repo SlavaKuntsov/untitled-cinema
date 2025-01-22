@@ -18,5 +18,6 @@
 
 	<ItemGroup>
 		<Protobuf Include="Auth\auth.proto" GrpcServices="Both" />
+		<Protobuf Include="Movie\movie.proto" GrpcServices="Both" />
 	</ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ COPY ["server/Microservices/MovieService/MovieService.Domain/MovieService.Domain
 COPY ["server/Microservices/MovieService/MovieService.Infrastructure/MovieService.Infrastructure.csproj", "server/Microservices/MovieService/MovieService.Infrastructure/"]
 COPY ["server/Microservices/MovieService/MovieService.Application/MovieService.Application.csproj", "server/Microservices/MovieService/MovieService.Application/"]
 COPY ["server/Microservices/MovieService/MovieService.Persistence/MovieService.Persistence.csproj", "server/Microservices/MovieService/MovieService.Persistence/"]
-COPY ["server/Protobufs/Protobufs.csproj", "server/Protobufs/"]
+COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
 
 RUN dotnet restore "server/Microservices/MovieService/MovieService.API/MovieService.API.csproj"
 
@@ -19,8 +19,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 7002
 EXPOSE 443  
-
-# COPY ./server/ApiGateway/certificates/localhost.pfx /app/localhost.pfx
 
 RUN update-ca-certificates
 
