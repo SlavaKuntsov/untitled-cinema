@@ -3,6 +3,8 @@ using BookingService.Application.Extensions;
 using BookingService.Infrastructure.Extensions;
 using BookingService.Persistence.Extensions;
 
+using Brokers.Extensions;
+
 using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.CookiePolicy;
@@ -20,7 +22,8 @@ builder.UseHttps();
 services.AddAPI(configuration)
 	.AddApplication()
 	.AddInfrastructure()
-	.AddPersistence(configuration);
+	.AddPersistence(configuration)
+	.AddRabbitMQ(configuration);
 
 var app = builder.Build();
 

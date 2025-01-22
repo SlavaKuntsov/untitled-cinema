@@ -8,6 +8,7 @@ COPY ["server/Microservices/BookingService/BookingService.Infrastructure/Booking
 COPY ["server/Microservices/BookingService/BookingService.Application/BookingService.Application.csproj", "server/Microservices/BookingService/BookingService.Application/"]
 COPY ["server/Microservices/BookingService/BookingService.Persistence/BookingService.Persistence.csproj", "server/Microservices/BookingService/BookingService.Persistence/"]
 COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
+COPY ["server/Shared/Brokers/Brokers.csproj", "server/Shared/Brokers/"]
 
 RUN dotnet restore "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj"
 

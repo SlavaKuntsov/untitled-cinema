@@ -38,8 +38,8 @@ public class BookingController : ControllerBase
 	[HttpPost("/Bookings")]
 	public async Task<IActionResult> Create([FromBody] CreateBookingCommand request)
 	{
-		var booking = await _mediator.Send(request);
+		await _mediator.Send(request);
 
-		return Ok(booking);
+		return Accepted("Your request is being processed");
 	}
 }

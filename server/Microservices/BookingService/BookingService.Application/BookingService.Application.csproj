@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
 		<ProjectReference Include="..\BookingService.Domain\BookingService.Domain.csproj" />
 	</ItemGroup>
 
