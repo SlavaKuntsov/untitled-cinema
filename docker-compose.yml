@@ -122,13 +122,13 @@ services:
       - 6379:6379
 
 
-  # rabbitmq:
-  #   container_name: rabbit-mq
-  #   image: rabbitmq:3-management-alpine
-  #   restart: unless-stopped
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
+  rabbitmq:
+    container_name: rabbit-mq
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
     
 
 volumes:
