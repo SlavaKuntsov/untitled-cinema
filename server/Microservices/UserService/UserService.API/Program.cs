@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 var services  = builder.Services;
 var configuration = builder.Configuration;
 
+builder.UseHttps();
+
 services.AddAPI(configuration)
 	.AddApplication()
 	.AddInfrastructure()
@@ -21,6 +23,8 @@ services.AddAPI(configuration)
 var app = builder.Build();
 
 app.UseAPI();
+
+app.UseExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI();

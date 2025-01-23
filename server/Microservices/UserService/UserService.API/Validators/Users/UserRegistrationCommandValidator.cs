@@ -39,7 +39,7 @@ public class UserRegistrationCommandValidator : BaseCommandValidator<UserRegistr
 
 		return DateTime.TryParseExact(
 			dateOfBirth,
-			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
+			Domain.Constants.DateTimeConstants.DATE_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out _);

@@ -1,47 +1,48 @@
 services:
 
   api-gateway:
-    container_name: api-gateway  
-      build:
-        context: ./server/ApiGateway
-        dockerfile: Dockerfile
-      ports:
-      - "80:80"  
-      - "443:443"  
-    volumes:  
-      - ./server/ApiGateway/nginx.conf:/etc/nginx/nginx.conf  
-      - ./server/ApiGateway/certificates/localhost.key:/etc/nginx/certificates/localhost.key  
+    container_name: api-gateway
+    build:
+      context: ./server/ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./server/ApiGateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./server/ApiGateway/certificates/localhost.key:/etc/nginx/certificates/localhost.key
       - ./server/ApiGateway/certificates/localhost.crt:/etc/nginx/certificates/localhost.crt
-    extra_hosts:  
-      - "host.docker.internal:host-gateway"  
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   user-service:
-    container_name: user-service  
-      build:
-        context: .
-        dockerfile: server/UsersDockerfile
-    ports:  
-      - "7001:7001"  
-    environment:  
-      - ASPNETCORE_ENVIRONMENT=Production  
-      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1  
-    volumes:  
+    container_name: user-service
+    build:
+      context: .
+      dockerfile: server/UsersDockerfile
+    ports:
+      - "7001:7001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
+    volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
 
+
   movie-service:
-    container_name: movie-service  
+    container_name: movie-service
     build:
       context: .
       dockerfile: server/MoviesDockerfile
-    ports:  
-      - "7002:7002"  
-    environment:  
-      - ASPNETCORE_ENVIRONMENT=Production  
-      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1  
-    volumes:  
+    ports:
+      - "7002:7002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - REDIS_CONFIGURATION=redis:6379
+    volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
-      - "host.docker.internal:host-gateway"  
-      
+
 
 #   booking-service:
 #     build:
@@ -68,13 +69,13 @@ services:
       - postgres-data:/var/lib/postgresql/data
         # - ./init-scripts:/docker-entrypoint-initdb.d
 
-  rabbitmq:
-    container_name: rabbit-mq
-    image: rabbitmq:3-management-alpine
-    ports:
-      - 5672:5672
-      - 15672:15672
-    restart: unless-stopped
+  # rabbitmq:
+  #   container_name: rabbit-mq
+  #   image: rabbitmq:3-management-alpine
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   restart: unless-stopped
 
   redis:
     container_name: redis

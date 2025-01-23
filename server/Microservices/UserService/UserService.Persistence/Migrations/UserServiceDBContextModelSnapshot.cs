@@ -22,7 +22,7 @@ namespace UserService.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("UserService.Persistence.Entities.RefreshTokenEntity", b =>
+            modelBuilder.Entity("UserService.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace UserService.Persistence.Migrations
                     b.ToTable("RefreshToken", (string)null);
                 });
 
-            modelBuilder.Entity("UserService.Persistence.Entities.UserEntity", b =>
+            modelBuilder.Entity("UserService.Domain.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,8 +81,9 @@ namespace UserService.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -91,26 +92,26 @@ namespace UserService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("94c7e850-8679-465c-9ece-46d0cc3f073d"),
+                            Id = new Guid("08a01170-5365-4c22-b52e-834d25b869e2"),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@gmail.com",
+                            Email = "admin@email.com",
                             FirstName = "",
                             LastName = "",
-                            Password = "$2a$11$.5pNl0VTQRv1eAg0A2itiuQ0OgMXAn9xkiXZHMYdcmm83OfJ0rQi.",
-                            Role = 3
+                            Password = "$2a$11$HFMERE.0BFWNUVN6UGvrgOwe4lDPDgZ1g3kiyqkmcP17S32zq8ZS6",
+                            Role = "Admin"
                         });
                 });
 
-            modelBuilder.Entity("UserService.Persistence.Entities.RefreshTokenEntity", b =>
+            modelBuilder.Entity("UserService.Domain.Entities.RefreshTokenEntity", b =>
                 {
-                    b.HasOne("UserService.Persistence.Entities.UserEntity", "User")
+                    b.HasOne("UserService.Domain.Entities.UserEntity", "User")
                         .WithOne("RefreshToken")
-                        .HasForeignKey("UserService.Persistence.Entities.RefreshTokenEntity", "UserId");
+                        .HasForeignKey("UserService.Domain.Entities.RefreshTokenEntity", "UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("UserService.Persistence.Entities.UserEntity", b =>
+            modelBuilder.Entity("UserService.Domain.Entities.UserEntity", b =>
                 {
                     b.Navigation("RefreshToken")
                         .IsRequired();

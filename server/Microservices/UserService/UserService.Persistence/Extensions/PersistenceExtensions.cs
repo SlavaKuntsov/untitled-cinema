@@ -11,9 +11,14 @@ public static class PersistenceExtensions
 {
 	public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
 	{
+		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+		if (string.IsNullOrEmpty(connectionString))
+			connectionString = configuration.GetConnectionString("UserServiceDBContext");
+
 		services.AddDbContext<UserServiceDBContext>(options =>
 		{
-			options.UseNpgsql(configuration.GetConnectionString(nameof(UserServiceDBContext)));
+			options.UseNpgsql(connectionString);
 		});
 
 		services.AddScoped<IUsersRepository, UsersRepository>();

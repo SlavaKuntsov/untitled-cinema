@@ -32,6 +32,8 @@ public static class ApiExtensions
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
+		services.AddHealthChecks();
 
 		services.AddGrpc(options =>
 		{
@@ -70,9 +72,6 @@ public static class ApiExtensions
 			});
 		});
 		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
-
-		services.AddProblemDetails();
-		services.AddHealthChecks();
 
 		TypeAdapterConfig typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
@@ -159,5 +158,33 @@ public static class ApiExtensions
 	public static void UseAPI(this WebApplication app)
 	{
 		app.MapGrpcService<Controllers.Grpc.Auth.AuthController>();
+	}
+
+	public static void UseHttps(this WebApplicationBuilder builder)
+	{
+		var environment = builder.Environment;
+
+		if (environment.IsProduction())
+		{
+			var certPath = "/app/localhost.pfx";
+			var certPassword = "1";
+			builder.WebHost.ConfigureKestrel(options =>
+			{
+				options.ListenAnyIP(7001, listenOptions =>
+				{
+					listenOptions.UseHttps(certPath, certPassword);
+				});
+			});
+		}
+		else
+		{
+			builder.WebHost.ConfigureKestrel(options =>
+			{
+				options.ListenAnyIP(7001, listenOptions =>
+				{
+					listenOptions.UseHttps();
+				});
+			});
+		}
 	}
 }

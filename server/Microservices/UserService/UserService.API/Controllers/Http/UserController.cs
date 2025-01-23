@@ -52,7 +52,6 @@ public class UserController : ControllerBase
 	[HttpPost(nameof(Registration))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
 	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request)
 	{
@@ -61,7 +60,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto);
 	}
 
-	[HttpPut(nameof(Update))]
+	[HttpPatch(nameof(Update))]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]

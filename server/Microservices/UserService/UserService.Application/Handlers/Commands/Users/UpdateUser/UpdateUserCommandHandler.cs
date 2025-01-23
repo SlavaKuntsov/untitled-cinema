@@ -18,7 +18,7 @@ public class UpdateUserCommandHandler(IUsersRepository usersRepository, IMapper 
 
 	public async Task<UserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.DateOfBirth.CustomTryParse(out DateTime parsedDateTime))
+		if (!request.DateOfBirth.DateFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
 		var existUser = await _usersRepository.GetAsync(request.Id, cancellationToken)
