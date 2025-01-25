@@ -158,7 +158,7 @@ public static class ApiExtensions
 
 	public static void UseAPI(this WebApplication app)
 	{
-		app.MapGrpcService<Controllers.Grpc.Auth.AuthController>();
+		app.MapGrpcService<Controllers.Grpc.AuthController>();
 	}
 
 	public static void UseHttps(this WebApplicationBuilder builder)
