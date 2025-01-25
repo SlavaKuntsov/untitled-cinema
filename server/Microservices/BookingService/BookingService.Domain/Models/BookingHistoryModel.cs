@@ -4,5 +4,5 @@ public class BookingHistoryModel
 {
 	public Guid Id { get; private set; }
 	public Guid UserId { get; private set; }
-	public List<BookingRecordModel> Bookings { get; private set; } = [];
+	public IList<BookingRecordModel> Bookings { get; private set; } = [];
 }
