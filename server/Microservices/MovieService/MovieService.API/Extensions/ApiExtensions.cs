@@ -36,6 +36,8 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddHostedService<SessionAndSeatsConsumeService>();
+
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 		services.AddHealthChecks();

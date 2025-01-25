@@ -68,9 +68,9 @@ public class FillSessionCommandHandler(
 		var hallModel = _mapper.Map<HallModel>(hall);
 		var seats = new List<SeatModel>();
 
-		for (int row = 0; row < hallModel.SeatsArray.Length; row++)
+		for (int row = 1; row <= hallModel.SeatsArray.Length; row++)
 		{
-			for (int column = 0; column < hallModel.SeatsArray[row].Length; column++)
+			for (int column = 1; column <= hallModel.SeatsArray[row].Length; column++)
 			{
 				var seatType = (SeatType)hallModel.SeatsArray[row][column];
 

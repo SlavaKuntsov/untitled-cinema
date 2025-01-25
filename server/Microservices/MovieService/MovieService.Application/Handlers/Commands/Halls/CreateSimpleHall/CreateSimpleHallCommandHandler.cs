@@ -44,6 +44,7 @@ public class CreateSimpleHallCommandHandler(
 			seats);
 
 		await _unitOfWork.HallsRepository.CreateAsync(_mapper.Map<HallEntity>(hall), cancellationToken);
+		await _unitOfWork.SeatsRepository.CreateRangeAsync(_mapper.Map<IList<SeatEntity>>(seats), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
