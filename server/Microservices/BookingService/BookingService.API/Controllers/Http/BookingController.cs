@@ -40,6 +40,6 @@ public class BookingController : ControllerBase
 	{
 		await _mediator.Send(request);
 
-		return Accepted("Your request is being processed");
+		return Ok("Your request is being processed");
 	}
 }

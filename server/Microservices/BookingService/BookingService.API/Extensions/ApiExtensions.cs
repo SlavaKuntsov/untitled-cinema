@@ -4,6 +4,7 @@ using System.Text;
 
 using BookingService.API.Behaviors;
 using BookingService.API.ExceptionHandlers;
+using BookingService.Application.Consumers.Bookings;
 using BookingService.Domain.Constants;
 using BookingService.Infrastructure.Auth;
 
@@ -29,6 +30,8 @@ public static class ApiExtensions
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 		services.AddHealthChecks();
+
+		services.AddHostedService<CreateBookingsConsumeService>();
 
 		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
 

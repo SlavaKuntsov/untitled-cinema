@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.Persistence"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protobufs", "..\..\Shared\Protobufs\Protobufs.csproj", "{343F7DEF-9E8B-4505-B829-155AE04D7064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brokers", "..\..\Shared\Brokers\Brokers.csproj", "{3DCD88D1-F79F-410C-A142-54D89FB6ED58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brokers", "..\..\Shared\Brokers\Brokers.csproj", "{42381B16-A338-4983-BB05-E4D3380E37EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,10 @@ Global
 		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DCD88D1-F79F-410C-A142-54D89FB6ED58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DCD88D1-F79F-410C-A142-54D89FB6ED58}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DCD88D1-F79F-410C-A142-54D89FB6ED58}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DCD88D1-F79F-410C-A142-54D89FB6ED58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
