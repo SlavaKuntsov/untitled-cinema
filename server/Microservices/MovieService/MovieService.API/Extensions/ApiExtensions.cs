@@ -26,6 +26,8 @@ using MovieService.Infrastructure.Auth;
 
 using Protobufs.Auth;
 
+using Serilog;
+
 using StackExchange.Redis;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -179,9 +181,17 @@ public static class ApiExtensions
 		return services;
 	}
 
-	public static void UseHttps(this WebApplicationBuilder builder)
+	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)
 	{
 		var environment = builder.Environment;
+
+		var portString = Environment.GetEnvironmentVariable("PORT");
+
+		if (string.IsNullOrEmpty(portString))
+			portString = builder.Configuration.GetValue<string>("ApplicationSettings:Port");
+
+		if (!int.TryParse(portString, out int port))
+			throw new InvalidOperationException($"Invalid port value: {portString}");
 
 		if (environment.IsProduction())
 		{
@@ -189,7 +199,7 @@ public static class ApiExtensions
 			var certPassword = "1";
 			builder.WebHost.ConfigureKestrel(options =>
 			{
-				options.ListenAnyIP(7002, listenOptions =>
+				options.ListenAnyIP(port, listenOptions =>
 				{
 					listenOptions.UseHttps(certPath, certPassword);
 				});
@@ -199,11 +209,30 @@ public static class ApiExtensions
 		{
 			builder.WebHost.ConfigureKestrel(options =>
 			{
-				options.ListenAnyIP(7002, listenOptions =>
+				options.ListenAnyIP(port, listenOptions =>
 				{
 					listenOptions.UseHttps();
 				});
 			});
 		}
+
+		return builder;
+	}
+
+	public static IHostBuilder AddLogging(this IHostBuilder hostBuilder, IConfiguration configuration)
+	{
+		var logstashPort = Environment.GetEnvironmentVariable("LOGSTASH_PORT");
+
+		if (string.IsNullOrEmpty(logstashPort))
+			logstashPort = configuration.GetValue<string>("ApplicationSettings:LogstashPort");
+
+		hostBuilder.UseSerilog((context, config) =>
+		{
+			config
+				.WriteTo.Console(outputTemplate: "{Timestamp:HH:mm} [{Level}] {Message}{NewLine}{Exception}")
+				.WriteTo.Http($"http://logstash:{logstashPort}", queueLimitBytes: null);
+		});
+
+		return hostBuilder;
 	}
 }

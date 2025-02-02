@@ -24,15 +24,20 @@ namespace MovieService.API.Controllers.Http;
 public class MovieController : ControllerBase
 {
 	private readonly IMediator _mediator;
+	private readonly ILogger<MovieController> _logger;
 
-	public MovieController(IMediator mediator)
+	public MovieController(IMediator mediator,
+		ILogger<MovieController> logger)
 	{
 		_mediator = mediator;
+		_logger = logger;
 	}
 
 	[HttpGet("/Movies")]
 	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request)
 	{
+		_logger.LogInformation("Fetch all movies.");
+
 		var movies = await _mediator.Send(new GetAllMoviesQuery(
 			request.Limit,
 			request.Offset,
@@ -40,6 +45,8 @@ public class MovieController : ControllerBase
 			request.FilterValue,
 			request.SortBy,
 			request.SortDirection));
+
+		_logger.LogInformation("Successfully fetched {Count} movies.", movies.Count);
 
 		return Ok(movies);
 	}
