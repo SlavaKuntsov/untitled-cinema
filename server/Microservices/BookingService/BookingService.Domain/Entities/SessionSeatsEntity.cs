@@ -1,6 +1,6 @@
 ﻿namespace BookingService.Domain.Entities;
 
-public class AvailableSeatsEntity
+public class SessionSeatsEntity
 {
 	public Guid Id { get; set; }
 	public Guid SessionId { get; set; }

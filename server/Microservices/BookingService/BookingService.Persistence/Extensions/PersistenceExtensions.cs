@@ -25,6 +25,7 @@ public static class PersistenceExtensions
 		});
 
 		services.AddScoped<IBookingsRepository, BookingsRepository>();
+		services.AddScoped<ISessionSeatsRepository, SessionSeatsRepository>();
 
 		return services;
 	}
