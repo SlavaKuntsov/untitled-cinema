@@ -3,10 +3,15 @@ using System.Reflection;
 using System.Text;
 
 using BookingService.API.Behaviors;
-using BookingService.API.ExceptionHandlers;
-using BookingService.Application.Consumers.Bookings;
+using BookingService.API.Consumers.Bookings;
+using BookingService.API.Middlewares;
 using BookingService.Domain.Constants;
 using BookingService.Infrastructure.Auth;
+
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 
 using Mapster;
 
@@ -18,6 +23,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using MongoDB.Driver;
 
 using Protobufs.Auth;
 
@@ -43,6 +50,38 @@ public static class ApiExtensions
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
 			options.Address = new Uri($"https://localhost:{usersPort}");
+		});
+
+		var hangfireConnectionString = Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
+
+		if (string.IsNullOrEmpty(hangfireConnectionString))
+		{
+			hangfireConnectionString = configuration.GetConnectionString("HangfireDb");
+		}
+
+		var mongoUrlBuilder = new MongoUrlBuilder(hangfireConnectionString);
+		var mongoClient = new MongoClient(mongoUrlBuilder.ToMongoUrl());
+
+		services.AddHangfire(configuration => configuration
+			.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+			.UseSimpleAssemblyNameTypeSerializer()
+			.UseRecommendedSerializerSettings()
+			.UseMongoStorage(mongoClient, mongoUrlBuilder.DatabaseName, new MongoStorageOptions
+			{
+				MigrationOptions = new MongoMigrationOptions
+				{
+					MigrationStrategy = new MigrateMongoMigrationStrategy(),
+					BackupStrategy = new NoneMongoBackupStrategy(),
+
+				},
+				CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection,
+				Prefix = "hangfire.mongo",
+				CheckConnection = true
+			}));
+
+		services.AddHangfireServer(serverOptions =>
+		{
+			serverOptions.ServerName = "Hangfire.Mongo server 1";
 		});
 
 		services.AddHttpContextAccessor();
@@ -132,6 +171,8 @@ public static class ApiExtensions
 		{
 			options.AddDefaultPolicy(policy =>
 			{
+				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("https://localhost:7003");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
@@ -153,6 +194,8 @@ public static class ApiExtensions
 
 		services.AddScoped<IAuthorizationHandler, ActiveAdminHandler>();
 
+		services.AddTransient(typeof(RequestLoggingPipelineBehavior<,>));
+
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -160,7 +203,7 @@ public static class ApiExtensions
 		return services;
 	}
 
-	public static void UseHttps(this WebApplicationBuilder builder)
+	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)
 	{
 		var environment = builder.Environment;
 

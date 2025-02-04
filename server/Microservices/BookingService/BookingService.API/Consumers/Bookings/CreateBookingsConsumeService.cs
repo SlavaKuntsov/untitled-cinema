@@ -3,11 +3,13 @@ using System.Text.Json;
 
 using BookingService.Application.Handlers.Commands.Bookings.SaveBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
+using BookingService.Application.Jobs.Bookings;
+using BookingService.Domain.Constants;
 using BookingService.Domain.Models;
 
 using Brokers.Interfaces;
 
-using MapsterMapper;
+using Hangfire;
 
 using MediatR;
 
@@ -46,6 +48,9 @@ public class CreateBookingsConsumeService(
 
 			await mediator.Send(new SaveBookingCommand(booking!));
 
+			_backgroundJobClient.Schedule<CancelBookingAfterExpired>(
+				b => b.ExecuteAsync(booking.Id, cancellationToken),
+				JobsConstants.AFTER_BOOKING_EXPIRED_TEST);
 		});
 
 		return Task.CompletedTask;

@@ -6,6 +6,8 @@ using BookingService.Persistence.Extensions;
 
 using Brokers.Extensions;
 
+using Hangfire;
+
 using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.CookiePolicy;
@@ -31,6 +33,8 @@ services.AddAPI(configuration)
 builder.Host.AddLogging(configuration);
 
 var app = builder.Build();
+
+app.UseHangfireDashboard();
 
 app.UseSerilogRequestLogging();
 

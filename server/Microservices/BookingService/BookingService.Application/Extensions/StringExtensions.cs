@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 
+using BookingService.Domain.Constants;
+
 namespace BookingService.Application.Extensions;
 
 public static class StringExtensions
@@ -8,7 +10,7 @@ public static class StringExtensions
 	{
 		return DateTime.TryParseExact(
 			dateString,
-			Domain.Constants.DateTimeConstants.DATE_FORMAT,
+			DateTimeConstants.DATE_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out parsedDateTime);
@@ -18,7 +20,7 @@ public static class StringExtensions
 	{
 		return DateTime.TryParseExact(
 			dateString,
-			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
+			DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out parsedDateTime);

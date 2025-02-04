@@ -1,4 +1,5 @@
 ﻿using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
+using BookingService.Application.Jobs.Bookings;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,8 @@ public static class ApplicationExtensions
 		{
 			cfg.RegisterServicesFromAssemblyContaining<CreateBookingCommandHandler>();
 		});
+
+		services.AddTransient<CancelBookingAfterExpired>();
 
 		return services;
 	}
