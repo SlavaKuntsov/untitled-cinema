@@ -27,6 +27,8 @@ using MovieService.Infrastructure.Auth;
 
 using Protobufs.Auth;
 
+using Serilog;
+
 using StackExchange.Redis;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -187,7 +189,7 @@ public static class ApiExtensions
 		return services;
 	}
 
-	public static void UseHttps(this WebApplicationBuilder builder)
+	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)
 	{
 		var environment = builder.Environment;
 
@@ -221,5 +223,24 @@ public static class ApiExtensions
 				});
 			});
 		}
+
+		return builder;
+	}
+
+	public static IHostBuilder AddLogging(this IHostBuilder hostBuilder, IConfiguration configuration)
+	{
+		var logstashPort = Environment.GetEnvironmentVariable("LOGSTASH_PORT");
+
+		if (string.IsNullOrEmpty(logstashPort))
+			logstashPort = configuration.GetValue<string>("ApplicationSettings:LogstashPort");
+
+		hostBuilder.UseSerilog((context, config) =>
+		{
+			config
+				.WriteTo.Console(outputTemplate: "{Timestamp:HH:mm} [{Level}] {Message}{NewLine}{Exception}")
+				.WriteTo.Http($"http://logstash:{logstashPort}", queueLimitBytes: null);
+		});
+
+		return hostBuilder;
 	}
 }

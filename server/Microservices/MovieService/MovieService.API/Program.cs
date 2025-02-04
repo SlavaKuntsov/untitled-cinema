@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 
 using MovieService.API.Extensions;
+using MovieService.API.Middlewares;
 using MovieService.Application.Extensions;
 using MovieService.Infrastructure.Extensions;
 using MovieService.Persistence.Extensions;
+
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services  = builder.Services;
@@ -25,9 +28,15 @@ services.AddAPI(configuration)
 	.AddPersistence(configuration)
 	.AddRabbitMQ(configuration);
 
+builder.Host.AddLogging(configuration);
+
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 app.UseExceptionHandler();
+
+app.UseMiddleware<RequestLogContextMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
