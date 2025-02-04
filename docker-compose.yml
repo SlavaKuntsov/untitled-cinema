@@ -2,6 +2,7 @@ services:
 
   api-gateway:
     container_name: api-gateway
+    restart: unless-stopped
     build:
       context: ./server/ApiGateway
       dockerfile: Dockerfile
@@ -17,6 +18,7 @@ services:
 
   user-service:
     container_name: user-service
+    restart: unless-stopped
     build:
       context: .
       dockerfile: server/UsersDockerfile
@@ -31,6 +33,7 @@ services:
 
   movie-service:
     container_name: movie-service
+    restart: unless-stopped
     build:
       context: .
       dockerfile: server/MoviesDockerfile
@@ -40,6 +43,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
       - REDIS_CONFIGURATION=redis:6379
+      - LOGSTASH_PORT=5044
     volumes:
       - ./server/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
 
@@ -67,7 +71,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-        # - ./init-scripts:/docker-entrypoint-initdb.d
 
   # rabbitmq:
   #   container_name: rabbit-mq
@@ -86,5 +89,49 @@ services:
     ports:
       - 6379:6379
 
+    
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.16.2
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xms512m
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+
+  logstash:
+    container_name: logstash
+    image: logstash:8.17.0
+    restart: unless-stopped
+    ports:
+      - "5044:5044"
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+      - XPACK_MONITORING_ENABLED=false
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+
+  kibana:
+    container_name: kibana
+    image: kibana:8.14.3
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:            
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+      
+
 volumes:
   postgres-data:
+  elasticsearch_data:
