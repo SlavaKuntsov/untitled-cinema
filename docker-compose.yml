@@ -97,7 +97,7 @@ services:
 
   user-postgres:
     container_name: user-postgres
-    image: postgres:latest
+    image: postgres:alpine
     restart: unless-stopped
     ports:
       - "5433:5432"
@@ -111,7 +111,7 @@ services:
 
   movie-postgres:
     container_name: movie-postgres
-    image: postgres:latest
+    image: postgres:alpine
     restart: unless-stopped
     ports:
       - "5434:5432"
@@ -140,14 +140,21 @@ services:
 
   redis:
     container_name: redis
-    image: redis:latest
+    image: redis:alpine
     restart: unless-stopped
     ports:
       - 6379:6379
     environment:
       REDIS_PASSWORD: 1
+
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
     ports:
-      - 6379:6379
+      - 5673:5672
+      - 15673:15672
 
     
   elasticsearch:
@@ -191,16 +198,6 @@ services:
     depends_on:
       - elasticsearch
       
-
-
-  rabbitmq:
-    container_name: rabbit-mq
-    image: rabbitmq:3-management-alpine
-    restart: unless-stopped
-    ports:
-      - 5672:5672
-      - 15672:15672
-    
 
 volumes:
   user-postgres-data:

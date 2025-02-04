@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-WORKDIR /src
+WORKDIR /app
 
 COPY ["server/Microservices/UserService/UserService.API/UserService.API.csproj", "server/Microservices/UserService/UserService.API/"]
 COPY ["server/Microservices/UserService/UserService.Domain/UserService.Domain.csproj", "server/Microservices/UserService/UserService.Domain/"]
@@ -8,6 +8,7 @@ COPY ["server/Microservices/UserService/UserService.Infrastructure/UserService.I
 COPY ["server/Microservices/UserService/UserService.Application/UserService.Application.csproj", "server/Microservices/UserService/UserService.Application/"]
 COPY ["server/Microservices/UserService/UserService.Persistence/UserService.Persistence.csproj", "server/Microservices/UserService/UserService.Persistence/"]
 COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
+COPY ["server/Shared/Brokers/Brokers.csproj", "server/Shared/Brokers/"]
 
 RUN dotnet restore "server/Microservices/UserService/UserService.API/UserService.API.csproj"
 
@@ -15,12 +16,12 @@ COPY . .
 
 RUN dotnet publish "server/Microservices/UserService/UserService.API/UserService.API.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
 EXPOSE 7001
-EXPOSE 443  
 
-RUN update-ca-certificates
+RUN apk add --no-cache ca-certificates \
+    && update-ca-certificates
 
 COPY --from=build /app/publish . 
 
