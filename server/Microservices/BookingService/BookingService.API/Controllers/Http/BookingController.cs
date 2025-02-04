@@ -1,4 +1,7 @@
-﻿using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
+﻿using BookingService.Application.Handlers.Commands.Bookings.CancelBooking;
+using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
+using BookingService.Application.Handlers.Commands.Bookings.PayBooking;
+using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 using BookingService.Application.Handlers.Query.Bookings.GetAllBookings;
 using BookingService.Application.Handlers.Query.Bookings.GetBookingsByUserId;
 
@@ -34,9 +37,9 @@ public class BookingController : ControllerBase
 	}
 
 	[HttpGet("/Bookings/{id:Guid}")]
-	public async Task<IActionResult> Create([FromRoute] Guid id)
+	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
-		var bookings = await _mediator.Send(new GetUserBookingsQuery(id));
+		var bookings = await _mediator.Send(new GetUserBookingsByIdQuery(id));
 
 		return Ok(bookings);
 	}
@@ -53,6 +56,24 @@ public class BookingController : ControllerBase
 		return Ok(bookingId);
 	}
 
-		return Ok("Your request is being processed");
+	[HttpPatch("/Bookings/Pay/{bookingId:Guid}/User/{userId:Guid}")]
+	public async Task<IActionResult> Pay([FromRoute] Guid bookingId, [FromRoute] Guid userId)
+	{
+		var booking = await _mediator.Send(new PayBookingCommand(bookingId, userId));
+
+		return Ok(booking);
+	}
+
+	[HttpPatch("/Bookings/Cancel/{bookingId:Guid}")]
+	public async Task<IActionResult> Cancel([FromRoute] Guid bookingId)
+	{
+		var booking = await _mediator.Send(new CancelBookingCommand(bookingId));
+
+		await _mediator.Send(new UpdateSeatsCommand(
+			booking.SessionId,
+			booking.Seats,
+			false));
+
+		return Ok(booking);
 	}
 }

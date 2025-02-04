@@ -11,7 +11,7 @@ public class BookingModel
 	public Guid SessionId { get; private set; }
 	public IList<SeatModel> Seats { get; private set; } = [];
 	public decimal TotalPrice { get; private set; }
-	public BookingStatus Status { get; private set; }
+	public string Status { get; private set; }
 	public DateTime CreatedAt { get; private set; }
 	public DateTime UpdatedAt { get; private set; }
 
@@ -22,7 +22,7 @@ public class BookingModel
 		Guid sessionId,
 		IList<SeatModel> seats,
 		decimal totalPrice,
-		BookingStatus status,
+		string status,
 		DateTime createdAt,
 		DateTime updatedAt)
 	{
