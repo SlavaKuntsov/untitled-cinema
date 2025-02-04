@@ -1,6 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Entities;
@@ -11,12 +9,10 @@ namespace MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 
 public class DeleteMovieCommandHandler(
 	IUnitOfWork unitOfWork,
-	IRedisCacheService redisCacheService,
-	IMapper mapper) : IRequestHandler<DeleteMovieCommand>
+	IRedisCacheService redisCacheService) : IRequestHandler<DeleteMovieCommand>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IRedisCacheService _redisCacheService = redisCacheService;
-	private readonly IMapper _mapper = mapper;
 
 	public async Task Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
 	{

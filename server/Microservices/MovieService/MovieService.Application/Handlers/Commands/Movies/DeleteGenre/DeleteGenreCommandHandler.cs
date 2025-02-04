@@ -1,6 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -9,11 +7,9 @@ using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 namespace MovieService.Application.Handlers.Commands.Movies.DeleteGenre;
 
 public class DeleteGenreCommandHandler(
-	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<DeleteGenreCommand>
+	IUnitOfWork unitOfWork) : IRequestHandler<DeleteGenreCommand>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
 
 	public async Task Handle(DeleteGenreCommand request, CancellationToken cancellationToken)
 	{

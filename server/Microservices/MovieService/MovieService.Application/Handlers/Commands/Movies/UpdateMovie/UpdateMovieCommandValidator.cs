@@ -11,7 +11,7 @@ public class UpdateMovieCommandValidator : BaseCommandValidator<UpdateMovieComma
 	public UpdateMovieCommandValidator()
 	{
 		RuleFor(x => x.Id)
-			.NotEmpty().WithMessage("Id is required.");
+			.NotEmpty().WithMessage("SessionId is required.");
 
 		RuleFor(x => x.Title)
 			.NotEmpty().WithMessage("Title is required.")

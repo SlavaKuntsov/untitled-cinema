@@ -17,7 +17,7 @@ public class GetSeatByIdQueryHandler(
 
 	public async Task<SeatModel> Handle(GetSeatByIdQuery request, CancellationToken cancellationToken)
 	{
-		var seats = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken);
+		var seat = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken);
 
 		return _mapper.Map<SeatModel>(seat);
 	}

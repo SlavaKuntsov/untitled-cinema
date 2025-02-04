@@ -16,8 +16,8 @@ public class GetSeatsBySessionIdQueryHandler(
 
 	public async Task<IList<SeatModel>> Handle(GetSeatsBySessionIdQuery request, CancellationToken cancellationToken)
 	{
-		var seats = await _unitOfWork.SeatsRepository.GetBySessionIdAsync(request.Id, cancellationToken);
+		var seats = await _unitOfWork.SeatsRepository.GetBySessionIdAsync(request.SessionId, cancellationToken);
 
-		return _mapper.Map< IList<SeatModel>>(seats);
+		return _mapper.Map<IList<SeatModel>>(seats);
 	}
 }
