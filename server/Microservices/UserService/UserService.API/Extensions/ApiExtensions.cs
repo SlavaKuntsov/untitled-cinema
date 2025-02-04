@@ -15,9 +15,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using Serilog;
+
 using Swashbuckle.AspNetCore.Filters;
 
 using UserService.API.Behaviors;
+using UserService.API.Consumers;
 using UserService.API.Contracts.Examples;
 using UserService.API.ExceptionHandlers;
 using UserService.API.Middlewares;
@@ -31,6 +34,8 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddHostedService<BookingPayConsumeService>();
+
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 		services.AddHealthChecks();
@@ -160,7 +165,7 @@ public static class ApiExtensions
 		app.MapGrpcService<Controllers.Grpc.AuthController>();
 	}
 
-	public static void UseHttps(this WebApplicationBuilder builder)
+	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)
 	{
 		var environment = builder.Environment;
 
@@ -194,5 +199,24 @@ public static class ApiExtensions
 				});
 			});
 		}
+
+		return builder;
+	}
+
+	public static IHostBuilder AddLogging(this IHostBuilder hostBuilder, IConfiguration configuration)
+	{
+		var logstashPort = Environment.GetEnvironmentVariable("LOGSTASH_PORT");
+
+		if (string.IsNullOrEmpty(logstashPort))
+			logstashPort = configuration.GetValue<string>("ApplicationSettings:LogstashPort");
+
+		hostBuilder.UseSerilog((context, config) =>
+		{
+			config
+				.WriteTo.Console(outputTemplate: "{Timestamp:HH:mm} [{Level}] {Message}{NewLine}{Exception}")
+				.WriteTo.Http($"http://logstash:{logstashPort}", queueLimitBytes: null);
+		});
+
+		return hostBuilder;
 	}
 }
