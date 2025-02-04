@@ -12,31 +12,31 @@ using MovieService.Application.Handlers.Queries.Seats.GetSeatTypeById;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 using MovieService.Domain.Models;
 
-namespace MovieService.API.Consumers.SessionAndSeats;
+namespace MovieService.API.Consumers;
 
-public class SessionAndSeatsConsumeService(
-	IRabbitMQConsumer<SessionAndSeatsResponse> rabbitMQConsuner,
+public class BookingPriceConsumeService(
+	IRabbitMQConsumer<BookingPriceResponse> rabbitMQConsuner,
 	IServiceScopeFactory serviceScopeFactory,
 	IMapper mapper) : BackgroundService
 {
-	private readonly IRabbitMQConsumer<SessionAndSeatsResponse> _rabbitMQConsuner = rabbitMQConsuner;
+	private readonly IRabbitMQConsumer<BookingPriceResponse> _rabbitMQConsuner = rabbitMQConsuner;
 	private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 	private readonly IMapper _mapper = mapper;
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await _rabbitMQConsuner
-			.RequestReplyAsync<SessionAndSeatsRequest>(async (request) =>
+			.RequestReplyAsync<BookingPriceRequest>(async (request) =>
 			{
 				using var scope = _serviceScopeFactory.CreateScope();
-				var _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+				var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-				var session = await _mediator.Send(new GetSessionByIdQuery(request.SessionId));
+				var session = await mediator.Send(new GetSessionByIdQuery(request.SessionId));
 
 				if (session is null)
-					return new SessionAndSeatsResponse($"Session with id '{request.SessionId}' not found.");
+					return new BookingPriceResponse($"Session with id '{request.SessionId}' not found.");
 
-				var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(request.SessionId));
+				var seats = await mediator.Send(new GetSeatsBySessionIdQuery(request.SessionId));
 
 				var seatsRequest = _mapper.Map<IList<SeatModel>>(request.Seats);
 
@@ -49,24 +49,28 @@ public class SessionAndSeatsConsumeService(
 					.ToList();
 
 				if (missingIds.Any())
-					return new SessionAndSeatsResponse(
+					return new BookingPriceResponse(
 						$"Seat(-s) with id's '{string.Join(", ", missingIds)}' not found.");
 
-				var movie = await _mediator.Send(new GetMovieByIdQuery(session.MovieId));
+				var movie = await mediator.Send(new GetMovieByIdQuery(session.MovieId));
 
 				if (movie is null)
-					return new SessionAndSeatsResponse($"Movie with id '{session.MovieId.ToString()}' not found.");
+					return new BookingPriceResponse($"Movie with id '{session.MovieId.ToString()}' not found.");
 
 				var price = 0m;
 
-				foreach (var item in seats)
+				var selectedSeats = seats.Where(
+					seat => seatsRequest.Any(
+						reqSeat => reqSeat.Id == seat.Id));
+
+				foreach (var item in selectedSeats)
 				{
-					var seatType = await _mediator.Send(new GetSeatTypeByIdQuery(item.SeatTypeId));
+					var seatType = await mediator.Send(new GetSeatTypeByIdQuery(item.SeatTypeId));
 
 					price += seatType.PriceModifier * session.PriceModifier * movie.Price;
 				}
 
-				return new SessionAndSeatsResponse("", price);
+				return new BookingPriceResponse("", price);
 			}, stoppingToken);
 
 		return;
