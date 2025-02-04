@@ -2,12 +2,12 @@
 
 namespace Brokers.Models.Request;
 
-public class SessionAndSeatsRequest
+public class BookingPriceRequest
 {
 	public Guid SessionId { get; private set; }
 	public IList<SeatModel> Seats { get; private set; } = [];
 
-	public SessionAndSeatsRequest(
+	public BookingPriceRequest(
 		Guid sessionId,
 		IList<SeatModel> seats)
 	{
