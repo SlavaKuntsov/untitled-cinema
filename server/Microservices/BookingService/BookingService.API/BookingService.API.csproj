@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>b05018d9-21a2-49c9-9deb-c4212ad55dfd</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>b05018d9-21a2-49c9-9deb-c4212ad55dfd</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+		<PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
 		<PackageReference Include="Google.Protobuf" Version="3.29.2" />
@@ -27,14 +28,16 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+		<PackageReference Include="Serilog.Sinks.Http" Version="9.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
-	  <ProjectReference Include="..\BookingService.Application\BookingService.Application.csproj" />
-	  <ProjectReference Include="..\BookingService.Infrastructure\BookingService.Infrastructure.csproj" />
-	  <ProjectReference Include="..\BookingService.Persistence\BookingService.Persistence.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
+		<ProjectReference Include="..\BookingService.Application\BookingService.Application.csproj" />
+		<ProjectReference Include="..\BookingService.Infrastructure\BookingService.Infrastructure.csproj" />
+		<ProjectReference Include="..\BookingService.Persistence\BookingService.Persistence.csproj" />
 	</ItemGroup>
 
 </Project>

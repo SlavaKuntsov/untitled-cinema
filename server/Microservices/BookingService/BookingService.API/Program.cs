@@ -1,4 +1,5 @@
 using BookingService.API.Extensions;
+using BookingService.API.Middlewares;
 using BookingService.Application.Extensions;
 using BookingService.Infrastructure.Extensions;
 using BookingService.Persistence.Extensions;
@@ -10,6 +11,8 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
+
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services  = builder.Services;
@@ -25,9 +28,15 @@ services.AddAPI(configuration)
 	.AddPersistence(configuration)
 	.AddRabbitMQ(configuration);
 
+builder.Host.AddLogging(configuration);
+
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 app.UseExceptionHandler();
+
+app.UseMiddleware<RequestLogContextMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

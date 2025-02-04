@@ -21,6 +21,8 @@ using Microsoft.OpenApi.Models;
 
 using Protobufs.Auth;
 
+using Serilog;
+
 namespace BookingService.API.Extensions;
 
 public static class ApiExtensions
@@ -192,5 +194,24 @@ public static class ApiExtensions
 				});
 			});
 		}
+
+		return builder;
+	}
+
+	public static IHostBuilder AddLogging(this IHostBuilder hostBuilder, IConfiguration configuration)
+	{
+		var logstashPort = Environment.GetEnvironmentVariable("LOGSTASH_PORT");
+
+		if (string.IsNullOrEmpty(logstashPort))
+			logstashPort = configuration.GetValue<string>("ApplicationSettings:LogstashPort");
+
+		hostBuilder.UseSerilog((context, config) =>
+		{
+			config
+				.WriteTo.Console(outputTemplate: "{Timestamp:HH:mm} [{Level}] {Message}{NewLine}{Exception}")
+				.WriteTo.Http($"http://logstash:{logstashPort}", queueLimitBytes: null);
+		});
+
+		return hostBuilder;
 	}
 }
