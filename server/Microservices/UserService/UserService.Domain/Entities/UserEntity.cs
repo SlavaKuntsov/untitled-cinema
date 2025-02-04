@@ -11,6 +11,7 @@ public class UserEntity
 	public string FirstName { get; set; } = string.Empty;
 	public string LastName { get; set; } = string.Empty;
 	public DateTime DateOfBirth { get; set; }
+	public decimal Balance { get; set; } = 0;
 
 	public virtual RefreshTokenEntity RefreshToken { get; set; } = null!;
 }

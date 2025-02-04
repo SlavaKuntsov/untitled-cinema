@@ -26,7 +26,7 @@ public class UpdateUserCommandHandler(IUsersRepository usersRepository, IMapper 
 
 		request.Adapt(existUser);
 
-		_usersRepository.Update(existUser, cancellationToken);
+		_usersRepository.Update(existUser);
 
 		return _mapper.Map<UserModel>(existUser);
 	}
