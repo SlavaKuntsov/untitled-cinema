@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 
 using Brokers.Interfaces;
-using Brokers.Services;
+using Brokers.Services.Producers;
+
+using Microsoft.Extensions.Logging;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -13,10 +14,14 @@ namespace Brokers.Services.Consumers;
 public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResponse>
 {
 	private readonly AsyncEventingBasicConsumer _consumer;
-	public RabbitMQConsumer(IConnectionFactory connectionFactory)
+	private readonly ILogger<RabbitMQProducer> _logger;
+	public RabbitMQConsumer(
+		IConnectionFactory connectionFactory,
+		ILogger<RabbitMQProducer> logger)
 		: base(connectionFactory)
 	{
 		_consumer = new AsyncEventingBasicConsumer(_channel!);
+		_logger = logger;
 	}
 
 	public async void ConsumeAsync(AsyncEventHandler<BasicDeliverEventArgs> handler)
@@ -38,7 +43,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 
 		consumer.ReceivedAsync += async (sender, args) =>
 		{
-			Debug.WriteLine("--------- CorrelationId consumer: " + args.BasicProperties.CorrelationId);
+			_logger.LogInformation("CorrelationId consumer: " + args.BasicProperties.CorrelationId);
 
 			var properties = new BasicProperties
 			{
@@ -49,7 +54,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 			var body = JsonSerializer.Deserialize<TRequest>(
 					Encoding.UTF8.GetString(args.Body.ToArray()));
 
-			Debug.WriteLine("--------- Get Recieved: " + body);
+			_logger.LogInformation("Get Recieved: " + body);
 
 			var response = await handler(body);
 
@@ -57,7 +62,9 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 
 			await PublishBaseAsync(responseBody, properties.ReplyTo!, properties, cancellationToken);
 
-			Debug.WriteLine("-------- Send request: " + responseBody);
+			_logger.LogInformation("Send request: " + responseBody);
+
+			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false);
 		};
 
 		await ConsumeBaseAsync(consumer, responseQueueName, cancellationToken);

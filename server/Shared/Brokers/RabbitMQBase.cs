@@ -70,19 +70,6 @@ public class RabbitMQBase : IAsyncDisposable
 			cancellationToken: token);
 	}
 
-	protected async Task PublishBaseAsync(byte[] messageBody, string routingKey, CancellationToken token)
-	{
-		if (_channel is null)
-			throw new InvalidOperationException("Channel not initialized.");
-
-		await _channel.BasicPublishAsync(
-			exchange: "",
-			routingKey: routingKey,
-			mandatory: true,
-			body: messageBody,
-			cancellationToken: token);
-	}
-
 	protected async Task ConsumeBaseAsync<TQueue>(IAsyncBasicConsumer consumer, CancellationToken token = default)
 	{
 		if (_channel == null)
@@ -106,7 +93,7 @@ public class RabbitMQBase : IAsyncDisposable
 
 		await _channel.BasicConsumeAsync(
 			queue: queueName,
-			autoAck: true,
+			autoAck: false,
 			consumer: consumer,
 			noLocal: false,
 			exclusive: false,

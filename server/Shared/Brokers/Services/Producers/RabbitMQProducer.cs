@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 
 using Brokers.Interfaces;
+
+using Microsoft.Extensions.Logging;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,9 +12,14 @@ namespace Brokers.Services.Producers;
 
 public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 {
-	public RabbitMQProducer(IConnectionFactory connectionFactory)
+	private readonly ILogger<RabbitMQProducer> _logger;
+
+	public RabbitMQProducer(
+		IConnectionFactory connectionFactory,
+		ILogger<RabbitMQProducer> logger)
 		: base(connectionFactory)
 	{
+		_logger = logger;
 	}
 
 	public async Task PublishAsync<T>(T message, CancellationToken cancellationToken)
@@ -26,8 +32,8 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 	public async Task<TResponse> RequestReplyAsync<TRequest, TResponse>(TRequest message, Guid guid, CancellationToken cancellationToken)
 	{
-		var responseQueueName = $"{typeof(TResponse).Name}"; // create server
-		var requestQueueName = $"{typeof(TRequest).Name}"; // create client
+		var responseQueueName = $"{typeof(TResponse).Name}";
+		var requestQueueName = $"{typeof(TRequest).Name}";
 
 		var tcs = new TaskCompletionSource<TResponse>(
 			TaskCreationOptions.RunContinuationsAsynchronously);
@@ -45,14 +51,14 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 		consumer.ReceivedAsync += async (model, args) =>
 		{
-			Debug.WriteLine("--------- CorrelationId: " + args.BasicProperties.CorrelationId + " - " + correlationId);
+			_logger.LogInformation("CorrelationId: " + args.BasicProperties.CorrelationId + " - " + correlationId);
 
 			if (args.BasicProperties.CorrelationId == correlationId)
 			{
 				var body = JsonSerializer.Deserialize<TResponse>(
 							Encoding.UTF8.GetString(args.Body.ToArray()));
 
-				Debug.WriteLine("--------- Get Recieved: " + Encoding.UTF8.GetString(args.Body.ToArray()));
+				_logger.LogInformation("Get Recieved: " + Encoding.UTF8.GetString(args.Body.ToArray()));
 
 				tcs.TrySetResult((body!));
 
@@ -60,11 +66,12 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 			}
 			else
 			{
-				Debug.WriteLine("--------- CorrelationId mismatch: " + args.BasicProperties.CorrelationId + " != " + correlationId);
+				_logger.LogWarning("CorrelationId mismatch: " + args.BasicProperties.CorrelationId + " != " + correlationId);
 
 				tcs.SetException(new InvalidOperationException("CorrelationId mismatch"));
-				//throw new InvalidOperationException("CorrelationId mismatch");
 			}
+
+			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false);
 		};
 
 		await ConsumeBaseAsync(consumer, requestQueueName, cancellationToken);
@@ -73,7 +80,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 		await PublishBaseAsync(body, responseQueueName, properties, cancellationToken);
 
-		Debug.WriteLine("-------- Send request: " + properties.CorrelationId);
+		_logger.LogInformation("Send request: " + properties.CorrelationId);
 
 		using CancellationTokenRegistration ctr = cancellationToken.Register(tcs.SetCanceled);
 
