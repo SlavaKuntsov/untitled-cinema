@@ -5,9 +5,7 @@ using MediatR;
 using MovieService.Application.Extensions;
 using MovieService.Domain.Constants;
 using MovieService.Domain.Entities;
-using MovieService.Domain.Enums;
 using MovieService.Domain.Exceptions;
-using MovieService.Domain.Extensions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -65,38 +63,8 @@ public class FillSessionCommandHandler(
 			parsedStartTime,
 			calculateEndTime);
 
-		var hallModel = _mapper.Map<HallModel>(hall);
-		var seats = new List<SeatModel>();
-
-		for (int row = 1; row <= hallModel.SeatsArray.Length; row++)
-		{
-			for (int column = 1; column <= hallModel.SeatsArray[row].Length; column++)
-			{
-				var seatType = (SeatType)hallModel.SeatsArray[row][column];
-
-				if (seatType == SeatType.None)
-					continue;
-
-				var seatTypeDescription = seatType.GetDescription();
-				var seatTypeEntity = await _unitOfWork.SeatsRepository
-					.GetTypeAsync(seatTypeDescription, cancellationToken)
-					?? throw new NotFoundException($"Seat type with name '{seatTypeDescription}' doesn't exists");
-
-				var seat = new SeatModel(
-						Guid.NewGuid(),
-						hallModel.Id,
-						seatTypeEntity.Id,
-						row,
-						column
-					);
-
-				seats.Add(seat);
-			}
-		}
-
 		await _unitOfWork.Repository<SessionEntity>().CreateAsync(_mapper.Map<SessionEntity>(session), cancellationToken);
-		await _unitOfWork.SeatsRepository.CreateRangeAsync(_mapper.Map<IList<SeatEntity>>(seats), cancellationToken);
-
+		
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return session.Id;
