@@ -1,1 +1,24 @@
-<p>auth works!</p>
+<div
+  class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-start justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800 px-16 py-12"
+>
+  <ul
+    class="mb-10 flex flex-row justify-end justify-items-end gap-14 text-3xl font-semibold text-white"
+  >
+    @for (route of routes; track route.title) {
+      <li
+        class="anim-bounce relative after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+      >
+        <a
+          class="relative z-10 text-zinc-600 transition-colors duration-500 hover:text-zinc-400"
+          [routerLink]="route.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ route.title }}
+        </a>
+      </li>
+    }
+  </ul>
+
+  <router-outlet></router-outlet>
+</div>

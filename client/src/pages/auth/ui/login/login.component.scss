@@ -1,0 +1,12 @@
+:host {
+  @apply w-full min-w-[350px];
+}
+
+.active {
+  svg {
+    path,
+    circle {
+      stroke: #4f46e5;
+    }
+  }
+}
