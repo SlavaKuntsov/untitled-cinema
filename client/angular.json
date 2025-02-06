@@ -67,6 +67,9 @@
               "buildTarget": "untitled-cinema:build:development"
             }
           },
+          "options": {
+            "port": 7000
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

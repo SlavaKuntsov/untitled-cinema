@@ -4,8 +4,8 @@ services:
     container_name: api-gateway
     restart: unless-stopped
     build:
-      context: ./server/Configs/ApiGateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Configs/ApiGateway/Dockerfile
     ports:
       - "80:80"
       - "443:443"
@@ -19,6 +19,7 @@ services:
       - user-service
       - movie-service
       - booking-service
+
 
 
   user-service:
