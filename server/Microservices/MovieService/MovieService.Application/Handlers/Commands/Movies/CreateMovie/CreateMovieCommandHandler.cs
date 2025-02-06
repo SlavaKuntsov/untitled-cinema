@@ -14,11 +14,11 @@ namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
 public class CreateMovieCommandHandler(
 	IUnitOfWork unitOfWork,
-	IRedisCacheService redisCacheService,
+	//IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IRedisCacheService _redisCacheService = redisCacheService;
+	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
@@ -73,7 +73,7 @@ public class CreateMovieCommandHandler(
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
+		//await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return movie.Id;
 	}

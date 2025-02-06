@@ -17,7 +17,6 @@ using UserService.Application.Handlers.Commands.Users.DeleteUser;
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Users.GetAllUsers;
-using UserService.Application.Handlers.Queries.Users.GetUser;
 using UserService.Application.Handlers.Queries.Users.Login;
 
 namespace UserService.API.Controllers.Http;
@@ -36,9 +35,6 @@ public class UserController : ControllerBase
 	}
 
 	[HttpPost("/Users/Login")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[SwaggerRequestExample(typeof(CreateLoginRequest), typeof(CreateLoginRequestExample))]
 	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request)
 	{
@@ -52,8 +48,6 @@ public class UserController : ControllerBase
 	}
 
 	[HttpPost("/Users/Registration")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
 	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request)
 	{
@@ -63,9 +57,6 @@ public class UserController : ControllerBase
 	}
 
 	[HttpPatch("/Users")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[SwaggerRequestExample(typeof(UpdateUserRequest), typeof(UpdateUserRequestExample))]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request)
@@ -88,16 +79,14 @@ public class UserController : ControllerBase
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
 		await _mediator.Send(new ChangeBalanceCommand(
-			userId, 
-			amount, 
+			userId,
+			amount,
 			true));
 
 		return Ok();
 	}
 
 	[HttpDelete("/Users/{id:Guid}")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
@@ -117,7 +106,6 @@ public class UserController : ControllerBase
 	}
 
 	[HttpGet("/Users")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users()
 	{

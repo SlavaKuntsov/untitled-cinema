@@ -20,6 +20,7 @@ services:
       - movie-service
       - booking-service
 
+
   user-service:
     container_name: user-service
     restart: unless-stopped

@@ -20,7 +20,7 @@ public class SeatController : ControllerBase
 		_logger = logger;
 	}
 
-	[HttpGet("/Seats/Available/Session/{sessionId:Guid}")]
+	[HttpGet("/AvailableSeats/Available/Session/{sessionId:Guid}")]
 	public async Task<IActionResult> GetAvailable([FromRoute] Guid sessionId)
 	{
 		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, true))
@@ -29,7 +29,7 @@ public class SeatController : ControllerBase
 		return Ok(seats);
 	}
 
-	[HttpGet("/Seats/Reserved/Session/{sessionId:Guid}")]
+	[HttpGet("/AvailableSeats/Reserved/Session/{sessionId:Guid}")]
 	public async Task<IActionResult> GetReserved([FromRoute] Guid sessionId)
 	{
 		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, false))
