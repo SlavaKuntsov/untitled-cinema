@@ -1,12 +1,11 @@
-import { Component } from '@angular/core'
-import { RouterLink, RouterOutlet } from '@angular/router'
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { NavComponent } from "../shared/ui/components/nav/nav.component";
 
 @Component({
-	selector: 'app-root',
-	imports: [RouterOutlet, RouterLink],
-	templateUrl: './app.component.html',
-	styleUrl: './app.component.scss'
+  selector: "app-root",
+  imports: [RouterOutlet, NavComponent],
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
 })
-export class AppComponent {
-	title = 'untitled-cinema'
-}
+export class AppComponent {}

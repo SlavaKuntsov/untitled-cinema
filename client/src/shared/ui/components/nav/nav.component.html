@@ -1,0 +1,55 @@
+<header
+  class="fixed z-30 flex w-full flex-col items-center py-10 backdrop-blur-xl"
+>
+  <nav class="container relative z-10 grid grid-cols-2 items-center gap-10">
+    <h1 class="items-center text-4xl font-bold tracking-wider text-white">
+      <a
+        class="anim-bounce relative z-10 after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+        routerLink="/"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        Untitled
+      </a>
+    </h1>
+
+    <div class="flex flex-row items-center justify-end gap-10">
+      <ul
+        class="flex flex-row justify-end justify-items-end gap-10 text-2xl font-medium text-white"
+      >
+        @for (route of routes; track route.title) {
+          <li
+            class="anim-bounce relative after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+          >
+            <a
+              class="relative z-10"
+              [routerLink]="route.route"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+            >
+              {{ route.title }}
+            </a>
+          </li>
+        }
+      </ul>
+
+      <div class="flex flex-col gap-5">
+        <a routerLink="/profile">
+          <svg
+            class="h-14 w-14 rounded-full p-2 transition-colors duration-500 ease-in-out hover:bg-indigo-600"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 20C4 17 8 17 10 15C11 14 8 14 8 9C8 5.667 9.333 4 12 4C14.667 4 16 5.667 16 9C16 14 13 14 14 15C16 17 20 17 20 20"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>

@@ -1,25 +1,5 @@
-<h1 class="text-5xl bg-red-400">CinemaClient</h1>
+<app-nav></app-nav>
 
-<nav>
-	<ul class="flex flex-row gap-10 text-3xl">
-		<li>
-			<a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">
-				main
-			</a>
-		</li>
-		<li>
-			<a
-				routerLink="/profile"
-				routerLinkActive="active"
-				ariaCurrentWhenActive="page"
-			>
-				profile
-			</a>
-		</li>
-		<li>
-			<a [routerLink]="['/user/bob']"> link to user component </a>
-		</li>
-	</ul>
-</nav>
-
-<router-outlet></router-outlet>
+<div class="layout container pb-10 pt-40">
+  <router-outlet></router-outlet>
+</div>
