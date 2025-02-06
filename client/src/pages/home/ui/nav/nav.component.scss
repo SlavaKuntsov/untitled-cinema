@@ -21,3 +21,7 @@
   opacity: 1;
   transform: translateX(-50%) translateY(150%);
 }
+
+li .active{
+	@apply text-indigo-400;
+}
