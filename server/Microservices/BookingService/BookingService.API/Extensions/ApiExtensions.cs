@@ -172,6 +172,7 @@ public static class ApiExtensions
 			options.AddDefaultPolicy(policy =>
 			{
 				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("https://localhost:7000");
 				policy.WithOrigins("https://localhost:7003");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
