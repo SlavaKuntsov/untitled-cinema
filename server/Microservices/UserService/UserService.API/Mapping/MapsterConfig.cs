@@ -5,6 +5,7 @@ using Mapster;
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Domain;
 using UserService.Domain.Entities;
+using UserService.Domain.Models;
 
 namespace UserService.API.Mapping;
 
@@ -28,6 +29,14 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.FirstName, src => src.FirstName)
 			.Map(dest => dest.LastName, src => src.LastName)
 			.Map(dest => dest.DateOfBirth, src => ParseDateOrDefault(src.DateOfBirth));
+
+		config.NewConfig<RefreshTokenModel, RefreshTokenEntity>()
+			.Map(dest => dest.UserId, src => src.UserId)
+			.Map(dest => dest.Token, src => src.Token)
+			.Map(dest => dest.ExpiresAt, src => src.ExpiresAt)
+			.Map(dest => dest.CreatedAt, src => src.CreatedAt)
+			.Map(dest => dest.IsRevoked, src => src.IsRevoked)
+			.Ignore(dest => dest.Id);
 	}
 
 	private static DateTime ParseDateOrDefault(string dateOfBirthString)

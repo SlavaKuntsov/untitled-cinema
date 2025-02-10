@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 
 using UserService.Application.Interfaces.Auth;
+using UserService.Domain.Constants;
 
 namespace UserService.Infrastructure.Auth;
 
@@ -19,7 +20,7 @@ public class CookieService : ICookieService
 		if (httpContext == null)
 			throw new InvalidOperationException("No active HTTP context available.");
 
-		if (httpContext.Request.Cookies.TryGetValue(Domain.Constants.JwtConstants.COOKIE_NAME, out var refreshToken))
+		if (httpContext.Request.Cookies.TryGetValue(JwtConstants.REFRESH_COOKIE_NAME, out var refreshToken))
 			return refreshToken;
 
 		throw new InvalidOperationException("Refresh token not found in cookies.");
@@ -31,6 +32,6 @@ public class CookieService : ICookieService
 		if (httpContext == null)
 			throw new InvalidOperationException("No active HTTP context available.");
 
-		httpContext.Response.Cookies.Delete(Domain.Constants.JwtConstants.COOKIE_NAME);
+		httpContext.Response.Cookies.Delete(JwtConstants.REFRESH_COOKIE_NAME);
 	}
 }

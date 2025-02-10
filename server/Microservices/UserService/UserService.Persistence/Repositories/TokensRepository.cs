@@ -39,8 +39,8 @@ public class TokensRepository : ITokensRepository
 		await _context.RefreshTokens.AddAsync(newRefreshTokenEntity, cancellationToken);
 	}
 
-	public void UpdateRefreshToken(RefreshTokenEntity refreshTolkenEntity)
+	public void UpdateRefreshToken(RefreshTokenEntity refreshTokenEntity)
 	{
-		_context.RefreshTokens.Attach(refreshTolkenEntity).State = EntityState.Modified;
+		_context.RefreshTokens.Attach(refreshTokenEntity).State = EntityState.Modified;
 	}
 }

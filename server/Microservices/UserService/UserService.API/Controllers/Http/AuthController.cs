@@ -4,12 +4,14 @@ using MapsterMapper;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
 using UserService.Application.Handlers.Queries.Users.GetUser;
 using UserService.Application.Interfaces.Auth;
+using UserService.Domain.Constants;
 using UserService.Domain.Exceptions;
 
 namespace UserService.API.Controllers.Http;
@@ -36,18 +38,20 @@ public class AuthController : ControllerBase
 
 		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken));
 
-		var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
+		//var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
+		var authResultDto = await _mediator.Send(new GenerateTokensCommand(userRoleDto.Id, userRoleDto.Role));
 
-		return Ok(accessToken);
+		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
+
+		return Ok(authResultDto.AccessToken);
 	}
 
 	[HttpGet(nameof(Authorize))]
+	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Authorize()
 	{
-		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-		if (userIdClaim == null)
-			throw new UnauthorizedAccessException("User ID not found in claims.");
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		var userId = Guid.Parse(userIdClaim.Value);
 
@@ -58,6 +62,7 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpGet(nameof(Unauthorize))]
+	[Authorize(Policy = "UserOrAdmin")]
 	public IActionResult Unauthorize()
 	{
 		_cookieService.DeleteRefreshToken();

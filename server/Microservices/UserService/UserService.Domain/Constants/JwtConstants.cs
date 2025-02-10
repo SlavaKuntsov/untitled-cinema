@@ -2,5 +2,5 @@
 
 public class JwtConstants
 {
-	public const string COOKIE_NAME = "yummy-cackes";
+	public const string REFRESH_COOKIE_NAME = "yummy-cackes";
 }

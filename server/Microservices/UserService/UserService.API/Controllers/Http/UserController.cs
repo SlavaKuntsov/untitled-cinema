@@ -18,6 +18,7 @@ using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Users.GetAllUsers;
 using UserService.Application.Handlers.Queries.Users.Login;
+using UserService.Domain.Constants;
 
 namespace UserService.API.Controllers.Http;
 
@@ -42,9 +43,9 @@ public class UserController : ControllerBase
 
 		var authResultDto = await _mediator.Send(new GenerateTokensCommand(existUser.Id, existUser.Role));
 
-		HttpContext.Response.Cookies.Append(Domain.Constants.JwtConstants.COOKIE_NAME, authResultDto.RefreshToken);
+		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
-		return Ok(authResultDto);
+		return Ok(authResultDto.AccessToken);
 	}
 
 	[HttpPost("/Users/Registration")]
@@ -53,7 +54,7 @@ public class UserController : ControllerBase
 	{
 		var authResultDto = await _mediator.Send(request);
 
-		return Ok(authResultDto);
+		return Ok(authResultDto.AccessToken);
 	}
 
 	[HttpPatch("/Users")]
@@ -70,10 +71,8 @@ public class UserController : ControllerBase
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Balance([FromRoute] decimal amount)
 	{
-		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-		if (userIdClaim == null)
-			throw new UnauthorizedAccessException("User ID not found in claims.");
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
