@@ -5,9 +5,9 @@ using MapsterMapper;
 using MediatR;
 
 using UserService.Application.Extensions;
-using UserService.Domain;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Users.UpdateUser;
 

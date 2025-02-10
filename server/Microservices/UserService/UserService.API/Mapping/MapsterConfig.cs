@@ -3,7 +3,6 @@
 using Mapster;
 
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
-using UserService.Domain;
 using UserService.Domain.Entities;
 using UserService.Domain.Models;
 

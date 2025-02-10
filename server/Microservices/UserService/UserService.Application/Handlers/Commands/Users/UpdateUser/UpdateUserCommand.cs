@@ -4,8 +4,8 @@ using Mapster;
 
 using MediatR;
 
-using UserService.Domain;
 using UserService.Domain.Entities;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Users.UpdateUser;
 

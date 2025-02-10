@@ -2,8 +2,8 @@
 
 using MediatR;
 
-using UserService.Domain;
 using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Queries.Users.GetAllUsers;
 
