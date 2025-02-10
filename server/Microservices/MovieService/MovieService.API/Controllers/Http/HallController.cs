@@ -11,7 +11,6 @@ using MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Queries.Halls.GetAllHalls;
 using MovieService.Application.Handlers.Queries.Halls.GetHallById;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -40,8 +39,7 @@ public class HallController : ControllerBase
 	[HttpGet("/halls/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
-		var halls = await _mediator.Send(new GetHallByIdQuery(id))
-			?? throw new NotFoundException($"Hall with id '{id.ToString()}' not found.");
+		var halls = await _mediator.Send(new GetHallByIdQuery(id));
 
 		return Ok(halls);
 	}

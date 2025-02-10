@@ -47,11 +47,15 @@ public class BookingController : ControllerBase
 	[HttpPost("/bookings")]
 	public async Task<IActionResult> Create([FromBody] CreateBookingCommand request)
 	{
-		_logger.LogInformation($"Starting to create bookings {request.UserId} - {request.SessionId}.");
+		_logger.LogInformation("Starting to create bookings {UserId} - {SessionId}.",
+			request.UserId,
+			request.SessionId);
 
 		var bookingId = await _mediator.Send(request);
 
-		_logger.LogInformation($"Processed create bookings {request.UserId} - {request.SessionId}.");
+		_logger.LogInformation("Processed create bookings {UserId} - {SessionId}.",
+			request.UserId,
+			request.SessionId);
 
 		return Ok(bookingId);
 	}

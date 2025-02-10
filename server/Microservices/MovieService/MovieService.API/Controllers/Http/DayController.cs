@@ -7,7 +7,6 @@ using MovieService.Application.Handlers.Commands.Days.CreateSession;
 using MovieService.Application.Handlers.Commands.Days.DeleteDay;
 using MovieService.Application.Handlers.Queries.Days.GetAllDays;
 using MovieService.Application.Handlers.Queries.Days.GetDayByDate;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -35,8 +34,7 @@ public class DayController : ControllerBase
 	[HttpGet("/days/{date}")]
 	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
 	{
-		var day = await _mediator.Send(new GetDayByDateQuery(date))
-			?? throw new NotFoundException(message: $"Day '{date}' not found.");
+		var day = await _mediator.Send(new GetDayByDateQuery(date));
 
 		return Ok(day);
 	}

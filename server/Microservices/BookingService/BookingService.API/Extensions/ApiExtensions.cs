@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text;
 
 using BookingService.API.Behaviors;
-using BookingService.API.Consumers.Bookings;
+using BookingService.API.Consumers;
 using BookingService.API.Middlewares;
 using BookingService.Domain.Constants;
 using BookingService.Infrastructure.Auth;

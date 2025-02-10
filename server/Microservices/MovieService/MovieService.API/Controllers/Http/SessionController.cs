@@ -43,7 +43,6 @@ public class SessionController : ControllerBase
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
 	{
-		// TODO - maybe create session by all name instead of hall id
 		var movie = await _mediator.Send(request);
 
 		return Ok(movie);

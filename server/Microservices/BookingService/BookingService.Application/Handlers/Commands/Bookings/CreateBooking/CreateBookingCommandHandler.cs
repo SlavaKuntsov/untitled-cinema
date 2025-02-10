@@ -1,4 +1,5 @@
-﻿using BookingService.Domain.Entities;
+﻿using BookingService.Domain.Constants;
+using BookingService.Domain.Entities;
 using BookingService.Domain.Enums;
 using BookingService.Domain.Exceptions;
 using BookingService.Domain.Extensions;
@@ -28,9 +29,7 @@ public class CreateBookingCommandHandler(
 
 	public async Task<Guid> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
 	{
-		const byte MAX_SEATS_COUNT_PER_PERSONE = 5;
-
-		if(request.Seats.Count > MAX_SEATS_COUNT_PER_PERSONE)
+		if (request.Seats.Count > BookingConstants.MAX_SEATS_COUNT_PER_PERSONE)
 			throw new InvalidOperationException("You can't book more than 5 seats per person");
 
 		var sessionSeats = await _sessionSeatsRepository.GetAsync(
@@ -38,24 +37,24 @@ public class CreateBookingCommandHandler(
 
 		if (sessionSeats is null)
 		{
-			var data1 = new SessionSeatsRequest(
+			var sessionSeatsData = new SessionSeatsRequest(
 				request.SessionId,
 				request.Seats);
 
-			var response1 = await _rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
-				data1,
+			var sessionSeatsResponse = await _rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
+				sessionSeatsData,
 				Guid.NewGuid(),
 				cancellationToken);
 
-			if (!string.IsNullOrWhiteSpace(response1.Error))
-				throw new NotFoundException(response1.Error);
+			if (!string.IsNullOrWhiteSpace(sessionSeatsResponse.Error))
+				throw new NotFoundException(sessionSeatsResponse.Error);
 
 			DateTime dateNow1 = DateTime.UtcNow;
 
 			var newSessionSeatModel = new SessionSeatsModel(
 				Guid.NewGuid(),
 				request.SessionId,
-				response1.Seats,
+				sessionSeatsResponse.Seats,
 				[],
 				dateNow1);
 
@@ -72,7 +71,7 @@ public class CreateBookingCommandHandler(
 				b => b.UserId == request.UserId && b.SessionId == request.SessionId,
 				cancellationToken);
 
-		if(existBookig is not null)
+		if (existBookig is not null)
 		{
 			var cancelledBookigSeats = existBookig.Seats.Select(s => s.Id).ToHashSet();
 
@@ -95,17 +94,17 @@ public class CreateBookingCommandHandler(
 			}
 		}
 
-		var data = new BookingPriceRequest(
+		var BookingPriceData = new BookingPriceRequest(
 			request.SessionId,
 			request.Seats);
 
-		var response = await _rabbitMQProducer.RequestReplyAsync<BookingPriceRequest, BookingPriceResponse>(
-			data,
+		var BookingPriceResponse = await _rabbitMQProducer.RequestReplyAsync<BookingPriceRequest, BookingPriceResponse>(
+			BookingPriceData,
 			Guid.NewGuid(),
 			cancellationToken);
 
-		if (!string.IsNullOrWhiteSpace(response.Error))
-			throw new NotFoundException(response.Error);
+		if (!string.IsNullOrWhiteSpace(BookingPriceResponse.Error))
+			throw new NotFoundException(BookingPriceResponse.Error);
 
 		DateTime dateNow = DateTime.UtcNow;
 
@@ -114,7 +113,7 @@ public class CreateBookingCommandHandler(
 			request.UserId,
 			request.SessionId,
 			request.Seats,
-			response.TotalPrice,
+			BookingPriceResponse.TotalPrice,
 			BookingStatus.Reserved.GetDescription(),
 			dateNow,
 			dateNow);

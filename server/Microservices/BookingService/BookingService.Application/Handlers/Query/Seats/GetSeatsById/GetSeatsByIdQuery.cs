@@ -2,7 +2,7 @@
 
 using MediatR;
 
-namespace BookingService.Application.Handlers.Query.Seats.GetSeats;
+namespace BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
 public class GetSeatsByIdQuery(
 	Guid sessionId,

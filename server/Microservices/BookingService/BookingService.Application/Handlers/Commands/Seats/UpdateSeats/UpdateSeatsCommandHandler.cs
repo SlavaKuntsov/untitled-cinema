@@ -16,13 +16,13 @@ namespace BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 public class UpdateSeatsCommandHandler(
 	IRabbitMQProducer rabbitMQProducer,
 	ISessionSeatsRepository sessionSeatsRepository,
-	IMapper mapper) : IRequestHandler<UpdateSeatsCommand, Guid>
+	IMapper mapper) : IRequestHandler<UpdateSeatsCommand>
 {
 	private readonly IRabbitMQProducer _rabbitMQProducer = rabbitMQProducer;
 	private readonly ISessionSeatsRepository _sessionSeatsRepository = sessionSeatsRepository;
 	private readonly IMapper _mapper = mapper;
 
-	public async Task<Guid> Handle(UpdateSeatsCommand request, CancellationToken cancellationToken)
+	public async Task Handle(UpdateSeatsCommand request, CancellationToken cancellationToken)
 	{
 		bool isExist = true;
 
@@ -89,14 +89,18 @@ public class UpdateSeatsCommandHandler(
 		}
 
 		if (isExist)
+		{
 			await _sessionSeatsRepository.UpdateAsync(
 				_mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
 				cancellationToken);
+		}
 		else
+		{
 			await _sessionSeatsRepository.CreateAsync(
 				_mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
 				cancellationToken);
+		}
 
-		return Guid.NewGuid();
+		return;
 	}
 }

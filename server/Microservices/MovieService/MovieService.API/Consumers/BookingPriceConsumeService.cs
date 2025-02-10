@@ -49,8 +49,10 @@ public class BookingPriceConsumeService(
 					.ToList();
 
 				if (missingIds.Any())
+				{
 					return new BookingPriceResponse(
 						$"Seat(-s) with id's '{string.Join(", ", missingIds)}' not found.");
+				}
 
 				var movie = await mediator.Send(new GetMovieByIdQuery(session.MovieId));
 

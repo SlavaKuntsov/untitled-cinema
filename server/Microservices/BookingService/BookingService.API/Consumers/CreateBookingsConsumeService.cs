@@ -13,7 +13,7 @@ using Hangfire;
 
 using MediatR;
 
-namespace BookingService.API.Consumers.Bookings;
+namespace BookingService.API.Consumers;
 
 public class CreateBookingsConsumeService(
 	IRabbitMQConsumer<BookingModel> rabbitMQConsuner,
@@ -33,18 +33,13 @@ public class CreateBookingsConsumeService(
 			var booking = JsonSerializer.Deserialize<BookingModel>(
 				Encoding.UTF8.GetString(args.Body.ToArray()));
 
-			//if (booking is null)
-			//	return;
-
 			using var scope = _serviceScopeFactory.CreateScope();
 			var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
 			await mediator.Send(new UpdateSeatsCommand(
-				booking!.SessionId, 
+				booking!.SessionId,
 				booking!.Seats,
 				true));
-
-			// if error(exception) maybe add error in the table with this booking status
 
 			await mediator.Send(new SaveBookingCommand(booking!));
 
