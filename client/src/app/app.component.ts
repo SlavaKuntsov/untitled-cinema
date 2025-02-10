@@ -29,7 +29,7 @@ export class AppComponent {
         this.isUser = isAuthenticated;
         if (isAuthenticated) {
           console.log("User authenticated, starting notifications...");
-          this.notificationService.startConnection();
+          // this.notificationService.startConnection();
         } else {
           console.log("User logged out, stopping notifications...");
           this.notificationService.stopConnection();
@@ -40,11 +40,8 @@ export class AppComponent {
     this.notificationService.notifications$.subscribe((messages) => {
       if (messages.length > 0) {
         const latestMessage = messages[messages.length - 1];
-        console.log("Получено сообщение:", latestMessage); 
-        this.toastService.showToast(
-          ToastStatus.Success,
-          latestMessage,
-        );
+        console.log("Получено сообщение:", latestMessage);
+        this.toastService.showToast(ToastStatus.Success, latestMessage);
       }
     });
   }

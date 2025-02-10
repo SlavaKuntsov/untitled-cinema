@@ -1,12 +1,12 @@
 import { ApplicationConfig, provideZoneChangeDetection } from "@angular/core";
 import { provideRouter } from "@angular/router";
-import Aura from "@primeng/themes/aura";
 import { providePrimeNG } from "primeng/config";
 
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { MessageService } from "primeng/api";
 
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
+import MyPreset from "../assets/styles/utils/mypreset";
 import { routes } from "./app.routes";
 import { authTokenInterceptor } from "./core/interceptor/auth/auth.interceptor";
 
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authTokenInterceptor])),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: MyPreset,
       },
     }),
     MessageService,

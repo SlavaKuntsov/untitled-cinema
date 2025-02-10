@@ -22,6 +22,10 @@
   transform: translateX(-50%) translateY(150%);
 }
 
-.active {
+a.active {
   @apply text-indigo-400;
+}
+
+button.active svg{
+  @apply bg-indigo-700;
 }

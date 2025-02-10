@@ -14,7 +14,7 @@
       </a>
     </h1>
 
-    <div class="flex flex-row items-center justify-end gap-10">
+    <div class="flex flex-row items-center justify-end gap-24">
       <ul
         class="flex flex-row justify-end justify-items-end gap-10 text-2xl font-normal text-white"
       >
@@ -34,13 +34,15 @@
         }
       </ul>
 
-      <div class="ml-52 flex flex-row gap-5">
-				@if (isLoggedIn) {
-					<p>isLoggedIn</p>
-				}
-        <button type="button" [routerLink]="[profile]">
+      <div class="flex flex-row gap-5">
+        <button
+          type="button"
+          [routerLink]="[profile]"
+          routerLinkActive="active"
+          class="relative"
+        >
           <svg
-            class="h-14 w-14 rounded-full p-2 transition-colors duration-500 ease-in-out hover:bg-indigo-600"
+            class="h-14 w-14 rounded-full p-2 transition-all duration-500 ease-in-out hover:bg-indigo-600"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -52,21 +54,13 @@
               stroke-linecap="round"
             />
           </svg>
-        </button>
-        <button type="button" [routerLink]="[auth]">
-          <svg
-            class="h-14 w-14 rounded-full p-2 transition-colors duration-500 ease-in-out hover:bg-indigo-600"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M4 20C4 17 8 17 10 15C11 14 8 14 8 9C8 5.667 9.333 4 12 4C14.667 4 16 5.667 16 9C16 14 13 14 14 15C16 17 20 17 20 20"
-              stroke="white"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-          </svg>
+
+          @if (!(isUser | async)) {
+            <span
+              class="absolute -right-9 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
+              >Login</span
+            >
+          }
         </button>
       </div>
     </div>

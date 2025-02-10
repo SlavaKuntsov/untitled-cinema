@@ -1,20 +1,19 @@
 import { Component, inject, signal } from "@angular/core";
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { ToastModule } from "primeng/toast";
+import { ErrorService } from "../../../../app/core/services/error/error.service";
 import { ToastService, ToastStatus } from "../../../../app/core/services/toast";
 import { IError } from "../../../../entities/error/model/error";
 import { Login } from "../../../../entities/users";
 import { AuthService } from "../../api/auth.service";
+import { passwordValidator } from "../../model/passwordValidation";
 
 @Component({
   selector: "app-login",
@@ -25,6 +24,7 @@ import { AuthService } from "../../api/auth.service";
 export class LoginComponent {
   toastService = inject(ToastService);
   authService = inject(AuthService);
+  errorService = inject(ErrorService);
   router = inject(Router);
 
   form = new FormGroup({
@@ -61,41 +61,17 @@ export class LoginComponent {
           this.toastService.showToast(ToastStatus.Success, "Login Success");
           this.router.navigate(["/"]);
           this.authService.accessToken = res;
-          console.log(res);
         },
         error: (error: IError) => {
-          this.toastService.showToast(ToastStatus.Error, error.error.detail);
+          const errorMessage = this.errorService.getErrorMessage(error);
+          this.toastService.showToast(ToastStatus.Error, errorMessage);
         },
       });
+
+      this.authService.authorize().subscribe();
       return;
     }
 
-    this.toastService.showToast(
-      ToastStatus.Error,
-      "Please write Email and Password",
-    );
+    this.toastService.showToast(ToastStatus.Error, "Invalid form data");
   }
-}
-
-export function passwordValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value;
-
-    if (value === "admin") {
-      return null; // ✅ Разрешаем "admin" без проверки
-    }
-
-    // Проверяем пароль на сложность
-    const hasUpperCase = /[A-Z]/.test(value);
-    const hasLowerCase = /[a-z]/.test(value);
-    const hasNumber = /\d/.test(value);
-    const isValid = hasUpperCase && hasLowerCase && hasNumber;
-
-    return isValid
-      ? null
-      : {
-          passwordInvalid:
-            "Пароль должен содержать цифры, строчные и заглавные буквы",
-        };
-  };
 }

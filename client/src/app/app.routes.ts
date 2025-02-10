@@ -27,20 +27,20 @@ export const routes: Routes = [
       {
         path: POSTER,
         component: PosterComponent,
-        data: { name: "Poster" },
+        data: { name: "Poster", isVisible: true },
       },
       {
         path: HISTORY,
         component: BookingHistoryComponent,
-        data: { name: "Booking History" },
+        data: { name: "Booking History", isVisible: true },
+      },
+      {
+        path: PROFILE,
+        component: ProfileComponent,
+        data: { name: "Profile", isVisible: false },
+        canActivate: [canActivateAuth],
       },
     ],
-  },
-  {
-    path: PROFILE,
-    component: ProfileComponent,
-    data: { name: "Profile" },
-    canActivate: [canActivateAuth],
   },
   {
     path: AUTH,
