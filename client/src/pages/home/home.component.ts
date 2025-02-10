@@ -3,9 +3,9 @@ import { RouterOutlet } from "@angular/router";
 import { NavComponent } from "./ui/nav/nav.component";
 
 @Component({
-  selector: "app-home-page",
+  selector: "app-home",
   imports: [RouterOutlet, NavComponent],
-  templateUrl: "./home-page.component.html",
-  styleUrl: "./home-page.component.scss",
+  templateUrl: "./home.component.html",
+  styleUrl: "./home.component.scss",
 })
-export class HomePageComponent {}
+export class HomeComponent {}

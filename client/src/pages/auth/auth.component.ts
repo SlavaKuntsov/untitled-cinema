@@ -15,16 +15,16 @@ import { AUTH } from "../../shared/router/routes";
   styleUrl: "./auth.component.scss",
 })
 export class AuthComponent {
-  routes: { route: string; title: string }[] = [];
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
-  constructor() {
+  ngOnInit() {
     this.getChildRoutes();
   }
 
-  auth = AUTH;
+  routes: { route: string; title: string }[] = [];
 
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  auth = AUTH;
 
   private getChildRoutes() {
     const rootRoute = this.router.config.find((r) => r.path === "auth");

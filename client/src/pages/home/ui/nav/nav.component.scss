@@ -22,6 +22,6 @@
   transform: translateX(-50%) translateY(150%);
 }
 
-li .active{
-	@apply text-indigo-400;
+.active {
+  @apply text-indigo-400;
 }

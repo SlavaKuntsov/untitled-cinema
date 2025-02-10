@@ -3,55 +3,88 @@
   [formGroup]="form"
   class="flex w-full flex-col gap-10"
 >
-  <label for="" class="flex flex-col gap-4 text-xl font-semibold">
-    Email
-    <input
-      class="w-full rounded-lg border border-zinc-600 bg-transparent px-4 py-3 text-lg"
-      formControlName="email"
-      placeholder="email"
-      type="text"
-    />
-  </label>
-
-  <label for="" class="flex flex-col gap-4 text-xl font-semibold">
-    Password
-    <div class="relative">
+  <div class="flex flex-col gap-2">
+    <label for="" class="flex flex-col gap-4 text-xl font-semibold">
+      Email
       <input
-        class="relative z-0 w-full rounded-lg border border-zinc-600 bg-transparent px-4 py-3 text-lg"
-        formControlName="password"
-        placeholder="password"
-        [type]="isPasswordVisible() ? 'text' : 'password'"
+        class="w-full rounded-lg border border-zinc-600 bg-transparent px-4 py-3 text-lg"
+        formControlName="email"
+        placeholder="email"
+        type="text"
       />
-      <button
-        (click)="isPasswordVisible.set(!isPasswordVisible())"
-        class="absolute right-4 top-1/4 z-10"
-        [class.active]="isPasswordVisible()"
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+    </label>
+
+    @if (email?.invalid && email?.touched) {
+      <p class="text-md text-red-500">
+        @if (email?.errors?.["required"]) {
+          <span>Email is required.</span>
+        }
+        @if (email?.errors?.["email"]) {
+          <span>Invalid email format.</span>
+        }
+      </p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="" class="flex flex-col gap-4 text-xl font-semibold">
+      Password
+      <div class="relative">
+        <input
+          class="relative z-0 w-full rounded-lg border border-zinc-600 bg-transparent px-4 py-3 text-lg"
+          formControlName="password"
+          placeholder="password"
+          [type]="isPasswordVisible() ? 'text' : 'password'"
+        />
+        <button
+          (click)="isPasswordVisible.set(!isPasswordVisible())"
+          class="absolute right-4 top-1/4 z-10"
+          [class.active]="isPasswordVisible()"
+					type="button"
         >
-          <path
-            d="M22 12C22 12 19 18 12 18C5 18 2 12 2 12C2 12 5 6 12 6C19 6 22 12 22 12Z"
-            stroke="white"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
-          <circle
-            cx="12"
-            cy="12"
-            r="3"
-            stroke="white"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button>
-    </div>
-  </label>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M22 12C22 12 19 18 12 18C5 18 2 12 2 12C2 12 5 6 12 6C19 6 22 12 22 12Z"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </label>
+
+    @if (password?.invalid && password?.touched) {
+      <p class="text-md text-red-500">
+        @if (password?.errors?.["required"]) {
+          <span>Password is required.</span>
+        } @else if (password?.errors?.["minlength"]) {
+          <span>Password must be at least 6 characters.</span>
+        }
+        <!-- @else if (password?.errors?.["pattern"]) {
+          <ul class="ml-4 list-disc">
+            <li>One <b>uppercase</b> letter (A-Z)</li>
+            <li>One <b>lowercase</b>letter (a-z)</li>
+            <li>One <b>number</b> (0-9)</li>
+          </ul>
+        } -->
+      </p>
+    }
+  </div>
 
   <div class="flex flex-col justify-center gap-5">
     <button

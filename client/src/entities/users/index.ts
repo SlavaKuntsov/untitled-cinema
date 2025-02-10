@@ -1,1 +1,2 @@
-export * from './model/user.interface'
+export * from './model/user'
+export * from './model/auth'
