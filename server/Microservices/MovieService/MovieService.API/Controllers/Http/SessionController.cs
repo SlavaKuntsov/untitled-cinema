@@ -25,7 +25,7 @@ public class SessionController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Sessions")]
+	[HttpGet("/sessions")]
 	public async Task<IActionResult> Get(
 		[FromQuery] GetSessionsRequest request)
 	{
@@ -38,7 +38,7 @@ public class SessionController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpPost("/Sessions")]
+	[HttpPost("/sessions")]
 	[SwaggerRequestExample(typeof(FillSessionCommand), typeof(FillSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
@@ -49,7 +49,7 @@ public class SessionController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch("/Sessions")]
+	[HttpPatch("/sessions")]
 	[SwaggerRequestExample(typeof(UpdateSessionCommand), typeof(UpdateSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request)
@@ -59,7 +59,7 @@ public class SessionController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete("/Sessions/{id:Guid}")]
+	[HttpDelete("/sessions/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
@@ -68,7 +68,7 @@ public class SessionController : ControllerBase
 		return NoContent();
 	}
 
-	[HttpGet("/Sessions/Seats/{sessionId:Guid}")]
+	[HttpGet("/sessions/seats/{sessionId:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid sessionId)
 	{
 		var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(sessionId));

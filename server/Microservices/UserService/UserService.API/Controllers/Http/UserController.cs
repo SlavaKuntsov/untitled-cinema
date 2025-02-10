@@ -35,7 +35,7 @@ public class UserController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpPost("/Users/Login")]
+	[HttpPost("/users/login")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -51,7 +51,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto);
 	}
 
-	[HttpPost("/Users/Registration")]
+	[HttpPost("/users/registration")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
@@ -62,7 +62,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto);
 	}
 
-	[HttpPatch("/Users")]
+	[HttpPatch("/users")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -75,7 +75,7 @@ public class UserController : ControllerBase
 		return Ok(particantModel);
 	}
 
-	[HttpPatch("/Users/Balance/Increase/{amount:decimal}")]
+	[HttpPatch("/users/balance/increase/{amount:decimal}")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Balance([FromRoute] decimal amount)
 	{
@@ -95,7 +95,7 @@ public class UserController : ControllerBase
 		return Ok();
 	}
 
-	[HttpDelete("/Users/{id:Guid}")]
+	[HttpDelete("/users/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[Authorize(Policy = "UserOrAdmin")]
@@ -116,7 +116,7 @@ public class UserController : ControllerBase
 		return Ok();
 	}
 
-	[HttpGet("/Users")]
+	[HttpGet("/users")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users()

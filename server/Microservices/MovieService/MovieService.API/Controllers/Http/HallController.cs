@@ -29,7 +29,7 @@ public class HallController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Halls")]
+	[HttpGet("/halls")]
 	public async Task<IActionResult> Get()
 	{
 		var halls = await _mediator.Send(new GetAllHallsQuery());
@@ -37,7 +37,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpGet("/Halls/{id:Guid}")]
+	[HttpGet("/halls/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var halls = await _mediator.Send(new GetHallByIdQuery(id))
@@ -46,7 +46,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpPost("/Halls/Simple")]
+	[HttpPost("/halls/simple")]
 	[SwaggerRequestExample(typeof(CreateSimpleHallCommand), typeof(CreateSimpleHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
 	{
@@ -55,7 +55,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPost("/Halls/Custom")]
+	[HttpPost("/halls/custom")]
 	[SwaggerRequestExample(typeof(CreateCustomHallCommand), typeof(CreateCustomHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request)
 	{
@@ -64,7 +64,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch("/Halls")]
+	[HttpPatch("/halls")]
 	[SwaggerRequestExample(typeof(UpdateHallCommand), typeof(UpdateHallRequestExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request)
 	{
@@ -73,7 +73,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete("/Halls/{id:Guid}")]
+	[HttpDelete("/halls/{id:Guid}")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
 		await _mediator.Send(new DeleteHallCommand(id));
