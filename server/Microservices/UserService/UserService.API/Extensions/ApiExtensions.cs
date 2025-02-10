@@ -27,6 +27,8 @@ using UserService.API.Middlewares;
 using UserService.API.Validators;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Infrastructure.Auth;
+using UserService.Infrastructure.Email;
+using UserService.Infrastructure.Notification;
 
 namespace UserService.API.Extensions;
 
@@ -84,7 +86,7 @@ public static class ApiExtensions
 		Mapper mapperConfig = new(typeAdapterConfig);
 		services.AddSingleton<IMapper>(mapperConfig);
 
-		JwtModel? jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
+		var jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
 
 		services
 			.AddAuthentication(options =>
@@ -110,13 +112,10 @@ public static class ApiExtensions
 				{
 					OnAuthenticationFailed = context =>
 					{
-						Debug.WriteLine(context.Request.Headers.Authorization);
-						Debug.WriteLine("Authentication failed: " + context.Exception.Message);
 						return Task.CompletedTask;
 					},
 					OnTokenValidated = context =>
 					{
-						Debug.WriteLine("Token is valid.");
 						return Task.CompletedTask;
 					}
 				};
@@ -166,6 +165,8 @@ public static class ApiExtensions
 	public static void UseAPI(this WebApplication app)
 	{
 		app.MapGrpcService<Controllers.Grpc.AuthController>();
+
+		app.MapHub<NotificationHub>("/notifications");
 	}
 
 	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)
