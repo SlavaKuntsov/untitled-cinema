@@ -2,9 +2,9 @@
 
 public class SeatTypeModel
 {
-	public Guid Id { get; set; }
-	public string Name { get; set; } = null!;
-	public decimal PriceModifier { get; set; } = 1;
+	public Guid Id { get; private set; }
+	public string Name { get; private set; } = null!;
+	public decimal PriceModifier { get; private set; } = 1;
 
 	public SeatTypeModel()
 	{

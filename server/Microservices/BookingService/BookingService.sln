@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.API", "BookingService.API\BookingService.API.csproj", "{FD1351B3-5AA9-4399-8E2D-62A44B3B21E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.API", "BookingService.API\BookingService.API.csproj", "{FD1351B3-5AA9-4399-8E2D-62A44B3B21E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Application", "BookingService.Application\BookingService.Application.csproj", "{00D6C613-A89A-4BEA-B94D-CDF6CA7662D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.Application", "BookingService.Application\BookingService.Application.csproj", "{00D6C613-A89A-4BEA-B94D-CDF6CA7662D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Domain", "BookingService.Domain\BookingService.Domain.csproj", "{D4FCC324-48ED-40AB-B25A-94537B118F42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.Domain", "BookingService.Domain\BookingService.Domain.csproj", "{D4FCC324-48ED-40AB-B25A-94537B118F42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Infrastructure", "BookingService.Infrastructure\BookingService.Infrastructure.csproj", "{EE6EC46B-9CAD-4FC9-9845-DD546E33F71F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.Infrastructure", "BookingService.Infrastructure\BookingService.Infrastructure.csproj", "{EE6EC46B-9CAD-4FC9-9845-DD546E33F71F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Persistence", "BookingService.Persistence\BookingService.Persistence.csproj", "{851F05C6-0E4C-4A11-BD84-86DCF0DA4B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService.Persistence", "BookingService.Persistence\BookingService.Persistence.csproj", "{851F05C6-0E4C-4A11-BD84-86DCF0DA4B5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protobufs", "..\..\Shared\Protobufs\Protobufs.csproj", "{343F7DEF-9E8B-4505-B829-155AE04D7064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brokers", "..\..\Shared\Brokers\Brokers.csproj", "{42381B16-A338-4983-BB05-E4D3380E37EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{851F05C6-0E4C-4A11-BD84-86DCF0DA4B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{851F05C6-0E4C-4A11-BD84-86DCF0DA4B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{851F05C6-0E4C-4A11-BD84-86DCF0DA4B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{343F7DEF-9E8B-4505-B829-155AE04D7064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42381B16-A338-4983-BB05-E4D3380E37EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

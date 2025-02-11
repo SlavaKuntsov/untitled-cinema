@@ -1,6 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -9,11 +7,9 @@ using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 namespace MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 
 public class DeleteHallCommandHandler(
-	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<DeleteHallCommand>
+	IUnitOfWork unitOfWork) : IRequestHandler<DeleteHallCommand>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
 
 	public async Task Handle(DeleteHallCommand request, CancellationToken cancellationToken)
 	{
@@ -23,6 +19,7 @@ public class DeleteHallCommandHandler(
 		_unitOfWork.Repository<HallEntity>().Delete(hall);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		_unitOfWork.SeatsRepository.DeleteBySessionId(request.Id);
 
 		return;
 	}

@@ -15,6 +15,7 @@ public class CreateMovieRequestExample : IExamplesProvider<CreateMovieCommand>
 			price: 20.0m,
 			durationMinutes: 165,
 			producer: "Ридли Скотт",
+			ageLimit: 18,
 			releaseDate: "23-12-2024 15:00");
 	}
 }

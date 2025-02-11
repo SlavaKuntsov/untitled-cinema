@@ -59,6 +59,9 @@ namespace UserService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("date");
 
@@ -92,12 +95,13 @@ namespace UserService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("08a01170-5365-4c22-b52e-834d25b869e2"),
+                            Id = new Guid("a592d29f-3c54-40f0-b7d7-40c0622a264e"),
+                            Balance = 0m,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@email.com",
-                            FirstName = "",
-                            LastName = "",
-                            Password = "$2a$11$HFMERE.0BFWNUVN6UGvrgOwe4lDPDgZ1g3kiyqkmcP17S32zq8ZS6",
+                            FirstName = "admin",
+                            LastName = "admin",
+                            Password = "$2a$11$UHwwtWYYZA9A4LqBR6xUTO5yDpkvxeG77q4//O4AWqyB7p1RcXgDG",
                             Role = "Admin"
                         });
                 });

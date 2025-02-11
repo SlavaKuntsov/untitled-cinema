@@ -6,11 +6,11 @@ public enum SeatType
 {
 	None = -1,
 	[Description("Стандарт")]
-	Standart = 0,
+	Standart = 1,
 	[Description("Комфорт")]
-	Comfort = 1,
+	Comfort = 2,
 	[Description("Диван")]
-	Sofa = 2,
+	Sofa = 3,
 	[Description("Кровать")]
-	Bed = 3
+	Bed = 4
 }

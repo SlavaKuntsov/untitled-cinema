@@ -13,17 +13,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
 		<ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Mapster" Version="7.4.0" />
 		<PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="DTOs\" />
 	</ItemGroup>
 
 </Project>

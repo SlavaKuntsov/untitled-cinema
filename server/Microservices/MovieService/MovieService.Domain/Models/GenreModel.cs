@@ -2,8 +2,8 @@
 
 public class GenreModel
 {
-	public Guid Id { get; set; }
-	public string Name { get; set; } = null!;
+	public Guid Id { get; private set; }
+	public string Name { get; private set; } = null!;
 
 	public GenreModel() 
 	{

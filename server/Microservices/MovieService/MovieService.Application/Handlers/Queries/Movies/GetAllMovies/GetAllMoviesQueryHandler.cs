@@ -51,6 +51,7 @@ public class GetAllMoviesQueryHandler(
 				"title" => query.OrderBy(m => m.Title),
 				"durationMinutes" => query.OrderBy(m => m.DurationMinutes),
 				"producer" => query.OrderBy(m => m.Producer),
+				"age" => query.OrderBy(m => m.AgeLimit),
 				"release" => query.OrderBy(m => m.ReleaseDate),
 				_ => throw new InvalidOperationException($"Invalid sort field '{request.SortBy}'.")
 			};
@@ -62,6 +63,7 @@ public class GetAllMoviesQueryHandler(
 				"title" => query.OrderByDescending(m => m.Title),
 				"durationMinutes" => query.OrderByDescending(m => m.DurationMinutes),
 				"producer" => query.OrderByDescending(m => m.Producer),
+				"age" => query.OrderByDescending(m => m.AgeLimit),
 				"release" => query.OrderByDescending(m => m.ReleaseDate),
 				_ => throw new InvalidOperationException($"Invalid sort field '{request.SortBy}'.")
 			};

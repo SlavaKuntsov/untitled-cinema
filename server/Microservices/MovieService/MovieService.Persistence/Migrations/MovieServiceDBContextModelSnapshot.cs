@@ -83,6 +83,9 @@ namespace MovieService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<byte>("AgeLimit")
+                        .HasColumnType("smallint");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamptz");
 

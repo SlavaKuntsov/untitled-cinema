@@ -10,7 +10,7 @@ using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
 using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
 using UserService.Application.Handlers.Queries.Users.GetUser;
 
-namespace UserService.API.Controllers.Grpc.Auth;
+namespace UserService.API.Controllers.Grpc;
 
 public class AuthController : AuthService.AuthServiceBase
 {

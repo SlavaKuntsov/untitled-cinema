@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpGet(nameof(RefreshToken))]
+	[HttpGet("auth/refreshToken")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
 		return Ok(accessToken);
 	}
 
-	[HttpGet(nameof(Authorize))]
+	[HttpGet("auth/authorize")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,7 +63,7 @@ public class AuthController : ControllerBase
 		return Ok(_mapper.Map<UserDto>(user));
 	}
 
-	[HttpGet(nameof(Unauthorize))]
+	[HttpGet("auth/unauthorize")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public IActionResult Unauthorize()
 	{

@@ -9,6 +9,7 @@ public class CreateMovieCommand(
     decimal price,
     short durationMinutes,
     string producer,
+    byte ageLimit,
     string releaseDate) : IRequest<Guid>
 {
     public string Title { get; private set; } = title;
@@ -17,5 +18,6 @@ public class CreateMovieCommand(
     public decimal Price { get; private set; } = price;
     public short DurationMinutes { get; private set; } = durationMinutes;
     public string Producer { get; private set; } = producer;
-    public string ReleaseDate { get; private set; } = releaseDate;
+	public byte AgeLimit { get; private set; } = ageLimit;
+	public string ReleaseDate { get; private set; } = releaseDate;
 }

@@ -35,6 +35,7 @@ public class CreateMovieCommandHandler(
 			request.Price,
 			request.DurationMinutes,
 			request.Producer,
+			request.AgeLimit,
 			parsedDateTime,
 			dateNow,
 			dateNow);

@@ -7,6 +7,7 @@ public class UserDto
 	public string Role { get; set; } = string.Empty;
 	public string FirstName { get; set; } = string.Empty;
 	public string LastName { get; set; } = string.Empty;
+	public decimal Balance { get; set; } 
 
 	private DateTime _dateOfBirth;
 

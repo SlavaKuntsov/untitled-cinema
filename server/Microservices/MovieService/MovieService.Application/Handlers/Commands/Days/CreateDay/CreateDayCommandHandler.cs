@@ -37,7 +37,8 @@ public class CreateDayCommandHandler(
 		var existDay = await _unitOfWork.DaysRepository.GetAsync(date, cancellationToken);
 
 		if (existDay is not null)
-			throw new AlreadyExistsException($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' already exist.");
+			throw new AlreadyExistsException
+				($"Day '{date.ToString(DateTimeConstants.DATE_FORMAT)}' already exist.");
 
 		var day = new DayModel(
 			Guid.NewGuid(),

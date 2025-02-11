@@ -20,7 +20,8 @@ public class MapsterConfig : IRegister
 				src.Role,
 				src.FirstName,
 				src.LastName,
-				src.DateOfBirth
+				src.DateOfBirth,
+				src.Balance
 			));
 
 		config.NewConfig<UpdateUserCommand, UserModel>()

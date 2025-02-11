@@ -1,6 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -9,11 +7,9 @@ using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 namespace MovieService.Application.Handlers.Commands.Seats.DeleteSeatType;
 
 public class DeleteSeatTypeCommandHandler(
-	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<DeleteSeatTypeCommand>
+	IUnitOfWork unitOfWork) : IRequestHandler<DeleteSeatTypeCommand>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
 
 	public async Task Handle(DeleteSeatTypeCommand request, CancellationToken cancellationToken)
 	{

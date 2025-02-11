@@ -70,7 +70,7 @@ public class UsersRepository : IUsersRepository
 		return user.Id;
 	}
 
-	public void Update(UserEntity entity, CancellationToken cancellationToken)
+	public void Update(UserEntity entity)
 	{
 		_context.Users.Attach(entity).State = EntityState.Modified;
 	}

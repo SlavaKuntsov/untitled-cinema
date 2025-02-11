@@ -8,6 +8,7 @@ public class MovieEntity
 	public decimal Price { get; set; } = 0.00m;
 	public short DurationMinutes { get; set; }
 	public string Producer { get; set; } = null!;
+	public byte AgeLimit { get; set; }
 	public DateTime ReleaseDate { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }

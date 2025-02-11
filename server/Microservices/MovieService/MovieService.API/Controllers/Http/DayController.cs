@@ -7,7 +7,6 @@ using MovieService.Application.Handlers.Commands.Days.CreateSession;
 using MovieService.Application.Handlers.Commands.Days.DeleteDay;
 using MovieService.Application.Handlers.Queries.Days.GetAllDays;
 using MovieService.Application.Handlers.Queries.Days.GetDayByDate;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -24,7 +23,7 @@ public class DayController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Days")]
+	[HttpGet("/days")]
 	public async Task<IActionResult> Get()
 	{
 		var day = await _mediator.Send(new GetAllDaysQuery());
@@ -32,16 +31,15 @@ public class DayController : ControllerBase
 		return Ok(day);
 	}
 
-	[HttpGet("/Days/{date}")]
+	[HttpGet("/days/{date}")]
 	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
 	{
-		var day = await _mediator.Send(new GetDayByDateQuery(date))
-			?? throw new NotFoundException(message: $"Day '{date}' not found.");
+		var day = await _mediator.Send(new GetDayByDateQuery(date));
 
 		return Ok(day);
 	}
 
-	[HttpPost("/Days")]
+	[HttpPost("/days")]
 	[SwaggerRequestExample(typeof(CreateDayCommand), typeof(CreateDayRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateDayCommand request)
 	{
@@ -51,7 +49,7 @@ public class DayController : ControllerBase
 	}
 
 
-	[HttpDelete("/Days/{id:Guid}")]
+	[HttpDelete("/days/{id:Guid}")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id)
 	{
 		await _mediator.Send(new DeleteDayCommand(id));

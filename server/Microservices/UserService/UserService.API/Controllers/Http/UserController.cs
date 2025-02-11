@@ -12,10 +12,12 @@ using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Contracts;
 using UserService.API.Contracts.Examples;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
+using UserService.Application.Handlers.Commands.Users.ChangeBalance;
 using UserService.Application.Handlers.Commands.Users.DeleteUser;
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Users.GetAllUsers;
+using UserService.Application.Handlers.Queries.Users.GetUser;
 using UserService.Application.Handlers.Queries.Users.Login;
 
 namespace UserService.API.Controllers.Http;
@@ -33,7 +35,7 @@ public class UserController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpPost(nameof(Login))]
+	[HttpPost("/users/login")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -49,7 +51,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto);
 	}
 
-	[HttpPost(nameof(Registration))]
+	[HttpPost("/users/registration")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
@@ -60,7 +62,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto);
 	}
 
-	[HttpPatch(nameof(Update))]
+	[HttpPatch("/users")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,7 +75,27 @@ public class UserController : ControllerBase
 		return Ok(particantModel);
 	}
 
-	[HttpDelete(nameof(Delete) + "/{id:Guid}")]
+	[HttpPatch("/users/balance/increase/{amount:decimal}")]
+	[Authorize(Policy = "UserOrAdmin")]
+	public async Task<IActionResult> Balance([FromRoute] decimal amount)
+	{
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+		if (userIdClaim == null)
+			throw new UnauthorizedAccessException("User ID not found in claims.");
+
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		await _mediator.Send(new ChangeBalanceCommand(
+			userId, 
+			amount, 
+			true));
+
+		return Ok();
+	}
+
+	[HttpDelete("/users/{id:Guid}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[Authorize(Policy = "UserOrAdmin")]
@@ -94,7 +116,7 @@ public class UserController : ControllerBase
 		return Ok();
 	}
 
-	[HttpGet(nameof(Users))]
+	[HttpGet("/users")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users()

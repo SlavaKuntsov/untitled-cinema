@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -17,8 +18,9 @@ public class GetSeatByIdQueryHandler(
 
 	public async Task<SeatModel> Handle(GetSeatByIdQuery request, CancellationToken cancellationToken)
 	{
-		var seats = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken);
+		var seat = await _unitOfWork.Repository<SeatEntity>().GetAsync(request.Id, cancellationToken)
+			?? throw new NotFoundException($"Seat with id '{request.Id}' not found.");
 
-		return _mapper.Map<SeatModel>(seats);
+		return _mapper.Map<SeatModel>(seat);
 	}
 }

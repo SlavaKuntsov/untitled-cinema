@@ -1,10 +1,15 @@
+using Brokers.Extensions;
+
 using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 
+using Serilog;
+
 using UserService.API.Extensions;
+using UserService.API.Middlewares;
 using UserService.Application.Extensions;
 using UserService.Infrastructure.Extensions;
 using UserService.Persistence.Extensions;
@@ -18,14 +23,20 @@ builder.UseHttps();
 services.AddAPI(configuration)
 	.AddApplication()
 	.AddInfrastructure()
-	.AddPersistence(configuration);
+	.AddPersistence(configuration)
+	.AddRabbitMQ(configuration);
+
+builder.Host.AddLogging(configuration);
 
 var app = builder.Build();
 
-app.UseAPI();
+app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
+app.UseMiddleware<RequestLogContextMiddleware>();
+
+app.UseAPI();
 app.UseSwagger();
 app.UseSwaggerUI();
 

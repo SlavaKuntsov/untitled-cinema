@@ -15,6 +15,7 @@ public class UpdateMovieRequestExample : IExamplesProvider<UpdateMovieCommand>
 			description: "После того как его дом завоевывают тиранические императоры, возглавляющие Рим, Луций, сын Луциллы и Максимуса, вынужден выйти на арену Колизея и обратиться к своему прошлому, чтобы найти в себе силы вернуть славу Рима его народу.",
 			durationMinutes: 166,
 			producer: "Ридли Скотт",
+			ageLimit: 16,
 			releaseDate: "23-12-2024 15:00");
 	}
 }

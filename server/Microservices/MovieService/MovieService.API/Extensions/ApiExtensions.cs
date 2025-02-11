@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 using MovieService.API.Behaviors;
+using MovieService.API.Consumers;
 using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.ExceptionHandlers;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
@@ -38,13 +39,21 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddHostedService<BookingPriceConsumeService>();
+		services.AddHostedService<SessionSeatsConsumerServices>();
+
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 		services.AddHealthChecks();
 
+		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
+
+		if (string.IsNullOrEmpty(usersPort))
+			usersPort = configuration.GetValue<string>("ApplicationSettings:UsersPort");
+
 		services.AddGrpcClient<AuthService.AuthServiceClient>(options =>
 		{
-			options.Address = new Uri("https://localhost:7001");
+			options.Address = new Uri($"https://localhost:{usersPort}");
 		});
 
 		services.AddHttpContextAccessor();
