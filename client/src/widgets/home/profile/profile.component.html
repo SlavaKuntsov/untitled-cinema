@@ -1,0 +1,182 @@
+<div class="mb-3 flex flex-row items-center justify-start gap-10">
+  <h3 class="text-3xl font-semibold">Change profile data:</h3>
+
+  <p-toggleswitch
+    styleClass="!text-2xl !flex !flex-row !items-center !justify-center"
+    [(ngModel)]="checked"
+    (ngModelChange)="toggleInputs()"
+  />
+</div>
+
+<div [formGroup]="form" class="flex flex-col gap-8" (change)="onFormChange()">
+  <app-input
+    label="Email"
+    placeholder="email"
+    type="text"
+    [control]="form.controls['email']"
+  >
+  </app-input>
+
+  <app-input
+    label="FirstName"
+    placeholder="firstName"
+    type="text"
+    [control]="form.controls['firstName']"
+  >
+  </app-input>
+
+  <app-input
+    label="LastName"
+    placeholder="lastName"
+    type="text"
+    [control]="form.controls['lastName']"
+  >
+  </app-input>
+  <label class="flex flex-col gap-4 text-xl font-semibold">
+    Date of Birth
+    <p-datepicker
+      (ngModelChange)="onDatepickerChange()"
+      formControlName="dateOfBirth"
+      placeholder="date of birth"
+      [showIcon]="true"
+      dateFormat="dd-mm-yy"
+      class="custom-datepicker"
+      styleClass="!w-full !text-2xl !h-14"
+    />
+  </label>
+</div>
+
+<app-button
+  [label]="'Save'"
+  [buttonClasses]="
+    'w-full mt-4 bg-indigo-600 hover:bg-white hover:text-indigo-600 border-[2px] border-indigo-600'
+  "
+  (clickEvent)="save()"
+>
+</app-button>
+
+<app-button
+  [label]="'Logout'"
+  [buttonClasses]="
+    'w-full border-[2px] border-red-600 bg-red-600 hover:bg-white hover:text-red-600'
+  "
+  (clickEvent)="logout()"
+>
+</app-button>
+
+<app-button
+  [label]="'Delete'"
+  [buttonClasses]="
+    'w-full border-[2px] border-red-600 bg-transparent hover:bg-red-600 hover:text-black hover:text-black text-red-600'
+  "
+  (clickEvent)="delete()"
+>
+</app-button>
+
+<p-confirmdialog #cd key="save">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
+    <div
+      class="bg-surface-0 dark:bg-surface-900 flex flex-col items-center rounded p-14"
+    >
+      <div
+        class="text-primary-contrast -mt-32 inline-flex h-32 w-32 items-center justify-center rounded-full bg-green-600"
+      >
+        <i class="pi pi-question !text-7xl"></i>
+      </div>
+      <span class="mb-6 mt-8 block text-3xl font-bold">{{
+        message.header
+      }}</span>
+      <p class="mb-0 !text-xl">{{ message.message }}</p>
+      <div class="mt-10 flex items-center gap-6">
+        <p-button
+          label="Save"
+          (onClick)="onAccept()"
+          styleClass="!bg-green-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-green-500 !border-[2px] hover:!border-white !border-green-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          (onClick)="onReject()"
+          styleClass="w-32 !text-white !border-white !text-2xl !px-8 !py-3"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-confirmdialog #cd key="logout">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
+    <div
+      class="bg-surface-0 dark:bg-surface-900 flex flex-col items-center rounded p-14"
+    >
+      <div
+        class="text-primary-contrast -mt-32 inline-flex h-32 w-32 items-center justify-center rounded-full bg-red-600"
+      >
+        <i class="pi pi-question !text-7xl"></i>
+      </div>
+      <span class="mb-6 mt-8 block text-3xl font-bold">{{
+        message.header
+      }}</span>
+      <p class="mb-0 !text-xl">{{ message.message }}</p>
+      <div class="mt-10 flex items-center gap-6">
+        <p-button
+          label="Logout"
+          (onClick)="onAccept()"
+          styleClass="!bg-red-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-red-500 !border-[2px] hover:!border-white !border-red-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          (onClick)="onReject()"
+          styleClass="w-32 !text-white !border-white !text-2xl !px-8 !py-3"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-confirmdialog #cd key="delete">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
+    <div
+      class="bg-surface-0 dark:bg-surface-900 flex flex-col items-center rounded p-14"
+    >
+      <div
+        class="text-primary-contrast -mt-32 inline-flex h-32 w-32 items-center justify-center rounded-full bg-red-600"
+      >
+        <i class="pi pi-question !text-7xl"></i>
+      </div>
+      <span class="mb-6 mt-8 block text-3xl font-bold">{{
+        message.header
+      }}</span>
+      <p class="mb-0 !text-xl">{{ message.message }}</p>
+      <div class="mt-10 flex items-center gap-6">
+        <p-button
+          label="Delete"
+          (onClick)="onAccept()"
+          styleClass="!bg-red-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-red-500 !border-[2px] hover:!border-white !border-red-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          (onClick)="onReject()"
+          styleClass="w-32 !text-white !border-white !text-2xl !px-8 !py-3"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>

@@ -37,7 +37,7 @@
       <div class="flex flex-row gap-5">
         <button
           type="button"
-          [routerLink]="[profile]"
+          [routerLink]="[account]"
           routerLinkActive="active"
           class="relative"
         >
@@ -55,11 +55,11 @@
             />
           </svg>
 
-          @if (!(isUser | async)) {
-            <span
-              class="absolute -right-9 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
-              >Login</span
-            >
+          @if (!user()) {
+          <span
+            class="absolute -right-9 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
+            >Login</span
+          >
           }
         </button>
       </div>

@@ -1,14 +1,15 @@
-import { Component, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Component, inject, Signal } from "@angular/core";
 import {
   ActivatedRoute,
   Router,
   RouterLink,
   RouterLinkActive,
 } from "@angular/router";
-import { Subscription } from "rxjs";
-import { AUTH, PROFILE } from "../../../../shared/router/routes";
-import { AuthService } from "../../../auth/api/auth.service";
-import { CommonModule } from "@angular/common";
+import { User } from "../../../../entities/users";
+import { UserService } from "../../../../entities/users/api/user.service";
+import { getChildRoutes } from "../../../../shared/model/getChildRoutes";
+import { ACCOUNT, AUTH } from "../../../../shared/router/routes";
 
 @Component({
   selector: "app-nav",
@@ -19,28 +20,18 @@ import { CommonModule } from "@angular/common";
 export class NavComponent {
   router = inject(Router);
   route = inject(ActivatedRoute);
-  authService = inject(AuthService);
-  userSubscription!: Subscription;
+  userService = inject(UserService);
 
-  isUser = this.authService.isUser$;
   routes: { route: string; title: string }[] = [];
 
+  user: Signal<User | null> = this.userService.user;
+
   auth = AUTH;
-  profile = PROFILE;
+  account = ACCOUNT;
+
+  isLoad: boolean = false;
 
   constructor() {
-    this.getChildRoutes();
-  }
-
-  private getChildRoutes() {
-    const rootRoute = this.router.config.find((r) => r.path === "");
-    if (rootRoute && rootRoute.children) {
-      this.routes = rootRoute.children
-        .filter((r) => r.path && r.data!["isVisible"])
-        .map((r) => ({
-          route: "/" + r.path,
-          title: r.data!["name"],
-        }));
-    }
+    this.routes = getChildRoutes(this.router, "");
   }
 }

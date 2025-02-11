@@ -1,0 +1,5 @@
+input {
+  &:disabled {
+    @apply cursor-not-allowed border-gray-600 bg-zinc-800 text-gray-400;
+  }
+}

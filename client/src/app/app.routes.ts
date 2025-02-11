@@ -1,13 +1,12 @@
 import { Routes } from "@angular/router";
 import { AuthComponent } from "../pages/auth/auth.component";
-import { LoginComponent } from "../pages/auth/ui/login/login.component";
-import { RegistrationComponent } from "../pages/auth/ui/registration/registration.component";
 import { BookingHistoryComponent } from "../pages/booking-history/booking-history.component";
 import { HomeComponent } from "../pages/home/home.component";
+import { AccountComponent } from "../pages/home/ui/account/account.component";
+import { PosterComponent } from "../pages/home/ui/poster/poster.component";
 import { NotFoundPageComponent } from "../pages/not-found/not-found-page.component";
-import { PosterComponent } from "../pages/poster/poster.component";
-import { ProfileComponent } from "../pages/profile/profile.component";
 import {
+  ACCOUNT,
   AUTH,
   HISTORY,
   LOGIN,
@@ -15,8 +14,11 @@ import {
   PROFILE,
   REGISTRATION,
 } from "../shared/router/routes";
-import { canActivateAuth } from "./core/guard/auth/access.guard";
-import { canActivateHome } from "./core/guard/home/home.guad";
+import { LoginComponent } from "../widgets/auth/login/login.component";
+import { RegistrationComponent } from "../widgets/auth/registration/registration.component";
+import { ProfileComponent } from "../widgets/home/profile/profile.component";
+import { canActivateAuth } from "./core/guards/auth/access.guard";
+import { canActivateHome } from "./core/guards/home/home.guad";
 
 export const routes: Routes = [
   {
@@ -35,10 +37,22 @@ export const routes: Routes = [
         data: { name: "Booking History", isVisible: true },
       },
       {
-        path: PROFILE,
-        component: ProfileComponent,
-        data: { name: "Profile", isVisible: false },
+        path: ACCOUNT,
+        component: AccountComponent,
+        data: { name: "Account", isVisible: false },
         canActivate: [canActivateAuth],
+        children: [
+          {
+            path: "",
+            redirectTo: PROFILE,
+            pathMatch: "full",
+          },
+          {
+            path: PROFILE,
+            component: ProfileComponent,
+            data: { name: "Profile", isVisible: true },
+          },
+        ],
       },
     ],
   },

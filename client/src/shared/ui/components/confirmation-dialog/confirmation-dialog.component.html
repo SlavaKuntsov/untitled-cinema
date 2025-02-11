@@ -1,0 +1,36 @@
+<p-confirmdialog [key]="dialogKey">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
+    <div
+      class="bg-surface-0 dark:bg-surface-900 flex flex-col items-center rounded p-14"
+    >
+      <div
+        class="text-primary-contrast -mt-32 inline-flex h-32 w-32 items-center justify-center rounded-full"
+        [ngClass]="colorClass"
+      >
+        <i class="pi pi-question !text-7xl"></i>
+      </div>
+      <span class="mb-6 mt-8 block text-3xl font-bold">{{
+        message.header
+      }}</span>
+      <p class="mb-0 !text-xl">{{ message.message }}</p>
+      <div class="mt-10 flex items-center gap-6">
+        <p-button
+          [label]="acceptLabel"
+          (onClick)="onAccept()"
+          [styleClass]="acceptButtonClass"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          (onClick)="onReject()"
+          styleClass="w-32 !text-white !border-white !text-2xl !px-8 !py-3"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>

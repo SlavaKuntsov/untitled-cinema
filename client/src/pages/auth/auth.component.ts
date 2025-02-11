@@ -18,7 +18,7 @@ export class AuthComponent {
   router = inject(Router);
   route = inject(ActivatedRoute);
 
-  ngOnInit() {
+  constructor() {
     this.getChildRoutes();
   }
 

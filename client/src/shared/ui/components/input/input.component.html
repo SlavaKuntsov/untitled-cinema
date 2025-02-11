@@ -1,4 +1,9 @@
-<label for="">
-  password
-  <input placeholder="password" type="text" />
+<label class="flex flex-col gap-4 text-xl font-semibold">
+  {{ label }}
+  <input
+    class="w-full rounded-lg border border-zinc-600 bg-transparent px-4 py-3 text-lg"
+    [formControl]="control"
+    [placeholder]="placeholder"
+    [type]="type"
+  />
 </label>

@@ -1,0 +1,52 @@
+@if (user(); as user) {
+  <div class="grid w-full grid-cols-4">
+    <div class="avatar justify-items-center text-center">
+      <p-avatar
+        [style.width]="'15rem'"
+        [style.height]="'15rem'"
+        [style.font-size]="'5rem'"
+        [label]="user.firstName.charAt(0)"
+        size="xlarge"
+        shape="circle"
+      />
+    </div>
+    <div class="col-span-3 ml-10 flex flex-col">
+      <h1 class="mb-20 text-7xl font-extrabold">
+        {{ user.firstName }} {{ user.lastName }}
+      </h1>
+      <div>
+        <div class="flex flex-col gap-4">
+          <ul
+            class="flex flex-row items-center gap-12 text-4xl font-normal text-white"
+          >
+            @for (route of routes; let i = $index; track route.title) {
+              <li
+                class="anim-bounce relative after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+              >
+                <a
+                  class="relative z-10"
+                  [routerLink]="route.route"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  {{ route.title }}
+                </a>
+              </li>
+
+              @if (i < routes.length - 1) {
+                <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
+              }
+            }
+          </ul>
+          <span class="my-2 h-1 w-full rounded-md bg-zinc-800"></span>
+        </div>
+
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="flex h-full w-full justify-center">
+    <p-progress-spinner ariaLabel="loading" />
+  </div>
+}
