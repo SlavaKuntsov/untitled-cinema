@@ -1,5 +1,7 @@
 using System.Security.Claims;
 
+using BookingService.Domain.Exceptions;
+
 using MapsterMapper;
 
 using MediatR;
@@ -50,7 +52,10 @@ public class UserController : ControllerBase
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
-		return Ok(authResultDto.AccessToken);
+		return Ok(new
+		{
+			authResultDto.AccessToken
+		});
 	}
 
 	[HttpPost("/users/registration")]
@@ -59,7 +64,10 @@ public class UserController : ControllerBase
 	{
 		var authResultDto = await _mediator.Send(request, cancellationToken);
 
-		return Ok(authResultDto.AccessToken);
+		return Ok(new
+		{
+			authResultDto.AccessToken
+		});
 	}
 
 	[HttpPatch("/users")]
@@ -67,9 +75,17 @@ public class UserController : ControllerBase
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
 	{
-		var particantModel = await _mediator.Send(request, cancellationToken);
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		return Ok(particantModel);
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		var command = request with { Id = userId };
+
+		var particantModel = await _mediator.Send(command, cancellationToken);
+
+		return Ok(_mapper.Map<UserDto>(particantModel));
 	}
 
 	[HttpPatch("/users/balance/increase/{amount:decimal}")]
@@ -85,28 +101,42 @@ public class UserController : ControllerBase
 		await _mediator.Send(new ChangeBalanceCommand(
 			userId,
 			amount,
-			true), 
+			true),
 			cancellationToken);
 
 		return Ok();
 	}
 
-	[HttpDelete("/users/{id:Guid}")]
-	[Authorize(Policy = "UserOrAdmin")]
+	[HttpDelete("/users/{id:Guid?}")]
+	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-		if (userIdClaim == null)
-			throw new UnauthorizedAccessException("User ID not found in claims.");
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		if (userId != id)
-			throw new UnauthorizedAccessException("User cannot delete another User.");
+		if (userId == id)
+			throw new UnprocessableContentException("Admin cannot delete himself.");
 
 		await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
+		
+		return Ok();
+	}
+
+	[HttpDelete("/users/me")]
+	[Authorize(Policy = "UserOnly")]
+	public async Task<IActionResult> Delete(CancellationToken cancellationToken)
+	{
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		await _mediator.Send(new DeleteUserCommand(userId), cancellationToken);
+
 		return Ok();
 	}
 

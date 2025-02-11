@@ -1,8 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using UserService.API.Contracts;
 using UserService.Application.Interfaces.Notification;
@@ -20,7 +16,7 @@ public class NotificationController : ControllerBase
 		_notificationService = notificationService;
 	}
 
-	[HttpPost("/Notifications/Send")]
+	[HttpPost("/notifications/send")]
 	public async Task<IActionResult> Push([FromBody] CreateNotificationRequest request)
 	{
 		await _notificationService.SendAsync(request.UserId, request.Message);

@@ -17,7 +17,7 @@ using UserService.Domain.Exceptions;
 namespace UserService.API.Controllers.Http;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/auth")]
 public class AuthController : ControllerBase
 {
 	private readonly IMediator _mediator;
@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpGet("auth/refreshToken")]
+	[HttpGet("refreshToken")]
 	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
 	{
 		var refreshToken = _cookieService.GetRefreshToken();
@@ -45,10 +45,13 @@ public class AuthController : ControllerBase
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
-		return Ok(authResultDto.AccessToken);
+		return Ok(new
+		{
+			authResultDto.AccessToken
+		});
 	}
 
-	[HttpGet("auth/authorize")]
+	[HttpGet("authorize")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Authorize(CancellationToken cancellationToken)
 	{
@@ -63,7 +66,7 @@ public class AuthController : ControllerBase
 		return Ok(_mapper.Map<UserDto>(user));
 	}
 
-	[HttpGet("auth/unauthorize")]
+	[HttpGet("unauthorize")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public IActionResult Unauthorize()
 	{
