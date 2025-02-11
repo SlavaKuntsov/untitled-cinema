@@ -34,7 +34,7 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpGet("/Movies")]
-	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request)
+	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Fetch all movies.");
 
@@ -44,7 +44,7 @@ public class MovieController : ControllerBase
 			request.Filter,
 			request.FilterValue,
 			request.SortBy,
-			request.SortDirection));
+			request.SortDirection), cancellationToken);
 
 		_logger.LogInformation("Successfully fetched {Count} movies.", movies.Count);
 
@@ -52,9 +52,9 @@ public class MovieController : ControllerBase
 	}
 
 	[HttpGet("/Movies/{id:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid id)
+	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		var movies = await _mediator.Send(new GetMovieByIdQuery(id))
+		var movies = await _mediator.Send(new GetMovieByIdQuery(id), cancellationToken)
 			?? throw new NotFoundException($"Movie with id '{id.ToString()}' not found.");
 
 		return Ok(movies);
@@ -63,9 +63,9 @@ public class MovieController : ControllerBase
 	[HttpPost("/Movies")]
 	[SwaggerRequestExample(typeof(CreateMovieCommand), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Create([FromBody] CreateMovieCommand request)
+	public async Task<IActionResult> Create([FromBody] CreateMovieCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
@@ -73,26 +73,26 @@ public class MovieController : ControllerBase
 	[HttpPatch("/Movies")]
 	[SwaggerRequestExample(typeof(UpdateMovieCommand), typeof(UpdateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request)
+	public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
 
 	[HttpDelete("/Movies/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id)
+	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		await _mediator.Send(new DeleteMovieCommand(id));
+		await _mediator.Send(new DeleteMovieCommand(id), cancellationToken);
 
 		return NoContent();
 	}
 
 	[HttpGet("/Movies/Genres")]
-	public async Task<IActionResult> Get()
+	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
-		var genres = await _mediator.Send(new GetAllGenresQuery());
+		var genres = await _mediator.Send(new GetAllGenresQuery(), cancellationToken);
 
 		return Ok(genres);
 	}
@@ -100,18 +100,18 @@ public class MovieController : ControllerBase
 	[HttpPatch("/Movies/Genres")]
 	[SwaggerRequestExample(typeof(UpdateGenreCommand), typeof(UpdateGenreCommandExample))]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Update([FromBody] UpdateGenreCommand request)
+	public async Task<IActionResult> Update([FromBody] UpdateGenreCommand request, CancellationToken cancellationToken)
 	{
-		var genre = await _mediator.Send(request);
+		var genre = await _mediator.Send(request, cancellationToken);
 
 		return Ok(genre);
 	}
 
 	[HttpDelete("/Movies/Genres/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> DeleteGenre([FromRoute] Guid id)
+	public async Task<IActionResult> DeleteGenre([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		await _mediator.Send(new DeleteGenreCommand(id));
+		await _mediator.Send(new DeleteGenreCommand(id), cancellationToken);
 
 		return NoContent();
 	}

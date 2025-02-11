@@ -30,17 +30,17 @@ public class HallController : ControllerBase
 	}
 
 	[HttpGet("/Halls")]
-	public async Task<IActionResult> Get()
+	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
-		var halls = await _mediator.Send(new GetAllHallsQuery());
+		var halls = await _mediator.Send(new GetAllHallsQuery(), cancellationToken);
 
 		return Ok(halls);
 	}
 
 	[HttpGet("/Halls/{id:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid id)
+	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		var halls = await _mediator.Send(new GetHallByIdQuery(id))
+		var halls = await _mediator.Send(new GetHallByIdQuery(id), cancellationToken)
 			?? throw new NotFoundException($"Hall with id '{id.ToString()}' not found.");
 
 		return Ok(halls);
@@ -48,35 +48,35 @@ public class HallController : ControllerBase
 
 	[HttpPost("/Halls/Simple")]
 	[SwaggerRequestExample(typeof(CreateSimpleHallCommand), typeof(CreateSimpleHallRequestExample))]
-	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests)
+	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(requests);
+		var movie = await _mediator.Send(requests, cancellationToken);
 
 		return Ok(movie);
 	}
 
 	[HttpPost("/Halls/Custom")]
 	[SwaggerRequestExample(typeof(CreateCustomHallCommand), typeof(CreateCustomHallRequestExample))]
-	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request)
+	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
 
 	[HttpPatch("/Halls")]
 	[SwaggerRequestExample(typeof(UpdateHallCommand), typeof(UpdateHallRequestExample))]
-	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request)
+	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
 
 	[HttpDelete("/Halls/{id:Guid}")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id)
+	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		await _mediator.Send(new DeleteHallCommand(id));
+		await _mediator.Send(new DeleteHallCommand(id), cancellationToken);
 
 		return NoContent();
 	}

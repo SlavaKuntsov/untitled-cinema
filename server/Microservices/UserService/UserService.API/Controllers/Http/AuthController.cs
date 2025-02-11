@@ -32,14 +32,16 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpGet(nameof(RefreshToken))]
-	public async Task<IActionResult> RefreshToken()
+	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
 	{
 		var refreshToken = _cookieService.GetRefreshToken();
 
-		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken));
+		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken), cancellationToken);
 
-		//var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
-		var authResultDto = await _mediator.Send(new GenerateTokensCommand(userRoleDto.Id, userRoleDto.Role));
+		var authResultDto = await _mediator.Send(new GenerateTokensCommand(
+			userRoleDto.Id,
+			userRoleDto.Role),
+			cancellationToken);
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
@@ -48,14 +50,14 @@ public class AuthController : ControllerBase
 
 	[HttpGet(nameof(Authorize))]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Authorize()
+	public async Task<IActionResult> Authorize(CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		var userId = Guid.Parse(userIdClaim.Value);
 
-		var user = await _mediator.Send(new GetUserByIdQuery(userId))
+		var user = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken)
 			?? throw new NotFoundException("User not found");
 
 		return Ok(_mapper.Map<UserDto>(user));

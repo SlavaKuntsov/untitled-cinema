@@ -37,11 +37,16 @@ public class UserController : ControllerBase
 
 	[HttpPost("/Users/Login")]
 	[SwaggerRequestExample(typeof(CreateLoginRequest), typeof(CreateLoginRequestExample))]
-	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request)
+	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request, CancellationToken cancellationToken)
 	{
-		var existUser = await _mediator.Send(new LoginQuery(request.Email, request.Password));
+		var existUser = await _mediator.Send(new LoginQuery(
+			request.Email,
+			request.Password), cancellationToken);
 
-		var authResultDto = await _mediator.Send(new GenerateTokensCommand(existUser.Id, existUser.Role));
+		var authResultDto = await _mediator.Send(new GenerateTokensCommand(
+			existUser.Id,
+			existUser.Role),
+			cancellationToken);
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
@@ -50,9 +55,9 @@ public class UserController : ControllerBase
 
 	[HttpPost("/Users/Registration")]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
-	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request)
+	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request, CancellationToken cancellationToken)
 	{
-		var authResultDto = await _mediator.Send(request);
+		var authResultDto = await _mediator.Send(request, cancellationToken);
 
 		return Ok(authResultDto.AccessToken);
 	}
@@ -60,16 +65,16 @@ public class UserController : ControllerBase
 	[HttpPatch("/Users")]
 	[SwaggerRequestExample(typeof(UpdateUserRequest), typeof(UpdateUserRequestExample))]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request)
+	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
 	{
-		var particantModel = await _mediator.Send(request);
+		var particantModel = await _mediator.Send(request, cancellationToken);
 
 		return Ok(particantModel);
 	}
 
 	[HttpPatch("/Users/Balance/Increase/{amount:decimal}")]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Balance([FromRoute] decimal amount)
+	public async Task<IActionResult> Balance([FromRoute] decimal amount, CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 			?? throw new UnauthorizedAccessException("User ID not found in claims.");
@@ -80,14 +85,15 @@ public class UserController : ControllerBase
 		await _mediator.Send(new ChangeBalanceCommand(
 			userId,
 			amount,
-			true));
+			true), 
+			cancellationToken);
 
 		return Ok();
 	}
 
 	[HttpDelete("/Users/{id:Guid}")]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id)
+	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -100,15 +106,15 @@ public class UserController : ControllerBase
 		if (userId != id)
 			throw new UnauthorizedAccessException("User cannot delete another User.");
 
-		await _mediator.Send(new DeleteUserCommand(id));
+		await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
 		return Ok();
 	}
 
 	[HttpGet("/Users")]
 	[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Users()
+	public async Task<IActionResult> Users(CancellationToken cancellationToken)
 	{
-		var users = await _mediator.Send(new GetAllUsersQuery());
+		var users = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
 
 		return Ok(_mapper.Map<IList<UserDto>>(users));
 	}

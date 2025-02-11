@@ -13,7 +13,10 @@ using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Tokens.GenerateTokens;
 
-public class GenerateTokensCommandHandler(ITokensRepository tokensRepository, IJwt jwt, IMapper mapper) : IRequestHandler<GenerateTokensCommand, AuthDto>
+public class GenerateTokensCommandHandler(
+	ITokensRepository tokensRepository,
+	IJwt jwt,
+	IMapper mapper) : IRequestHandler<GenerateTokensCommand, AuthDto>
 {
 	private readonly ITokensRepository _tokensRepository = tokensRepository;
 	private readonly IJwt _jwt = jwt;

@@ -25,17 +25,19 @@ public class DayController : ControllerBase
 	}
 
 	[HttpGet("/Days")]
-	public async Task<IActionResult> Get()
+	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
-		var day = await _mediator.Send(new GetAllDaysQuery());
+		var day = await _mediator.Send(new GetAllDaysQuery(), cancellationToken);
 
 		return Ok(day);
 	}
 
 	[HttpGet("/Days/{date}")]
-	public async Task<IActionResult> Get([FromRoute] string date = "05-01-2025")
+	public async Task<IActionResult> Get(
+		CancellationToken cancellationToken,
+		[FromRoute] string date = "05-01-2025")
 	{
-		var day = await _mediator.Send(new GetDayByDateQuery(date))
+		var day = await _mediator.Send(new GetDayByDateQuery(date), cancellationToken)
 			?? throw new NotFoundException(message: $"Day '{date}' not found.");
 
 		return Ok(day);
@@ -43,18 +45,18 @@ public class DayController : ControllerBase
 
 	[HttpPost("/Days")]
 	[SwaggerRequestExample(typeof(CreateDayCommand), typeof(CreateDayRequestExample))]
-	public async Task<IActionResult> Create([FromBody] CreateDayCommand request)
+	public async Task<IActionResult> Create([FromBody] CreateDayCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
 
 
 	[HttpDelete("/Days/{id:Guid}")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id)
+	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		await _mediator.Send(new DeleteDayCommand(id));
+		await _mediator.Send(new DeleteDayCommand(id), cancellationToken);
 
 		return NoContent();
 	}

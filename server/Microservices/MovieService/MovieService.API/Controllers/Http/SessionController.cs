@@ -26,14 +26,13 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpGet("/Sessions")]
-	public async Task<IActionResult> Get(
-		[FromQuery] GetSessionsRequest request)
+	public async Task<IActionResult> Get([FromQuery] GetSessionsRequest request, CancellationToken cancellationToken)
 	{
 		var movies = await _mediator.Send(new GetAllSessionsQuery(
 			request.Limit,
 			request.Offset,
 			request.Date,
-			request.Hall));
+			request.Hall), cancellationToken);
 
 		return Ok(movies);
 	}
@@ -41,10 +40,10 @@ public class SessionController : ControllerBase
 	[HttpPost("/Sessions")]
 	[SwaggerRequestExample(typeof(FillSessionCommand), typeof(FillSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request)
+	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request, CancellationToken cancellationToken)
 	{
 		// TODO - maybe create session by all name instead of hall id
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
@@ -52,26 +51,26 @@ public class SessionController : ControllerBase
 	[HttpPatch("/Sessions")]
 	[SwaggerRequestExample(typeof(UpdateSessionCommand), typeof(UpdateSessionRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request)
+	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request);
+		var movie = await _mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
 	}
 
 	[HttpDelete("/Sessions/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id)
+	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		await _mediator.Send(new DeleteSessionCommand(id));
+		await _mediator.Send(new DeleteSessionCommand(id), cancellationToken);
 
 		return NoContent();
 	}
 
 	[HttpGet("/Sessions/Seats/{sessionId:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid sessionId)
+	public async Task<IActionResult> Get([FromRoute] Guid sessionId, CancellationToken cancellationToken)
 	{
-		var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(sessionId));
+		var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(sessionId), cancellationToken);
 
 		return Ok(seats);
 	}
