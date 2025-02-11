@@ -27,7 +27,7 @@ public class SeatController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Seats/{id:Guid}")]
+	[HttpGet("/seats/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		var seat = await _mediator.Send(new GetSeatByIdQuery(id), cancellationToken);
@@ -35,7 +35,7 @@ public class SeatController : ControllerBase
 		return Ok(seat);
 	}
 
-	[HttpPost("/Seats")]
+	[HttpPost("/seats")]
 	[SwaggerRequestExample(typeof(CreateSeatCommand), typeof(CreateSeatCommandExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Create([FromBody] CreateSeatCommand request, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public class SeatController : ControllerBase
 		return Ok(seat);
 	}
 
-	[HttpPatch("/Seats")]
+	[HttpPatch("/seats")]
 	[SwaggerRequestExample(typeof(UpdateSeatCommand), typeof(UpdateSeatCommandExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateSeatCommand request, CancellationToken cancellationToken)
 	{
@@ -55,7 +55,7 @@ public class SeatController : ControllerBase
 		return Ok(seat);
 	}
 
-	[HttpGet("/Seats/Types")]
+	[HttpGet("/seats/types")]
 	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
 		var seatTypes = await _mediator.Send(new GetAllSeatTypesQuery(), cancellationToken);
@@ -63,7 +63,7 @@ public class SeatController : ControllerBase
 		return Ok(seatTypes);
 	}
 
-	[HttpPost("/Seats/Types")]
+	[HttpPost("/seats/types")]
 	[SwaggerRequestExample(typeof(CreateSeatTypeCommand), typeof(CreateSeatTypeCommandExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSeatTypeCommand request, CancellationToken cancellationToken)
 	{
@@ -72,7 +72,7 @@ public class SeatController : ControllerBase
 		return Ok(type);
 	}
 
-	[HttpPatch("/Seats/Types")]
+	[HttpPatch("/seats/types")]
 	[SwaggerRequestExample(typeof(CreateSeatCommand), typeof(CreateSeatCommandExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateSeatTypeCommand request, CancellationToken cancellationToken)
 	{
@@ -81,7 +81,7 @@ public class SeatController : ControllerBase
 		return Ok(type);
 	}
 
-	[HttpDelete("/Seats/Types/{id:Guid}")]
+	[HttpDelete("/seats/types/{id:Guid}")]
 	public async Task<IActionResult> Update([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		await _mediator.Send(new DeleteSeatTypeCommand(id), cancellationToken);

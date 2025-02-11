@@ -27,25 +27,20 @@ public class SessionSeatsRepository : ISessionSeatsRepository
 		bool isAvailableSeats,
 		CancellationToken cancellationToken)
 	{
-		return await _collection
+		var entities = await _collection
 			.Find(predicate)
-			.Project(entity => isAvailableSeats ?
-			new SessionSeatsEntity
-			{
-				Id = entity.Id,
-				SessionId = entity.SessionId,
-				AvailableSeats = entity.AvailableSeats,
-				UpdatedAt = entity.UpdatedAt
-			} :
-			new SessionSeatsEntity
-			{
-				Id = entity.Id,
-				SessionId = entity.SessionId,
-				ReservedSeats = entity.ReservedSeats,
-				UpdatedAt = entity.UpdatedAt
-			})
-			.ToListAsync(cancellationToken);
+			.ToListAsync(cancellationToken);  
+
+		return entities.Select(entity => new SessionSeatsEntity
+		{
+			Id = entity.Id,
+			SessionId = entity.SessionId,
+			AvailableSeats = isAvailableSeats ? entity.AvailableSeats : null,
+			ReservedSeats = !isAvailableSeats ? entity.ReservedSeats : null,
+			UpdatedAt = entity.UpdatedAt
+		}).ToList();
 	}
+
 
 	public async Task<SessionSeatsEntity> GetAsync(
 		Expression<Func<SessionSeatsEntity, bool>> predicate,

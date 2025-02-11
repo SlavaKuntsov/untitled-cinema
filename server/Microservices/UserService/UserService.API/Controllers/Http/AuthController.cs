@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpGet(nameof(RefreshToken))]
+	[HttpGet("auth/refreshToken")]
 	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
 	{
 		var refreshToken = _cookieService.GetRefreshToken();
@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
 		return Ok(authResultDto.AccessToken);
 	}
 
-	[HttpGet(nameof(Authorize))]
+	[HttpGet("auth/authorize")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Authorize(CancellationToken cancellationToken)
 	{
@@ -63,7 +63,7 @@ public class AuthController : ControllerBase
 		return Ok(_mapper.Map<UserDto>(user));
 	}
 
-	[HttpGet(nameof(Unauthorize))]
+	[HttpGet("auth/unauthorize")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public IActionResult Unauthorize()
 	{

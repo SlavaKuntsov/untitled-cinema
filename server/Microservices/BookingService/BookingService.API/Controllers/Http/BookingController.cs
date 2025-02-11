@@ -24,7 +24,7 @@ public class BookingController : ControllerBase
 		_logger = logger;
 	}
 
-	[HttpGet("/Bookings")]
+	[HttpGet("/bookings")]
 	public async Task<IActionResult> Get()
 	{
 		_logger.LogInformation("Fetch all bookings.");
@@ -36,7 +36,7 @@ public class BookingController : ControllerBase
 		return Ok(bookings);
 	}
 
-	[HttpGet("/Bookings/{id:Guid}")]
+	[HttpGet("/bookings/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id)
 	{
 		var bookings = await _mediator.Send(new GetUserBookingsByIdQuery(id));
@@ -44,19 +44,23 @@ public class BookingController : ControllerBase
 		return Ok(bookings);
 	}
 
-	[HttpPost("/Bookings")]
+	[HttpPost("/bookings")]
 	public async Task<IActionResult> Create([FromBody] CreateBookingCommand request)
 	{
-		_logger.LogInformation($"Starting to create bookings {request.UserId} - {request.SessionId}.");
+		_logger.LogInformation("Starting to create bookings {UserId} - {SessionId}.",
+			request.UserId,
+			request.SessionId);
 
 		var bookingId = await _mediator.Send(request);
 
-		_logger.LogInformation($"Processed create bookings {request.UserId} - {request.SessionId}.");
+		_logger.LogInformation("Processed create bookings {UserId} - {SessionId}.",
+			request.UserId,
+			request.SessionId);
 
 		return Ok(bookingId);
 	}
 
-	[HttpPatch("/Bookings/Pay/{bookingId:Guid}/User/{userId:Guid}")]
+	[HttpPatch("/bookings/pay/{bookingId:Guid}/user/{userId:Guid}")]
 	public async Task<IActionResult> Pay([FromRoute] Guid bookingId, [FromRoute] Guid userId)
 	{
 		var booking = await _mediator.Send(new PayBookingCommand(bookingId, userId));
@@ -64,7 +68,7 @@ public class BookingController : ControllerBase
 		return Ok(booking);
 	}
 
-	[HttpPatch("/Bookings/Cancel/{bookingId:Guid}")]
+	[HttpPatch("/bookings/cancel/{bookingId:Guid}")]
 	public async Task<IActionResult> Cancel([FromRoute] Guid bookingId)
 	{
 		var booking = await _mediator.Send(new CancelBookingCommand(bookingId));

@@ -1,11 +1,12 @@
-﻿using BookingService.Domain.Interfaces.Repositories;
+﻿using BookingService.Domain.Exceptions;
+using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
 
 using MapsterMapper;
 
 using MediatR;
 
-namespace BookingService.Application.Handlers.Query.Seats.GetSeats;
+namespace BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
 public class GetSeatsByIdQueryHandler(
 	ISessionSeatsRepository seatsRepository,

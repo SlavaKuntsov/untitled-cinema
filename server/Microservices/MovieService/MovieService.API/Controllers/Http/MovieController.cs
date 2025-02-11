@@ -33,7 +33,7 @@ public class MovieController : ControllerBase
 		_logger = logger;
 	}
 
-	[HttpGet("/Movies")]
+	[HttpGet("/movies")]
 	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Fetch all movies.");
@@ -51,7 +51,7 @@ public class MovieController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpGet("/Movies/{id:Guid}")]
+	[HttpGet("/movies/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		var movies = await _mediator.Send(new GetMovieByIdQuery(id), cancellationToken)
@@ -60,7 +60,7 @@ public class MovieController : ControllerBase
 		return Ok(movies);
 	}
 
-	[HttpPost("/Movies")]
+	[HttpPost("/movies")]
 	[SwaggerRequestExample(typeof(CreateMovieCommand), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Create([FromBody] CreateMovieCommand request, CancellationToken cancellationToken)
@@ -70,7 +70,7 @@ public class MovieController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch("/Movies")]
+	[HttpPatch("/movies")]
 	[SwaggerRequestExample(typeof(UpdateMovieCommand), typeof(UpdateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -80,7 +80,7 @@ public class MovieController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete("/Movies/{id:Guid}")]
+	[HttpDelete("/movies/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
@@ -89,7 +89,7 @@ public class MovieController : ControllerBase
 		return NoContent();
 	}
 
-	[HttpGet("/Movies/Genres")]
+	[HttpGet("/movies/genres")]
 	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
 		var genres = await _mediator.Send(new GetAllGenresQuery(), cancellationToken);
@@ -97,7 +97,7 @@ public class MovieController : ControllerBase
 		return Ok(genres);
 	}
 
-	[HttpPatch("/Movies/Genres")]
+	[HttpPatch("/movies/genres")]
 	[SwaggerRequestExample(typeof(UpdateGenreCommand), typeof(UpdateGenreCommandExample))]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateGenreCommand request, CancellationToken cancellationToken)
@@ -107,7 +107,7 @@ public class MovieController : ControllerBase
 		return Ok(genre);
 	}
 
-	[HttpDelete("/Movies/Genres/{id:Guid}")]
+	[HttpDelete("/movies/genres/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> DeleteGenre([FromRoute] Guid id, CancellationToken cancellationToken)
 	{

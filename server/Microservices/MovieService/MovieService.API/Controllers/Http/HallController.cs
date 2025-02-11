@@ -11,7 +11,6 @@ using MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Queries.Halls.GetAllHalls;
 using MovieService.Application.Handlers.Queries.Halls.GetHallById;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -29,7 +28,7 @@ public class HallController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Halls")]
+	[HttpGet("/halls")]
 	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
 		var halls = await _mediator.Send(new GetAllHallsQuery(), cancellationToken);
@@ -37,7 +36,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpGet("/Halls/{id:Guid}")]
+	[HttpGet("/halls/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		var halls = await _mediator.Send(new GetHallByIdQuery(id), cancellationToken)
@@ -46,7 +45,7 @@ public class HallController : ControllerBase
 		return Ok(halls);
 	}
 
-	[HttpPost("/Halls/Simple")]
+	[HttpPost("/halls/simple")]
 	[SwaggerRequestExample(typeof(CreateSimpleHallCommand), typeof(CreateSimpleHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateSimpleHallCommand requests, CancellationToken cancellationToken)
 	{
@@ -55,7 +54,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPost("/Halls/Custom")]
+	[HttpPost("/halls/custom")]
 	[SwaggerRequestExample(typeof(CreateCustomHallCommand), typeof(CreateCustomHallRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateCustomHallCommand request, CancellationToken cancellationToken)
 	{
@@ -64,7 +63,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpPatch("/Halls")]
+	[HttpPatch("/halls")]
 	[SwaggerRequestExample(typeof(UpdateHallCommand), typeof(UpdateHallRequestExample))]
 	public async Task<IActionResult> Update([FromBody] UpdateHallCommand request, CancellationToken cancellationToken)
 	{
@@ -73,7 +72,7 @@ public class HallController : ControllerBase
 		return Ok(movie);
 	}
 
-	[HttpDelete("/Halls/{id:Guid}")]
+	[HttpDelete("/halls/{id:Guid}")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		await _mediator.Send(new DeleteHallCommand(id), cancellationToken);

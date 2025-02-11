@@ -7,7 +7,6 @@ using MovieService.Application.Handlers.Commands.Days.CreateSession;
 using MovieService.Application.Handlers.Commands.Days.DeleteDay;
 using MovieService.Application.Handlers.Queries.Days.GetAllDays;
 using MovieService.Application.Handlers.Queries.Days.GetDayByDate;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -24,15 +23,15 @@ public class DayController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpGet("/Days")]
-	public async Task<IActionResult> Get(CancellationToken cancellationToken)
+	[HttpGet("/days")]
+	public async Task<IActionResult> Get()
 	{
 		var day = await _mediator.Send(new GetAllDaysQuery(), cancellationToken);
 
 		return Ok(day);
 	}
 
-	[HttpGet("/Days/{date}")]
+	[HttpGet("/days/{date}")]
 	public async Task<IActionResult> Get(
 		CancellationToken cancellationToken,
 		[FromRoute] string date = "05-01-2025")
@@ -43,7 +42,7 @@ public class DayController : ControllerBase
 		return Ok(day);
 	}
 
-	[HttpPost("/Days")]
+	[HttpPost("/days")]
 	[SwaggerRequestExample(typeof(CreateDayCommand), typeof(CreateDayRequestExample))]
 	public async Task<IActionResult> Create([FromBody] CreateDayCommand request, CancellationToken cancellationToken)
 	{
@@ -53,7 +52,7 @@ public class DayController : ControllerBase
 	}
 
 
-	[HttpDelete("/Days/{id:Guid}")]
+	[HttpDelete("/days/{id:Guid}")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		await _mediator.Send(new DeleteDayCommand(id), cancellationToken);

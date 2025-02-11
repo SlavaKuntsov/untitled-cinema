@@ -1,5 +1,4 @@
-﻿using BookingService.Application.Handlers.Query.Seats.GetSeats;
-using BookingService.Domain.Exceptions;
+﻿using BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
 using MediatR;
 
@@ -20,20 +19,18 @@ public class SeatController : ControllerBase
 		_logger = logger;
 	}
 
-	[HttpGet("/AvailableSeats/Available/Session/{sessionId:Guid}")]
+	[HttpGet("/bookingsSeats/available/session/{sessionId:Guid}")]
 	public async Task<IActionResult> GetAvailable([FromRoute] Guid sessionId)
 	{
-		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, true))
-			?? throw new NotFoundException(message: $"Available seats with session id '{sessionId}' not found.");
+		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, true));
 
 		return Ok(seats);
 	}
 
-	[HttpGet("/AvailableSeats/Reserved/Session/{sessionId:Guid}")]
+	[HttpGet("/bookingsSeats/reserved/session/{sessionId:Guid}")]
 	public async Task<IActionResult> GetReserved([FromRoute] Guid sessionId)
 	{
-		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, false))
-			?? throw new NotFoundException(message: $"Reserved seats with session id '{sessionId}' not found.");
+		var seats = await _mediator.Send(new GetSeatsByIdQuery(sessionId, false));
 
 		return Ok(seats);
 	}

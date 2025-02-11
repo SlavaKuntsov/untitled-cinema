@@ -35,7 +35,7 @@ public class UserController : ControllerBase
 		_mapper = mapper;
 	}
 
-	[HttpPost("/Users/Login")]
+	[HttpPost("/users/login")]
 	[SwaggerRequestExample(typeof(CreateLoginRequest), typeof(CreateLoginRequestExample))]
 	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request, CancellationToken cancellationToken)
 	{
@@ -53,7 +53,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto.AccessToken);
 	}
 
-	[HttpPost("/Users/Registration")]
+	[HttpPost("/users/registration")]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
 	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request, CancellationToken cancellationToken)
 	{
@@ -62,7 +62,7 @@ public class UserController : ControllerBase
 		return Ok(authResultDto.AccessToken);
 	}
 
-	[HttpPatch("/Users")]
+	[HttpPatch("/users")]
 	[SwaggerRequestExample(typeof(UpdateUserRequest), typeof(UpdateUserRequestExample))]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
@@ -72,7 +72,7 @@ public class UserController : ControllerBase
 		return Ok(particantModel);
 	}
 
-	[HttpPatch("/Users/Balance/Increase/{amount:decimal}")]
+	[HttpPatch("/users/balance/increase/{amount:decimal}")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Balance([FromRoute] decimal amount, CancellationToken cancellationToken)
 	{
@@ -91,7 +91,7 @@ public class UserController : ControllerBase
 		return Ok();
 	}
 
-	[HttpDelete("/Users/{id:Guid}")]
+	[HttpDelete("/users/{id:Guid}")]
 	[Authorize(Policy = "UserOrAdmin")]
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
@@ -110,7 +110,7 @@ public class UserController : ControllerBase
 		return Ok();
 	}
 
-	[HttpGet("/Users")]
+	[HttpGet("/users")]
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users(CancellationToken cancellationToken)
 	{

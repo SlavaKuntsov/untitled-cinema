@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -17,7 +18,8 @@ public class GetHallByIdQueryHandler(
 
 	public async Task<HallModel?> Handle(GetHallByIdQuery request, CancellationToken cancellationToken)
 	{
-		var hall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.Id, cancellationToken);
+		var hall = await _unitOfWork.Repository<HallEntity>().GetAsync(request.Id, cancellationToken)
+			?? throw new NotFoundException($"Hall with id '{request.Id.ToString()}' not found.");
 
 		return _mapper.Map<HallModel>(hall);
 	}
