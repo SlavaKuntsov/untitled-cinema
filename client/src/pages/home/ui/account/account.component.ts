@@ -13,6 +13,7 @@ import { User } from "../../../../entities/users";
 import { AuthService } from "../../../../entities/users/api/auth.service";
 import { UserService } from "../../../../entities/users/api/user.service";
 import { PROFILE } from "../../../../shared/router/routes";
+import { DividerComponent } from "../../../../shared/ui/components/divider/divider.component";
 
 @Component({
   selector: "app-account",
@@ -24,6 +25,7 @@ import { PROFILE } from "../../../../shared/router/routes";
     AvatarModule,
     AvatarGroupModule,
     ProgressSpinner,
+		DividerComponent
   ],
   templateUrl: "./account.component.html",
   styleUrl: "./account.component.scss",

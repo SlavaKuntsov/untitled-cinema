@@ -1,8 +1,9 @@
 <button
-  class="rounded-lg p-4 text-2xl font-bold transition-colors duration-500"
+  class="btn rounded-lg p-4 text-2xl font-bold transition-colors duration-500 group-disabled:bg-gray-400"
   type="submit"
   (click)="onClick()"
-  [ngClass]="buttonClasses"
+  [ngClass]="[buttonClasses, disabled ? disabledClasses : '']"
+  [disabled]="disabled"
 >
   {{ label }}
 </button>

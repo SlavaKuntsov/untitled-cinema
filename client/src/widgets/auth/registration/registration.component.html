@@ -8,6 +8,7 @@
       label="Email"
       placeholder="email"
       type="text"
+			id="email"
       [control]="form.controls['email']"
     >
     </app-input>
@@ -84,6 +85,7 @@
       label="FirstName"
       placeholder="firstName"
       type="text"
+			id="name"
       [control]="form.controls['firstName']"
     >
     </app-input>
@@ -102,6 +104,7 @@
       label="LastName"
       placeholder="lastName"
       type="text"
+			id="name"
       [control]="form.controls['lastName']"
     >
     </app-input>
@@ -125,8 +128,8 @@
         dateFormat="dd-mm-yy"
         class="custom-datepicker"
         styleClass="!w-full !text-2xl !h-14"
-      />
-    </label>
+				/>
+			</label>
 
     @if (dateOfBirth?.invalid && dateOfBirth?.touched) {
       <p class="text-md text-red-500">
@@ -138,13 +141,6 @@
   </div>
 
   <div class="mt-4 flex flex-col justify-center gap-5">
-    <!-- <button
-      class="rounded-lg bg-indigo-600 p-4 text-2xl font-bold transition-colors duration-500 hover:bg-white hover:text-indigo-600"
-      type="submit"
-    >
-      Registration
-    </button> -->
-
     <app-button
       [label]="'Registration'"
       [buttonClasses]="

@@ -6,7 +6,7 @@
         [style.height]="'15rem'"
         [style.font-size]="'5rem'"
         [style.background]="'rgb(39 39 42)'"
-				[styleClass]="'bg-zinc-600'"
+        [styleClass]="'bg-zinc-600'"
         [label]="user.firstName.charAt(0)"
         size="xlarge"
         shape="circle"
@@ -40,14 +40,16 @@
               }
             }
           </ul>
-          <span class="my-2 h-1 w-full rounded-md bg-zinc-800"></span>
+          <app-divider
+            dividerClasses="my-3 h-1 w-full rounded-md bg-zinc-800"
+          ></app-divider>
         </div>
 
         <router-outlet></router-outlet>
       </div>
     </div>
   </div>
-} @else if(!user();) {
+} @else if (!user()) {
   <div class="flex h-full w-full justify-center">
     <p-progress-spinner ariaLabel="loading" />
   </div>

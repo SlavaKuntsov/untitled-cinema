@@ -1,5 +1,5 @@
 <header
-  class="fixed z-30 flex w-full flex-col items-center py-10 backdrop-blur-xl"
+  class="fixed z-30 flex w-full flex-col items-center py-10 backdrop-blur-xl px-10"
 >
   <nav class="container relative z-10 grid grid-cols-2 items-center gap-10">
     <h1 class="items-center text-4xl font-bold tracking-wider">
@@ -20,7 +20,7 @@
       >
         @for (route of routes; track route.title) {
           <li
-            class="anim-bounce relative after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+            class="anim-bounce relative flex items-center after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
           >
             <a
               class="relative z-10"
@@ -35,7 +35,7 @@
       </ul>
 
       <div class="relative flex flex-row">
-        <div class="flex flex-row gap-5 mr-2">
+        <div class="mr-2 flex flex-row gap-5">
           <button (click)="send()">send</button>
 
           <button
@@ -74,7 +74,7 @@
 
         @if (isNotifocationsOpen()) {
           <div
-            class="notifications absolute right-0 top-20 flex h-fit w-[300px] flex-col gap-4 rounded-xl border-2 border-zinc-600 bg-zinc-800 p-6"
+            class="notifications absolute right-0 top-20 flex h-fit w-[30rem] flex-col gap-4 rounded-xl border-2 border-zinc-600 bg-zinc-800 p-6"
           >
             <h3 class="text-2xl font-semibold">Notifications</h3>
 

@@ -3,16 +3,18 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
   selector: "app-button",
-  imports: [CommonModule], // Добавляем CommonModule для ngClass
+  imports: [CommonModule],
   templateUrl: "./button.component.html",
   styleUrl: "./button.component.scss",
 })
 export class ButtonComponent {
-  @Input() label: string = ""; // Текст кнопки
-  @Input() buttonClasses: string | string[] = ""; // Классы для кнопки
-  @Output() clickEvent = new EventEmitter<void>(); // Событие клика
+  @Input() label: string = "";
+  @Input() buttonClasses: string | string[] = "";
+  @Input() disabledClasses: string | string[] = "";
+  @Input() disabled: boolean = false;
+  @Output() clickEvent = new EventEmitter<void>();
 
   onClick() {
-    this.clickEvent.emit(); // Генерация события при клике
+    this.clickEvent.emit();
   }
 }

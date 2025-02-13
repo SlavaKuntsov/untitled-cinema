@@ -51,8 +51,6 @@ export class ProfileComponent {
   messageService = inject(MessageService);
   toastService = inject(ToastService);
 
-  checked: boolean = false;
-
   form = new FormGroup({
     email: new FormControl<string | null>({ value: "", disabled: true }, [
       Validators.required,
@@ -69,9 +67,10 @@ export class ProfileComponent {
     ]),
   });
 
-  user: Signal<User | null> = this.userService.user;
+  checked: boolean = false;
 
-  newUser: User | null = this.user();
+  user: Signal<User | null> = this.userService.user;
+  tempUser: Partial<User> = {};
 
   constructor() {
     effect(() => {
@@ -95,23 +94,18 @@ export class ProfileComponent {
       message: "Please confirm to proceed.",
       key: "save",
       accept: () => {
-        console.log(this.form.value);
         const updateUser: UpdateUser = {
-          id: this.newUser?.id!,
-          firstName: this.newUser?.firstName!,
-          lastName: this.newUser?.lastName!,
-          dateOfBirth: this.newUser?.dateOfBirth!,
+          id: this.user()?.id!,
+          firstName: this.tempUser.firstName || this.user()?.firstName!,
+          lastName: this.tempUser.lastName || this.user()?.lastName!,
+          dateOfBirth: this.tempUser.dateOfBirth || this.user()?.dateOfBirth!,
         };
-
-        console.log("UPD");
-        console.log(updateUser);
 
         this.userService.update(updateUser).subscribe({
           next: (res: User) => {
             this.toastService.showToast(ToastStatus.Info, "Profile saved");
           },
           error: (error: IError) => {
-            console.log(error);
             const errorMessage = this.errorService.getErrorMessage(error);
             this.toastService.showToast(ToastStatus.Error, errorMessage);
           },
@@ -159,15 +153,11 @@ export class ProfileComponent {
   }
 
   onFormChange() {
-    if (this.newUser) {
-      this.newUser.firstName = this.form.controls.firstName.value!;
-      this.newUser.lastName = this.form.controls.lastName.value!;
-      this.newUser.dateOfBirth = format(
-        this.form.controls.dateOfBirth.value!,
-        "dd-MM-yyyy",
-      );
-      console.log(this.newUser);
-    }
+    this.tempUser = {
+      firstName: this.form.controls.firstName.value!,
+      lastName: this.form.controls.lastName.value!,
+      dateOfBirth: format(this.form.controls.dateOfBirth.value!, "dd-MM-yyyy"),
+    };
   }
 
   toggleInputs() {
@@ -180,8 +170,8 @@ export class ProfileComponent {
   }
 
   onDatepickerChange() {
-    if (this.newUser) {
-      this.newUser.dateOfBirth = format(
+    if (this.tempUser) {
+      this.tempUser.dateOfBirth = format(
         this.form.controls.dateOfBirth.value!,
         "dd-MM-yyyy",
       );
