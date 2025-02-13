@@ -22,7 +22,7 @@ public class SeatController : ControllerBase
 {
 	private readonly IMediator _mediator;
 
-	public SeatController(IMediator mediator, CancellationToken cancellationToken)
+	public SeatController(IMediator mediator)
 	{
 		_mediator = mediator;
 	}

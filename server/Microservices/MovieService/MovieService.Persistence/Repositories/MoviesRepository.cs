@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Persistence.Repositories;

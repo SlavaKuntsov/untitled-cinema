@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-using MovieService.API.Contracts.Examples.Movies;
 using MovieService.API.Contracts.RequestExamples.Movies;
 using MovieService.API.Contracts.Requests;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
@@ -26,8 +25,7 @@ public class MovieController : ControllerBase
 	private readonly IMediator _mediator;
 	private readonly ILogger<MovieController> _logger;
 
-	public MovieController(IMediator mediator,
-		ILogger<MovieController> logger)
+	public MovieController(IMediator mediator, ILogger<MovieController> logger)
 	{
 		_mediator = mediator;
 		_logger = logger;

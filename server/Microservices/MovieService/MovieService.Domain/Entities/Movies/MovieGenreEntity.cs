@@ -1,4 +1,4 @@
-﻿namespace MovieService.Domain.Entities;
+﻿namespace MovieService.Domain.Entities.Movies;
 
 public class MovieGenreEntity
 {

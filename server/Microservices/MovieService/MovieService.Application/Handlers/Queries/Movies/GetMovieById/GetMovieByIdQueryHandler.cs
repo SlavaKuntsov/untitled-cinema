@@ -2,9 +2,9 @@
 
 using MediatR;
 
-using MovieService.Domain;
-using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetMovieById;
 

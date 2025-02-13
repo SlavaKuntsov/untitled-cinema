@@ -1,4 +1,5 @@
 ﻿using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 
 namespace MovieService.Domain.Interfaces.Repositories;
 

@@ -4,8 +4,8 @@ using MediatR;
 
 using MovieService.Application.DTOs;
 using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 

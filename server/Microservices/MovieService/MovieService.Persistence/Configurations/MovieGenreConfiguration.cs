@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 
 namespace MovieService.Persistence.Configurations;
 

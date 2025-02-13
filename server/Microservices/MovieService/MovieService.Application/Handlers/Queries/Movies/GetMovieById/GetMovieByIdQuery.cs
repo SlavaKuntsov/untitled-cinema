@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-using MovieService.Domain;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetMovieById;
 
