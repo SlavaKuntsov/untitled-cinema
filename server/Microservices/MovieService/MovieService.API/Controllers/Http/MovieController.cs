@@ -38,7 +38,7 @@ public class MovieController : ControllerBase
 	{
 		_logger.LogInformation("Fetch all movies.");
 
-		var movies = await _mediator.Send(new GetAllMoviesQuery(
+		var paginatedMovies = await _mediator.Send(new GetAllMoviesQuery(
 			request.Limit,
 			request.Offset,
 			request.Filter,
@@ -46,9 +46,13 @@ public class MovieController : ControllerBase
 			request.SortBy,
 			request.SortDirection), cancellationToken);
 
-		_logger.LogInformation("Successfully fetched {Count} movies.", movies.Count);
+		var (nextRef, prevRef) = GeneratePaginationLinks(request, paginatedMovies.Total);
 
-		return Ok(movies);
+		var newPaginatedMovies = paginatedMovies with { NextRef = nextRef, PrevRef = prevRef };
+
+		_logger.LogInformation("Successfully fetched {Count} movies.", request.Limit);
+
+		return Ok(newPaginatedMovies);
 	}
 
 	[HttpGet("/movies/{id:Guid}")]
@@ -114,5 +118,24 @@ public class MovieController : ControllerBase
 		await _mediator.Send(new DeleteGenreCommand(id), cancellationToken);
 
 		return NoContent();
+	}
+
+	private (string NextRef, string PrevRef) GeneratePaginationLinks(GetMovieRequest request, int totalItems)
+	{
+		var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+
+		var nextOffset = request.Offset + 1;
+		var nextRef = (request.Offset * request.Limit) < totalItems
+		? $"{baseUrl}?Limit={request.Limit}&Offset={nextOffset}&SortBy={request.SortBy}&SortDirection={request.SortDirection}"
+		: string.Empty;
+
+		var prevRef = string.Empty;
+		if (request.Offset > 1)
+		{
+			var prevOffset = request.Offset - 1;
+			prevRef = $"{baseUrl}?Limit={request.Limit}&Offset={prevOffset}&SortBy={request.SortBy}&SortDirection={request.SortDirection}";
+		}
+
+		return (nextRef, prevRef);
 	}
 }

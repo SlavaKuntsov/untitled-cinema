@@ -2,6 +2,7 @@
 
 using MediatR;
 
+using MovieService.Application.DTOs;
 using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -10,15 +11,18 @@ namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
 public class GetAllMoviesQueryHandler(
 	IUnitOfWork unitOfWork,
-	IMapper mapper,
-	IRedisCacheService redisCacheService) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
+	//IRedisCacheService redisCacheService,
+	IMapper mapper
+	) : IRequestHandler<GetAllMoviesQuery, PaginationWrapperDto<MovieModel>>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
-	private readonly IRedisCacheService _redisCacheService = redisCacheService;
+	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
-	public async Task<IList<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
+	public async Task<PaginationWrapperDto<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
 	{
+		var totalMovies = await _unitOfWork.MoviesRepository.GetCount();
+
 		string cacheKey = @$"movies_
 			{request.Filter}_
 			{request.FilterValue}_
@@ -27,10 +31,16 @@ public class GetAllMoviesQueryHandler(
 			{request.Offset}_
 			{request.Limit}";
 
-		var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
+		//var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
 
-		if (cachedMovies != null)
-			return cachedMovies;
+		//if (cachedMovies != null)
+		//{
+		//	return new PaginationWrapperDto<MovieModel>(
+		//		cachedMovies,
+		//		request.Limit,
+		//		request.Offset,
+		//		totalMovies);
+		//}
 
 		var query = _unitOfWork.MoviesRepository.Get();
 
@@ -76,8 +86,12 @@ public class GetAllMoviesQueryHandler(
 
 		var movieModels = _mapper.Map<IList<MovieModel>>(movies);
 
-		await _redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
+		//await _redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
 
-		return movieModels;
+		return new PaginationWrapperDto<MovieModel>(
+			movieModels,
+			request.Limit,
+			request.Offset,
+			totalMovies);
 	}
 }

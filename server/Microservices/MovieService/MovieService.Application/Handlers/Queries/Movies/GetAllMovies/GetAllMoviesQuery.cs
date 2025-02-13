@@ -1,5 +1,6 @@
 ﻿using MediatR;
 
+using MovieService.Application.DTOs;
 using MovieService.Domain;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
@@ -10,7 +11,7 @@ public class GetAllMoviesQuery(
 	string? filter,
 	string? filterValue,
 	string sortBy,
-	string sortDirection) : IRequest<IList<MovieModel>>
+	string sortDirection) : IRequest<PaginationWrapperDto<MovieModel>>
 {
 	public byte Limit { get; private set; } = limit;
 	public byte Offset { get; private set; } = offset;

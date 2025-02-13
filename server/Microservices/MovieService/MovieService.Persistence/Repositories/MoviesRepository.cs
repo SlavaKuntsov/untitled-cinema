@@ -33,6 +33,11 @@ public class MoviesRepository : IMoviesRepository
 			.AsQueryable();
 	}
 
+	public async Task<int> GetCount()
+	{
+		return await _context.Movies.CountAsync();
+	}
+
 	public async Task<IList<MovieEntity>> ToListAsync(IQueryable<MovieEntity> query, CancellationToken cancellationToken)
 	{
 		return await query.ToListAsync(cancellationToken);
