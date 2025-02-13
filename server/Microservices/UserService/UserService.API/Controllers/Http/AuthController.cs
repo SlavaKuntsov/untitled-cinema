@@ -67,9 +67,16 @@ public class AuthController : ControllerBase
 
 	[HttpGet("unauthorize")]
 	[Authorize(Policy = "UserOrAdmin")]
-	public IActionResult Unauthorize()
+	public async Task<IActionResult> Unauthorize(CancellationToken cancellationToken)
 	{
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+
+		var userId = Guid.Parse(userIdClaim.Value);
+
 		_cookieService.DeleteRefreshToken();
+
+		await _mediator.Send(new UnauthorizeCommand(userId), cancellationToken);
 
 		return Ok();
 	}
