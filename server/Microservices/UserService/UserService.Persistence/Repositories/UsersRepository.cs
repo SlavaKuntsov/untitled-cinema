@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
@@ -8,10 +11,14 @@ namespace UserService.Persistence.Repositories;
 public class UsersRepository : IUsersRepository
 {
 	private readonly UserServiceDBContext _context;
+	private readonly ILogger<UsersRepository> _logger;
 
-	public UsersRepository(UserServiceDBContext context)
+	public UsersRepository(
+		UserServiceDBContext context,
+		ILogger<UsersRepository> logger)
 	{
 		_context = context;
+		_logger = logger;
 	}
 
 	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)

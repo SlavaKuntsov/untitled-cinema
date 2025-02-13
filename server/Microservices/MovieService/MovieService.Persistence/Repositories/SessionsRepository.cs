@@ -26,14 +26,12 @@ public class SessionsRepository : ISessionsRepository
 
 	public async Task<IList<SessionEntity>> GetOverlappingAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
 	{
-		var sessions = await _context.Sessions
+		return await _context.Sessions
 			.AsNoTracking()
 			.Where(s =>
 				(s.StartTime < endTime && s.EndTime > startTime) ||
 				(s.StartTime == startTime && s.EndTime == endTime)
 			)
 			.ToListAsync(cancellationToken);
-
-		return sessions ?? [];
 	}
 }

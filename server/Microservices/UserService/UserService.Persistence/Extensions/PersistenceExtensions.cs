@@ -16,10 +16,10 @@ public static class PersistenceExtensions
 		if (string.IsNullOrEmpty(connectionString))
 			connectionString = configuration.GetConnectionString("UserServiceDBContext");
 
-		services.AddDbContext<UserServiceDBContext>(options =>
+		services.AddDbContextPool<UserServiceDBContext>(options =>
 		{
 			options.UseNpgsql(connectionString);
-		});
+		}, poolSize: 128);
 
 		services.AddScoped<IUsersRepository, UsersRepository>();
 		services.AddScoped<ITokensRepository, TokensRepository>();

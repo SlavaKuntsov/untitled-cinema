@@ -44,5 +44,8 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 			   .WithOne(s => s.Movie)
 			   .HasForeignKey(s => s.MovieId)
 			   .OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasIndex(m => m.Title)
+			   .HasDatabaseName("IX_Movies_Title");
 	}
 }

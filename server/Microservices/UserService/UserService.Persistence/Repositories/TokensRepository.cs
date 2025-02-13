@@ -16,22 +16,19 @@ public class TokensRepository : ITokensRepository
 
 	public async Task<RefreshTokenEntity?> GetAsync(string refreshToken, CancellationToken cancellationToken)
 	{
-		var entity = await _context
-			.RefreshTokens
+		return await _context.RefreshTokens
 			.AsNoTracking()
-			.FirstOrDefaultAsync(r => r.Token == refreshToken, cancellationToken);
-
-		return entity;
+			.Where(r => r.Token == refreshToken)
+			.FirstOrDefaultAsync(cancellationToken);
 	}
 
 	public async Task<RefreshTokenEntity?> GetAsync(Guid userId, CancellationToken cancellationToken)
 	{
-		var entity = await _context
+		return  await _context
 			.RefreshTokens
 			.AsNoTracking()
-			.FirstOrDefaultAsync(r => r.UserId == userId, cancellationToken);
-
-		return entity;
+			.Where(r => r.UserId == userId)
+			.FirstOrDefaultAsync(cancellationToken);
 	}
 
 	public async Task CreateAsync(RefreshTokenEntity newRefreshTokenEntity, CancellationToken cancellationToken)
