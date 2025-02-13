@@ -1,3 +1,27 @@
+.custom-datepicker .p-inputtext {
+  @apply bg-transparent;
+}
+
+.custom-datepicker .p-inputtext:disabled {
+  @apply cursor-not-allowed bg-[#27272a];
+}
+
+.custom-datepicker .p-datepicker-panel {
+  @apply !bg-zinc-900 opacity-100;
+}
+
+.custom-datepicker .p-datepicker-day-view {
+  @apply p-2 text-2xl;
+}
+
+.custom-datepicker .p-datepicker-weekday-cell {
+  @apply !p-4;
+}
+
+.custom-datepicker .p-datepicker-day {
+  @apply !p-5;
+}
+
 .custom-dialog .p-dialog-title {
   @apply text-4xl;
 }
@@ -8,7 +32,52 @@
 .custom-dialog .p-dialog {
   @apply !w-1/2 px-6 py-4;
 }
+
+.custom-chip {
+  @apply !rounded-3xl !border-[3px] !border-zinc-800 !bg-transparent !px-5 !py-3 !text-2xl !font-medium !text-zinc-500 !transition-colors !duration-500 !ease-in-out hover:!border-zinc-600 hover:!text-white;
+}
+
+.custom-chip .p-chip-remove-icon {
+  @apply ml-3 !h-7 !w-7;
+}
+
+.custom-chip .p-chip-remove-icon .p-icon {
+  @apply !h-full !w-full !text-zinc-400;
+}
+
 .i-p-badge .p-badge {
-  @apply min-h-7 min-w-7 bg-indigo-600 text-lg text-white rounded-full;
+  @apply min-h-7 min-w-7 rounded-full bg-indigo-600 text-lg text-white;
   transform: translate(65%, -50%) !important;
+}
+
+.custom-paginator .p-paginator button {
+  @apply h-14 w-14 text-2xl;
+}
+
+.custom-toggleswitch .p-toggleswitch .p-toggleswitch-slider{
+	@apply h-10 min-w-16
+}
+
+.custom-toggleswitch .p-toggleswitch .p-toggleswitch-handle{
+	@apply h-6 w-6 top-[35%] -left-1
+}
+
+.custom-message .p-message-content{
+	@apply !pl-5 !pr-3 !py-5 !gap-0 items-start
+}
+
+.custom-message .p-message-text{
+	@apply ml-5 mr-0 !text-xl !min-h-[3rem] !flex !items-center
+}
+
+.custom-message .p-message-icon{
+	@apply !text-3xl mt-1 !w-8 !h-7 mb-1 flex flex-col items-center
+}
+
+.custom-message .p-message-close-button svg{
+	@apply w-8 h-7
+}
+
+.custom-message .p-message-close-button{
+	@apply p-6
 }

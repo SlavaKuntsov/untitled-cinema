@@ -1,0 +1,29 @@
+:host {
+  @apply flex flex-col;
+}
+
+.grid-container {
+  @apply grid gap-10
+}
+
+.grid-container {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (min-width: 2048px) {
+  .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
