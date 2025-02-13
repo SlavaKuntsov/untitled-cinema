@@ -7,8 +7,8 @@ using MediatR;
 using Protobufs.Auth;
 
 using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
-using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
-using UserService.Application.Handlers.Queries.Users.GetUser;
+using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
+using UserService.Application.Handlers.Queries.Users.GetUserById;
 
 namespace UserService.API.Controllers.Grpc;
 

@@ -50,6 +50,11 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 			.WithOne(r => r.User)
 			.HasForeignKey<RefreshTokenEntity>(r => r.UserId);
 
+		builder.HasMany(u => u.Notifications)
+			.WithOne(n => n.User)
+			.HasForeignKey(n => n.UserId)
+			.OnDelete(DeleteBehavior.Cascade);
+
 		builder.HasData(
 			new UserEntity
 			{

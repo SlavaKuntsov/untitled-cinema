@@ -1,0 +1,14 @@
+.custom-dialog .p-dialog-title {
+  @apply text-4xl;
+}
+.custom-dialog {
+  @apply !w-1/2;
+}
+
+.custom-dialog .p-dialog {
+  @apply !w-1/2 px-6 py-4;
+}
+.i-p-badge .p-badge {
+  @apply min-h-7 min-w-7 bg-indigo-600 text-lg text-white rounded-full;
+  transform: translate(65%, -50%) !important;
+}

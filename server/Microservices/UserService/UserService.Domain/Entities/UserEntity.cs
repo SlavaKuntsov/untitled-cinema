@@ -14,4 +14,5 @@ public class UserEntity
 	public decimal Balance { get; set; } = 0;
 
 	public virtual RefreshTokenEntity RefreshToken { get; set; } = null!;
+	public virtual ICollection<NotificationEntity> Notifications { get; set; } = [];
 }

@@ -52,7 +52,6 @@ public class UserRegistrationCommandHandler(
 
 		var refreshTokenModel = new RefreshTokenModel(
 				userModel.Id,
-				role,
 				refreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 

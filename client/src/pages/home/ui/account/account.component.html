@@ -5,6 +5,8 @@
         [style.width]="'15rem'"
         [style.height]="'15rem'"
         [style.font-size]="'5rem'"
+        [style.background]="'rgb(39 39 42)'"
+				[styleClass]="'bg-zinc-600'"
         [label]="user.firstName.charAt(0)"
         size="xlarge"
         shape="circle"
@@ -45,7 +47,7 @@
       </div>
     </div>
   </div>
-} @else {
+} @else if(!user();) {
   <div class="flex h-full w-full justify-center">
     <p-progress-spinner ariaLabel="loading" />
   </div>

@@ -14,7 +14,7 @@ public class TokensRepository : ITokensRepository
 		_context = context;
 	}
 
-	public async Task<RefreshTokenEntity?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+	public async Task<RefreshTokenEntity?> GetAsync(string refreshToken, CancellationToken cancellationToken)
 	{
 		var entity = await _context
 			.RefreshTokens
@@ -24,7 +24,7 @@ public class TokensRepository : ITokensRepository
 		return entity;
 	}
 
-	public async Task<RefreshTokenEntity?> GetRefreshTokenAsync(Guid userId, CancellationToken cancellationToken)
+	public async Task<RefreshTokenEntity?> GetAsync(Guid userId, CancellationToken cancellationToken)
 	{
 		var entity = await _context
 			.RefreshTokens
@@ -34,12 +34,12 @@ public class TokensRepository : ITokensRepository
 		return entity;
 	}
 
-	public async Task AddRefreshTokenAsync(RefreshTokenEntity newRefreshTokenEntity, CancellationToken cancellationToken)
+	public async Task CreateAsync(RefreshTokenEntity newRefreshTokenEntity, CancellationToken cancellationToken)
 	{
 		await _context.RefreshTokens.AddAsync(newRefreshTokenEntity, cancellationToken);
 	}
 
-	public void UpdateRefreshToken(RefreshTokenEntity refreshTolkenEntity)
+	public void Update(RefreshTokenEntity refreshTolkenEntity)
 	{
 		_context.RefreshTokens.Attach(refreshTolkenEntity).State = EntityState.Modified;
 	}

@@ -1,0 +1,105 @@
+<header
+  class="fixed z-30 flex w-full flex-col items-center py-10 backdrop-blur-xl"
+>
+  <nav class="container relative z-10 grid grid-cols-2 items-center gap-10">
+    <h1 class="items-center text-4xl font-bold tracking-wider">
+      <a
+        class="anim-bounce relative z-10 after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+      >
+        Untitled
+      </a>
+    </h1>
+
+    <div class="flex flex-row items-center justify-end gap-24">
+      <ul
+        class="flex flex-row justify-end justify-items-end gap-10 text-2xl font-normal text-white"
+      >
+        @for (route of routes; track route.title) {
+          <li
+            class="anim-bounce relative after:bg-indigo-500 after:transition-all after:duration-500 hover:after:translate-y-[-150%] hover:after:opacity-100"
+          >
+            <a
+              class="relative z-10"
+              [routerLink]="route.route"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              {{ route.title }}
+            </a>
+          </li>
+        }
+      </ul>
+
+      <div class="relative flex flex-row">
+        <div class="flex flex-row gap-5 mr-2">
+          <button (click)="send()">send</button>
+
+          <button
+            (click)="openNotifications()"
+            type="button"
+            class="open-notifications-button h-14 w-14 rounded-full p-2 transition-all duration-500 ease-in-out hover:bg-indigo-600"
+            [ngClass]="{ 'bg-indigo-800': isNotifocationsOpen() }"
+          >
+            @if (notifications().length > 0) {
+              <i
+                class="pi pi-bell i-p-badge !text-3xl"
+                pBadge
+                [value]="notifications().length"
+              ></i>
+            } @else {
+              <i class="pi pi-bell i-p-badge !text-3xl"></i>
+            }
+          </button>
+
+          <button
+            class="h-14 w-14 rounded-full p-2 transition-all duration-500 ease-in-out hover:bg-indigo-600"
+            type="button"
+            [routerLink]="[account]"
+            routerLinkActive="active"
+          >
+            <i class="pi pi-user !text-3xl"></i>
+
+            @if (!user()) {
+              <span
+                class="absolute -right-5 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
+                >Login</span
+              >
+            }
+          </button>
+        </div>
+
+        @if (isNotifocationsOpen()) {
+          <div
+            class="notifications absolute right-0 top-20 flex h-fit w-[300px] flex-col gap-4 rounded-xl border-2 border-zinc-600 bg-zinc-800 p-6"
+          >
+            <h3 class="text-2xl font-semibold">Notifications</h3>
+
+            <app-divider dividerClasses="bg-zinc-600 my-3"></app-divider>
+
+            <div class="flex flex-col gap-4 text-lg">
+              @if (notifications() && notifications().length != 0) {
+                @for (item of notifications(); track item.id) {
+                  <p-message
+                    [text]="item.message"
+                    icon="pi pi-send"
+                    class="custom-message"
+                    size="large"
+                    severity="secondary"
+                    closable
+                    (onClose)="deleteNotification(item.id)"
+                  />
+                }
+              } @else {
+                <p>No notifications</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </nav>
+</header>

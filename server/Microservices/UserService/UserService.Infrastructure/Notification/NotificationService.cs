@@ -1,25 +1,29 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 using UserService.Application.Interfaces.Notification;
+using UserService.Domain.Models;
 
 namespace UserService.Infrastructure.Notification;
 
-public class NotificationService : INotificationService
+public class NotificationService(
+	IHubContext<NotificationHub> hubContext,
+	ILogger<NotificationService> logger) : INotificationService
 {
-	private readonly IHubContext<NotificationHub> _hubContext;
+	private readonly IHubContext<NotificationHub> _hubContext = hubContext;
 
-	public NotificationService(IHubContext<NotificationHub> hubContext)
+	public async Task SendAsync(NotificationModel notification, CancellationToken cancellationToken)
 	{
-		_hubContext = hubContext;
-	}
-
-	public async Task SendAsync(Guid userId, string message)
-	{
-		var connections = NotificationHub.GetConnections(userId);
+		var connections = NotificationHub.GetConnections(notification.UserId);
 
 		foreach (var connectionId in connections)
 		{
-			await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveNotification", message);
+			logger.LogError("coonect count: " + connections.Count());
+
+			await _hubContext.Clients.Client(connectionId).SendAsync(
+				"ReceiveNotification",
+				notification,
+				cancellationToken);
 		}
 	}
 }

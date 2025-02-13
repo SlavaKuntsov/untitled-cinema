@@ -1,11 +1,13 @@
-import { Component, effect, inject, Signal } from "@angular/core";
+import { Component, effect, inject, OnDestroy, Signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { ToastModule } from "primeng/toast";
 import { IError } from "../entities/error/model/error";
+import { NotificationService } from "../entities/notifications/api/notification.service";
+import { User } from "../entities/users";
 import { AuthService } from "../entities/users/api/auth.service";
+import { UserService } from "../entities/users/api/user.service";
 import { ErrorService } from "./core/services/error/api/error.service";
-import { NotificationService } from "./core/services/notification/notification.service";
 import { ToastService, ToastStatus } from "./core/services/toast";
 
 @Component({
@@ -14,15 +16,16 @@ import { ToastService, ToastStatus } from "./core/services/toast";
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   authService = inject(AuthService);
   toastService = inject(ToastService);
+  userService = inject(UserService);
   errorService = inject(ErrorService);
   notificationService = inject(NotificationService);
 
-  notifications: string[] = [];
   isUser = false;
 
+  user: Signal<User | null> = this.userService.user;
   accessTokenExist: Signal<boolean> = this.authService.accessTokenExist;
 
   constructor() {
@@ -32,38 +35,20 @@ export class AppComponent {
     this.authService.authorize().subscribe({
       error: (error: IError) => {
         const errorMessage = this.errorService.getErrorMessage(error);
-        // this.toastService.showToast(ToastStatus.Error, errorMessage);
+        this.toastService.showToast(ToastStatus.Error, errorMessage);
       },
     });
 
     effect(() => {
-      if (this.accessTokenExist()) {
+      const hasUser = !!this.user();
+      const hasToken = this.accessTokenExist();
+
+      if (hasUser && hasToken) {
         console.log("User authenticated, starting notifications...");
-        // this.notificationService.startConnection();
+        this.notificationService.startConnection();
       } else {
         console.log("User logged out, stopping notifications...");
         this.notificationService.stopConnection();
-      }
-    });
-
-    // this.userSubscription = this.authService.isUser$.subscribe(
-    //   (isAuthenticated) => {
-    //     this.isUser = isAuthenticated;
-    //     if (isAuthenticated) {
-    //       console.log("User authenticated, starting notifications...");
-    //       // this.notificationService.startConnection();
-    //     } else {
-    //       console.log("User logged out, stopping notifications...");
-    //       this.notificationService.stopConnection();
-    //     }
-    //   },
-    // );
-
-    this.notificationService.notifications$.subscribe((messages) => {
-      if (messages.length > 0) {
-        const latestMessage = messages[messages.length - 1];
-        console.log("Получено сообщение:", latestMessage);
-        this.toastService.showToast(ToastStatus.Success, latestMessage);
       }
     });
   }

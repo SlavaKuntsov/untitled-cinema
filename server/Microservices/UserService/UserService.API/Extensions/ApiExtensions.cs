@@ -166,7 +166,7 @@ public static class ApiExtensions
 	{
 		app.MapGrpcService<Controllers.Grpc.AuthController>();
 
-		app.MapHub<NotificationHub>("/notifications");
+		app.MapHub<NotificationHub>("/notify");
 	}
 
 	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)

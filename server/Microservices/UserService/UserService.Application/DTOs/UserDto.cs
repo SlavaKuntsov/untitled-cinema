@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 
+namespace UserService.Application.DTOs;
+
 public class UserDto
 {
 	public Guid Id { get; set; }
@@ -7,7 +9,7 @@ public class UserDto
 	public string Role { get; set; } = string.Empty;
 	public string FirstName { get; set; } = string.Empty;
 	public string LastName { get; set; } = string.Empty;
-	public decimal Balance { get; set; } 
+	public decimal Balance { get; set; }
 
 	private DateTime _dateOfBirth;
 
@@ -17,7 +19,7 @@ public class UserDto
 		set
 		{
 			if (DateTime.TryParseExact(value,
-				[UserService.Domain.Constants.DateTimeConstants.DATE_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
+				[Domain.Constants.DateTimeConstants.DATE_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
 				CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
 			{
 				_dateOfBirth = date;

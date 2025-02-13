@@ -11,6 +11,7 @@ using MovieService.Application.Handlers.Commands.Halls.DeleteHall;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Queries.Halls.GetAllHalls;
 using MovieService.Application.Handlers.Queries.Halls.GetHallById;
+using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 

@@ -12,5 +12,6 @@ public interface IUsersRepository
 	Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken);
 	Task<IList<Guid>> GetByRole(Role role, CancellationToken cancellationToken);
 	Task<Role?> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken);
+	Task<UserEntity?> GetWithTokenAsync(Guid id, CancellationToken cancellationToken);
 	void Update(UserEntity entity);
 }

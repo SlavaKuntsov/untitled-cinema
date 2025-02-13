@@ -5,7 +5,7 @@ using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
-namespace UserService.Application.Handlers.Commands.Tokens.RefreshToken;
+namespace UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
 
 public class GetByRefreshTokenCommandHandler(IUsersRepository usersRepository, IJwt jwt) : IRequestHandler<GetByRefreshTokenCommand, UserRoleDto>
 {
@@ -23,7 +23,7 @@ public class GetByRefreshTokenCommandHandler(IUsersRepository usersRepository, I
 			throw new InvalidTokenException("Invalid refresh token");
 
 		var role = await _usersRepository.GetRoleByIdAsync(userId, cancellationToken)
-				?? throw new NotFoundException("User not found");
+			?? throw new NotFoundException("User not found");
 
 		return new UserRoleDto(userId, role);
 	}

@@ -22,6 +22,30 @@ namespace UserService.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("UserService.Domain.Entities.NotificationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notification", (string)null);
+                });
+
             modelBuilder.Entity("UserService.Domain.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -95,15 +119,26 @@ namespace UserService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a592d29f-3c54-40f0-b7d7-40c0622a264e"),
+                            Id = new Guid("c1072bf0-aaae-4054-baf0-fa957fdce21e"),
                             Balance = 0m,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@email.com",
                             FirstName = "admin",
                             LastName = "admin",
-                            Password = "$2a$11$UHwwtWYYZA9A4LqBR6xUTO5yDpkvxeG77q4//O4AWqyB7p1RcXgDG",
+                            Password = "$2a$11$YNtcUezN8AWzQQHBoqmRg.snL03rBk5pfVYnqHVdVcV0tjjzmfh7i",
                             Role = "Admin"
                         });
+                });
+
+            modelBuilder.Entity("UserService.Domain.Entities.NotificationEntity", b =>
+                {
+                    b.HasOne("UserService.Domain.Entities.UserEntity", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.RefreshTokenEntity", b =>
@@ -117,6 +152,8 @@ namespace UserService.Persistence.Migrations
 
             modelBuilder.Entity("UserService.Domain.Entities.UserEntity", b =>
                 {
+                    b.Navigation("Notifications");
+
                     b.Navigation("RefreshToken")
                         .IsRequired();
                 });

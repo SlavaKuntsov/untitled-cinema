@@ -4,7 +4,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
 
-using UserService.Application.Handlers.Queries.Users.GetUser;
+using UserService.Application.Handlers.Queries.Users.GetUserById;
 
 namespace UserService.API.Extensions;
 

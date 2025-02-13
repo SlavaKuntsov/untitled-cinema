@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 using UserService.API.Contracts;
 using UserService.API.Contracts.Examples;
+using UserService.Application.DTOs;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Commands.Users.ChangeBalance;
 using UserService.Application.Handlers.Commands.Users.DeleteUser;
@@ -52,10 +53,7 @@ public class UserController : ControllerBase
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
-		return Ok(new
-		{
-			authResultDto.AccessToken
-		});
+		return Ok(new { authResultDto.AccessToken });
 	}
 
 	[HttpPost("/users/registration")]
@@ -64,10 +62,7 @@ public class UserController : ControllerBase
 	{
 		var authResultDto = await _mediator.Send(request, cancellationToken);
 
-		return Ok(new
-		{
-			authResultDto.AccessToken
-		});
+		return Ok(new { authResultDto.AccessToken });
 	}
 
 	[HttpPatch("/users")]
@@ -121,7 +116,7 @@ public class UserController : ControllerBase
 			throw new UnprocessableContentException("Admin cannot delete himself.");
 
 		await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
-		
+
 		return Ok();
 	}
 

@@ -21,7 +21,10 @@ public class UpdateUserCommandHandler(IUsersRepository usersRepository, IMapper 
 		if (!request.DateOfBirth.DateFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		var existUser = await _usersRepository.GetAsync(request.Id, cancellationToken)
+		var userId = request.Id ?? 
+			throw new ArgumentNullException(nameof(request.Id), "User ID is required.");
+
+		var existUser = await _usersRepository.GetAsync(userId, cancellationToken)
 				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
 
 		request.Adapt(existUser);

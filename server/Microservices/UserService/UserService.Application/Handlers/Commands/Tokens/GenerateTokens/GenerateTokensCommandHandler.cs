@@ -29,21 +29,22 @@ public class GenerateTokensCommandHandler(
 
 		var newRefreshTokenModel = new RefreshTokenModel(
 				request.Id,
-				request.Role,
 				newRefreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
-		var existRefreshToken = await _tokensRepository.GetRefreshTokenAsync(request.Id, cancellationToken);
+		var existRefreshToken = await _tokensRepository.GetAsync(
+			request.Id, 
+			cancellationToken);
 
 		if (existRefreshToken is not null)
 		{
 			newRefreshTokenModel.Adapt(existRefreshToken);
 
-			_tokensRepository.UpdateRefreshToken(existRefreshToken);
+			_tokensRepository.Update(existRefreshToken);
 		}
 		else
 		{
-			await _tokensRepository.AddRefreshTokenAsync(
+			await _tokensRepository.CreateAsync(
 				_mapper.Map<RefreshTokenEntity>(newRefreshTokenModel),
 				cancellationToken);
 		}

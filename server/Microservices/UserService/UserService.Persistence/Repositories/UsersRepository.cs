@@ -2,7 +2,6 @@
 
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Persistence.Repositories;
@@ -20,7 +19,15 @@ public class UsersRepository : IUsersRepository
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Id == id)
-			.Select(user => user)
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
+	public async Task<UserEntity?> GetWithTokenAsync(Guid id, CancellationToken cancellationToken)
+	{
+		return await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Id == id)
+			.Include(u => u.RefreshToken)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
@@ -29,7 +36,6 @@ public class UsersRepository : IUsersRepository
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Email == email)
-			.Select(user => user)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
@@ -44,22 +50,18 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<IList<Guid>> GetByRole(Role role, CancellationToken cancellationToken)
 	{
-		var users = await _context.Users
+		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Role == role)
 			.Select(u => u.Id)
 			.ToListAsync(cancellationToken);
-
-		return users ?? [];
 	}
 
 	public async Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken)
 	{
-		var users = await _context.Users
+		return await _context.Users
 			.AsNoTracking()
 			.ToListAsync(cancellationToken);
-
-		return users ?? [];
 	}
 
 	public async Task<Guid> CreateAsync(UserEntity user, RefreshTokenEntity refreshToken, CancellationToken cancellationToken)

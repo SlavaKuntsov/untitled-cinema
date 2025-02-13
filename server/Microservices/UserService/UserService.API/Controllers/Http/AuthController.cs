@@ -7,9 +7,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using UserService.Application.DTOs;
+using UserService.Application.Handlers.Commands.Auth.Unauthorize;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
-using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
-using UserService.Application.Handlers.Queries.Users.GetUser;
+using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
+using UserService.Application.Handlers.Queries.Users.GetUserById;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Constants;
 using UserService.Domain.Exceptions;
@@ -45,10 +47,7 @@ public class AuthController : ControllerBase
 
 		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
 
-		return Ok(new
-		{
-			authResultDto.AccessToken
-		});
+		return Ok(new { authResultDto.AccessToken });
 	}
 
 	[HttpGet("authorize")]
@@ -58,12 +57,12 @@ public class AuthController : ControllerBase
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		var userId = Guid.Parse(userIdClaim.Value);
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		var user = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken)
-			?? throw new NotFoundException("User not found");
+		var user = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken);
 
-		return Ok(_mapper.Map<UserDto>(user));
+		return Ok(_mapper.Map<UserDto>(user!));
 	}
 
 	[HttpGet("unauthorize")]

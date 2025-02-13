@@ -17,9 +17,9 @@ public class DeleteHallCommandHandler(
 				?? throw new NotFoundException($"Hall with id {request.Id} doesn't exists");
 
 		_unitOfWork.Repository<HallEntity>().Delete(hall);
+		_unitOfWork.SeatsRepository.DeleteBySessionId(request.Id);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
-		_unitOfWork.SeatsRepository.DeleteBySessionId(request.Id);
 
 		return;
 	}

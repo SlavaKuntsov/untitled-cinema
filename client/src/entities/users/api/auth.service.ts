@@ -82,9 +82,6 @@ export class AuthService {
       tap((res) => {
         this.userService.user.set(res);
         console.log("AUTH");
-        // this.updateUserState();
-        // this.accessTokenExist.set()
-        // this.userService.
       }),
     );
   }
@@ -95,12 +92,11 @@ export class AuthService {
         responseType: "json",
       })
       .pipe(
-        map((res) => res.accessToken), // Извлекаем accessToken
+        map((res) => res.accessToken),
         tap((res) => {
-          this.saveTokens(res); // Сохраняем токен
+          this.saveTokens(res); 
         }),
         catchError((error) => {
-          // Если refreshToken завершился ошибкой, перенаправляем на страницу входа
           this.logout();
           return throwError(() => error);
         }),
