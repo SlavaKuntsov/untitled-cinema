@@ -36,6 +36,11 @@ public class NotificationsRepository : INotificationsRepository
 		return notification.Id;
 	}
 
+	public void Update(NotificationEntity notification)
+	{
+		_context.Notifications.Attach(notification).State = EntityState.Modified;
+	}
+
 	public void Delete(NotificationEntity notification)
 	{
 		_context.Notifications.Attach(notification);

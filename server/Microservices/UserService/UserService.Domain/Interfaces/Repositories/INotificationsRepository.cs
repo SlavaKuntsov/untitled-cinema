@@ -8,4 +8,5 @@ public interface INotificationsRepository
 	void Delete(NotificationEntity notification);
 	Task<NotificationEntity?> GetAsync(Guid id, CancellationToken cancellationToken);
 	Task<IList<NotificationEntity>> GetByUserIdAsync(Guid id, CancellationToken cancellationToken);
+	void Update(NotificationEntity notification);
 }

@@ -2,10 +2,11 @@
 
 public class NotificationModel
 {
-	public Guid Id { get; set; }
-	public string Message { get; set; } = string.Empty;
-	public DateTime CreatedAt { get; set; }
+	public Guid Id { get; private set; }
 	public Guid UserId { get; private set; }
+	public string Message { get; private set; } = string.Empty;
+	public bool IsDeleted { get; private set; } = false;
+	public DateTime CreatedAt { get; private set; }
 
 	public NotificationModel() { }
 

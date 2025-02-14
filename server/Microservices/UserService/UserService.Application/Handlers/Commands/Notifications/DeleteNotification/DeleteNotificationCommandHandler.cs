@@ -15,7 +15,9 @@ public class DeleteNotificationCommandHandler(
 		var notification = await _notificationsRepository.GetAsync(request.Id, cancellationToken)
 			?? throw new NotFoundException($"Notification with id {request.Id} doesn't exists");
 
-		_notificationsRepository.Delete(notification);
+		notification.IsDeleted = true;
+
+		_notificationsRepository.Update(notification);
 
 		return;
 	}
