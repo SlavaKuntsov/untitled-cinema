@@ -3,8 +3,6 @@
 using MediatR;
 
 using MovieService.Application.Extensions;
-using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Exceptions;

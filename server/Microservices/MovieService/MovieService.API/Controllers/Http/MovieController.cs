@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using MapsterMapper;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,23 +26,30 @@ public class MovieController : ControllerBase
 {
 	private readonly IMediator _mediator;
 	private readonly ILogger<MovieController> _logger;
+	private readonly IMapper _mapper;
 
-	public MovieController(IMediator mediator, ILogger<MovieController> logger)
+	public MovieController(
+		IMediator mediator,
+		ILogger<MovieController> logger,
+		IMapper mapper)
 	{
 		_mediator = mediator;
 		_logger = logger;
+		_mapper = mapper;
 	}
 
 	[HttpGet("/movies")]
-	public async Task<IActionResult> Get([FromQuery] GetMovieRequest request, CancellationToken cancellationToken)
+	public async Task<IActionResult> Get(
+		[FromQuery] GetMovieRequest request,
+		CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Fetch all movies.");
 
 		var paginatedMovies = await _mediator.Send(new GetAllMoviesQuery(
 			request.Limit,
 			request.Offset,
-			request.Filter,
-			request.FilterValue,
+			request.Filters,
+			request.FilterValues,
 			request.SortBy,
 			request.SortDirection), cancellationToken);
 
