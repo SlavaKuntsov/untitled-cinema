@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+
+using Microsoft.EntityFrameworkCore;
 
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repositories;
@@ -24,8 +26,7 @@ public class TokensRepository : ITokensRepository
 
 	public async Task<RefreshTokenEntity?> GetAsync(Guid userId, CancellationToken cancellationToken)
 	{
-		return  await _context
-			.RefreshTokens
+		return await _context.RefreshTokens
 			.AsNoTracking()
 			.Where(r => r.UserId == userId)
 			.FirstOrDefaultAsync(cancellationToken);

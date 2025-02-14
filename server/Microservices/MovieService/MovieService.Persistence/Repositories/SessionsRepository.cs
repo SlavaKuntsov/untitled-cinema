@@ -24,7 +24,10 @@ public class SessionsRepository : ISessionsRepository
 		return await query.ToListAsync(cancellationToken);
 	}
 
-	public async Task<IList<SessionEntity>> GetOverlappingAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+	public async Task<IList<(Guid Id, Guid MovieId)>> GetOverlappingAsync(
+		DateTime startTime,
+		DateTime endTime,
+		CancellationToken cancellationToken)
 	{
 		return await _context.Sessions
 			.AsNoTracking()
@@ -32,6 +35,10 @@ public class SessionsRepository : ISessionsRepository
 				(s.StartTime < endTime && s.EndTime > startTime) ||
 				(s.StartTime == startTime && s.EndTime == endTime)
 			)
-			.ToListAsync(cancellationToken);
+			.Select(s => new { s.Id, s.MovieId })
+			.ToListAsync(cancellationToken)
+			.ContinueWith(task => task.Result
+				.Select(x => (x.Id, x.MovieId))
+				.ToList());
 	}
 }

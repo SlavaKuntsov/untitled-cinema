@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using UserService.Domain.Entities;
@@ -8,41 +6,56 @@ using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Persistence.Repositories;
+
 public class UsersRepository : IUsersRepository
 {
 	private readonly UserServiceDBContext _context;
-	private readonly ILogger<UsersRepository> _logger;
 
-	public UsersRepository(
-		UserServiceDBContext context,
-		ILogger<UsersRepository> logger)
+	private static readonly Func<UserServiceDBContext, Guid, CancellationToken, Task<UserEntity?>> s_compiledQuery =
+		EF.CompileAsyncQuery((UserServiceDBContext context, Guid id, CancellationToken cancellationToken) =>
+			context.Users
+				.AsNoTracking()
+				.Where(u => u.Id == id)
+				.FirstOrDefault());
+
+	public UsersRepository(UserServiceDBContext context)
 	{
 		_context = context;
-		_logger = logger;
 	}
 
 	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
-		return await _context.Users
-			.AsNoTracking()
-			.Where(u => u.Id == id)
-			.FirstOrDefaultAsync(cancellationToken);
+		return await s_compiledQuery(_context, id, cancellationToken);
 	}
 
-	public async Task<UserEntity?> GetWithTokenAsync(Guid id, CancellationToken cancellationToken)
+	public async Task<(Guid?, Role?, Guid?)> GetIdWithRoleAndTokenAsync(Guid userId, CancellationToken cancellationToken)
 	{
-		return await _context.Users
+		var result = await _context.Users
 			.AsNoTracking()
-			.Where(u => u.Id == id)
-			.Include(u => u.RefreshToken)
+			.Where(u => u.Id == userId)
+			.Select(u => new { u.Id, u.Role, RefreshTokenId = (Guid?)u.RefreshToken.Id })
 			.FirstOrDefaultAsync(cancellationToken);
+
+		return (result?.Id, result?.Role, result?.RefreshTokenId);
 	}
 
-	public async Task<UserEntity?> GetAsync(string email, CancellationToken cancellationToken)
+	public async Task<(Guid?, string?)> GetIdWithPasswordAsync(string email, CancellationToken cancellationToken)
+	{
+		var result = await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Email == email)
+			.Select(u => new { u.Id, u.Password})
+			.FirstOrDefaultAsync(cancellationToken);
+
+		return (result?.Id, result?.Password);
+	}
+
+	public async Task<Guid?> GetIdAsync(string email, CancellationToken cancellationToken)
 	{
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Email == email)
+			.Select(u => u.Id)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
@@ -84,14 +97,17 @@ public class UsersRepository : IUsersRepository
 		_context.Users.Attach(entity).State = EntityState.Modified;
 	}
 
-	public void Delete(UserEntity userEntity, RefreshTokenEntity refreshTolkenEntity)
+	public void Delete(Guid userId, Guid refreshTokenId)
 	{
+		var userEntity = new UserEntity { Id = userId };
+		var refreshTokenEntity = new RefreshTokenEntity { Id = refreshTokenId };
+
 		_context.Users.Attach(userEntity);
-		_context.RefreshTokens.Attach(refreshTolkenEntity);
+		_context.RefreshTokens.Attach(refreshTokenEntity);
 
 		_context.Users.Remove(userEntity);
-		_context.RefreshTokens.Remove(refreshTolkenEntity);
+		_context.RefreshTokens.Remove(refreshTokenEntity);
 
-		return;
+		_context.SaveChanges();
 	}
 }

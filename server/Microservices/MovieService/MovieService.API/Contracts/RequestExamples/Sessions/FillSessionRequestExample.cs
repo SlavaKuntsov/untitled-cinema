@@ -1,4 +1,4 @@
-﻿using MovieService.Application.Handlers.Commands.Sessoins.FillSession;
+﻿using MovieService.Application.Handlers.Commands.Sessions.FillSession;
 
 using Swashbuckle.AspNetCore.Filters;
 

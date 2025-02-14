@@ -36,16 +36,22 @@ public class MoviesRepository : IMoviesRepository
 
 	public async Task<int> GetCount()
 	{
-		return await _context.Movies.CountAsync();
+		return await _context.Movies
+			.AsNoTracking()
+			.CountAsync();
 	}
 
 	public async Task<IList<MovieEntity>> ToListAsync(IQueryable<MovieEntity> query, CancellationToken cancellationToken)
 	{
-		return await query.ToListAsync(cancellationToken);
+		return await query
+			.AsNoTracking().
+			ToListAsync(cancellationToken);
 	}
+
 	public IQueryable<MovieEntity> FilterByGenre(IQueryable<MovieEntity> query, string genreFilter)
 	{
-		return query.Where(m => m.MovieGenres.Any(mg => mg.Genre.Name.ToLower() == genreFilter));
+		return query.Where(m => 
+			m.MovieGenres.Any(mg => mg.Genre.Name.ToLower() == genreFilter));
 	}
 
 	public async Task<GenreEntity?> GetGenreByNameAsync(string name, CancellationToken cancellationToken)

@@ -6,35 +6,36 @@ using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;
 
-public class DeleteUserCommandHandler(
-	IUsersRepository usersRepository,
-	ITokensRepository tokensRepository) : IRequestHandler<DeleteUserCommand>
+public class DeleteUserCommandHandler(IUsersRepository usersRepository) : IRequestHandler<DeleteUserCommand>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
-	private readonly ITokensRepository _tokensRepository = tokensRepository;
 
 	public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 	{
-		var user = await _usersRepository.GetWithTokenAsync(request.Id, cancellationToken)
-				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
+		var (userId, role, refreshTokenId) = await _usersRepository.GetIdWithRoleAndTokenAsync(
+			request.Id,
+			cancellationToken);
 
-		if(user.RefreshToken is null)
+		if (userId is null)
+			throw new NotFoundException($"User with id {request.Id} doesn't exists");
+
+		if (refreshTokenId is null)
 			throw new NotFoundException($"Refresh Token for user with id {request.Id} not found");
 
-		if (user.Role is Role.User)
+		if (role is Role.User)
 		{
-			_usersRepository.Delete(user, user.RefreshToken);
+			//_usersRepository.Delete(user, user.RefreshToken);
+			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
-		else if (user.Role is Role.Admin)
+		else if (role is Role.Admin)
 		{
 			var admins = await _usersRepository.GetByRole(Role.Admin, cancellationToken);
 
 			if (admins.Count == 1)
 				throw new UnprocessableContentException("Cannot delete the last Admin");
 
-			_usersRepository.Delete(user, user.RefreshToken);
+			//_usersRepository.Delete(user, user.RefreshToken);
+			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
-
-		return;
 	}
 }

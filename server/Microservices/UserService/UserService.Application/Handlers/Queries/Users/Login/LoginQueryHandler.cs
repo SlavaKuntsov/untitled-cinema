@@ -20,7 +20,7 @@ public class LoginQueryHandler(
 
 	public async Task<UserRoleDto> Handle(LoginQuery request, CancellationToken cancellationToken)
 	{
-		var existUser = await _usersRepository.GetAsync(request.Email, cancellationToken)
+		var existUser = await _usersRepository.GetIdAsync(request.Email, cancellationToken)
 				?? throw new NotFoundException($"User with email '{request.Email}' not found.");
 
 		var isCorrectPassword = _passwordHash.Verify(request.Password, existUser.Password);

@@ -9,7 +9,7 @@ using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
-namespace MovieService.Application.Handlers.Commands.Sessoins.FillSession;
+namespace MovieService.Application.Handlers.Commands.Sessions.FillSession;
 
 public class FillSessionCommandHandler(
 	IUnitOfWork unitOfWork,
@@ -64,7 +64,7 @@ public class FillSessionCommandHandler(
 			calculateEndTime);
 
 		await _unitOfWork.Repository<SessionEntity>().CreateAsync(_mapper.Map<SessionEntity>(session), cancellationToken);
-		
+
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return session.Id;

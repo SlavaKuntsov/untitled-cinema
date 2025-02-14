@@ -26,16 +26,13 @@ public class MovieController : ControllerBase
 {
 	private readonly IMediator _mediator;
 	private readonly ILogger<MovieController> _logger;
-	private readonly IMapper _mapper;
 
 	public MovieController(
 		IMediator mediator,
-		ILogger<MovieController> logger,
-		IMapper mapper)
+		ILogger<MovieController> logger)
 	{
 		_mediator = mediator;
 		_logger = logger;
-		_mapper = mapper;
 	}
 
 	[HttpGet("/movies")]

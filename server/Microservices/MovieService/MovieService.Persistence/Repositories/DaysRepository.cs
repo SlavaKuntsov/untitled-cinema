@@ -13,6 +13,7 @@ public class DaysRepository : IDaysRepository
 	{
 		_context = context;
 	}
+
 	public async Task<DayEntity?> GetAsync(DateTime date, CancellationToken cancellationToken)
 	{
 		return await _context.Days

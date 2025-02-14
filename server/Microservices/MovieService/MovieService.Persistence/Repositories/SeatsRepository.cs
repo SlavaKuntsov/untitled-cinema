@@ -14,11 +14,12 @@ public class SeatsRepository : ISeatsRepository
 		_context = context;
 	}
 
-	public async Task<SeatEntity?> GetAsync(int row, int column, CancellationToken cancellationToken)
+	public async Task<Guid?> GetAsync(int row, int column, CancellationToken cancellationToken)
 	{
 		return await _context.Seats
 			.AsNoTracking()
 			.Where(m => m.Row == row && m.Column == column)
+			.Select(s => s.Id)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
