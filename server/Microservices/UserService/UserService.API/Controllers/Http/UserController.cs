@@ -78,9 +78,9 @@ public class UserController : ControllerBase
 
 		var command = request with { Id = userId };
 
-		var particantModel = await _mediator.Send(command, cancellationToken);
+		var user = await _mediator.Send(command, cancellationToken);
 
-		return Ok(_mapper.Map<UserDto>(particantModel));
+		return Ok(_mapper.Map<UserDto>(user));
 	}
 
 	[HttpPatch("/users/balance/increase/{amount:decimal}")]

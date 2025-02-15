@@ -8,7 +8,7 @@ using Protobufs.Auth;
 
 using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
 using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
-using UserService.Application.Handlers.Queries.Users.GetUserById;
+using UserService.Application.Handlers.Queries.Users.GetUserExist;
 
 namespace UserService.API.Controllers.Grpc;
 
@@ -34,11 +34,11 @@ public class AuthController : AuthService.AuthServiceBase
 
 	public override async Task<CheckExistResponse> CheckExist(CheckExistRequest request, ServerCallContext context)
 	{
-		var user = await _mediator.Send(new GetUserByIdQuery(Guid.Parse(request.UserId)));
+		var user = await _mediator.Send(new GetUserExistQuery(Guid.Parse(request.UserId)));
 
 		return new CheckExistResponse
 		{
-			IsExist = user is not null
+			IsExist = user
 		};
 	}
 }

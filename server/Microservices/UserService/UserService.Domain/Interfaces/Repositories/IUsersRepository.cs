@@ -15,4 +15,6 @@ public interface IUsersRepository
 	Task<(Guid?, Role?, Guid?)> GetIdWithRoleAndTokenAsync(Guid userId, CancellationToken cancellationToken);
 	void Update(UserEntity entity);
 	void Delete(Guid userId, Guid refreshTokenId);
+	Task<(Guid?, string?, Role?)> GetIdWithRoleAndPasswordAsync(string email, CancellationToken cancellationToken);
+	Task<UserWithStringDateOfBirthEntity?> GetWithStringDateOfBirthAsync(Guid id, CancellationToken cancellationToken);
 }

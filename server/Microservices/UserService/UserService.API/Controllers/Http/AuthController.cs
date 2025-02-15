@@ -14,7 +14,6 @@ using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
 using UserService.Application.Handlers.Queries.Users.GetUserById;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Constants;
-using UserService.Domain.Exceptions;
 
 namespace UserService.API.Controllers.Http;
 
@@ -38,7 +37,9 @@ public class AuthController : ControllerBase
 	{
 		var refreshToken = _cookieService.GetRefreshToken();
 
-		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken), cancellationToken);
+		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(
+			refreshToken), 
+			cancellationToken);
 
 		var authResultDto = await _mediator.Send(new GenerateTokensCommand(
 			userRoleDto.Id,
@@ -62,7 +63,8 @@ public class AuthController : ControllerBase
 
 		var user = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken);
 
-		return Ok(_mapper.Map<UserDto>(user!));
+		return Ok(user);
+		//return Ok(_mapper.Map<UserDto>(user!));
 	}
 
 	[HttpGet("unauthorize")]

@@ -7,7 +7,9 @@ using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Queries.Users.GetAllUsers;
 
-public class GetUserQueryHandler(IUsersRepository usersRepository, IMapper mapper) : IRequestHandler<GetAllUsersQuery, IList<UserModel>>
+public class GetUserQueryHandler(
+	IUsersRepository usersRepository,
+	IMapper mapper) : IRequestHandler<GetAllUsersQuery, IList<UserModel>>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
 	private readonly IMapper _mapper = mapper;

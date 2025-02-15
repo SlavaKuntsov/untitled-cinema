@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+
+using Microsoft.EntityFrameworkCore;
 
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
@@ -18,6 +19,24 @@ public class UsersRepository : IUsersRepository
 				.Where(u => u.Id == id)
 				.FirstOrDefault());
 
+	private static readonly Func<UserServiceDBContext, Guid, CancellationToken, Task<UserWithStringDateOfBirthEntity?>> s_compiledQuery2 =
+	EF.CompileAsyncQuery((UserServiceDBContext context, Guid id, CancellationToken cancellationToken) =>
+		context.Users
+			.AsNoTracking()
+			.Where(u => u.Id == id)
+			.Select(u => new UserWithStringDateOfBirthEntity
+			{
+				Id = u.Id,
+				Email = u.Email,
+				Password = u.Password,
+				Role = u.Role,
+				FirstName = u.FirstName,
+				LastName = u.LastName,
+				DateOfBirth = u.DateOfBirth.ToString("yyyy-MM-dd"), // Преобразование в строку
+                Balance = u.Balance
+			})
+			.FirstOrDefault());
+
 	public UsersRepository(UserServiceDBContext context)
 	{
 		_context = context;
@@ -25,7 +44,28 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
-		return await s_compiledQuery(_context, id, cancellationToken);
+		//var stopwatch = new Stopwatch();
+		//stopwatch.Start();
+
+		var a = await s_compiledQuery(_context, id, cancellationToken);
+
+		//stopwatch.Stop();
+		//Debug.WriteLine($"Date query executed in {stopwatch.ElapsedMilliseconds} ms.");
+
+		//stopwatch.Reset();
+		//stopwatch.Start();
+
+		//var b = await s_compiledQuery2(_context, id, cancellationToken);
+
+		//stopwatch.Stop();
+		//Debug.WriteLine($"String query executed in {stopwatch.ElapsedMilliseconds} ms.");
+
+		return a;
+	}
+
+	public async Task<UserWithStringDateOfBirthEntity?> GetWithStringDateOfBirthAsync(Guid id, CancellationToken cancellationToken)
+	{
+		return await s_compiledQuery2(_context, id, cancellationToken);
 	}
 
 	public async Task<(Guid?, Role?, Guid?)> GetIdWithRoleAndTokenAsync(Guid userId, CancellationToken cancellationToken)
@@ -33,10 +73,21 @@ public class UsersRepository : IUsersRepository
 		var result = await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Id == userId)
-			.Select(u => new { u.Id, u.Role, RefreshTokenId = (Guid?)u.RefreshToken.Id })
+			.Select(u => new { u.Id, u.Role ,RefreshTokenId = (Guid?)u.RefreshToken.Id })
 			.FirstOrDefaultAsync(cancellationToken);
 
 		return (result?.Id, result?.Role, result?.RefreshTokenId);
+	}
+
+	public async Task<(Guid?, string?, Role?)> GetIdWithRoleAndPasswordAsync(string email, CancellationToken cancellationToken)
+	{
+		var result = await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Email == email)
+			.Select(u => new { u.Id, u.Password, u.Role})
+			.FirstOrDefaultAsync(cancellationToken);
+
+		return (result?.Id, result?.Password, result?.Role);
 	}
 
 	public async Task<(Guid?, string?)> GetIdWithPasswordAsync(string email, CancellationToken cancellationToken)

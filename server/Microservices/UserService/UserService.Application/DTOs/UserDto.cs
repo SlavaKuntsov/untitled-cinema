@@ -15,7 +15,7 @@ public class UserDto
 
 	public string DateOfBirth
 	{
-		get => _dateOfBirth.ToString(UserService.Domain.Constants.DateTimeConstants.DATE_FORMAT);
+		get => _dateOfBirth.ToString(Domain.Constants.DateTimeConstants.DATE_FORMAT);
 		set
 		{
 			if (DateTime.TryParseExact(value,
