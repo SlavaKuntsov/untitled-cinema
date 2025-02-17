@@ -1,4 +1,6 @@
 export const environment = {
   production: false,
-  backendBaseUrl: "https:/localhost",
+  userBaseUrl: "https://localhost:7001",
+  movieBaseUrl: "https://localhost:7002",
+  bookingBaseUrl: "https://localhost:7003",
 };

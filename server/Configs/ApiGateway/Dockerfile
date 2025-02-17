@@ -16,6 +16,6 @@ RUN rm -rf /usr/share/nginx/html/*
 
 COPY server/Configs/ApiGateway/nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=builder /app/client/dist /usr/share/nginx/html
+COPY --from=builder /app/client/dist/untitled-cinema/browser /usr/share/nginx/html
 
 EXPOSE 80

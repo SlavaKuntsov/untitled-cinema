@@ -21,7 +21,6 @@ services:
       - booking-service
 
 
-
   user-service:
     container_name: user-service
     restart: unless-stopped
@@ -34,6 +33,7 @@ services:
       - APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=user-postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - REDIS_CONFIGURATION=redis:6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - LOGSTASH_PORT=5044
@@ -41,6 +41,7 @@ services:
       - ./server/Configs/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
     depends_on:
       - user-postgres
+      - redis
       - rabbitmq
 
 
