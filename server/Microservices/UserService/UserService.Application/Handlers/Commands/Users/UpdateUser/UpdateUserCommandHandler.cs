@@ -13,10 +13,12 @@ using UserService.Domain.Models;
 namespace UserService.Application.Handlers.Commands.Users.UpdateUser;
 
 public class UpdateUserCommandHandler(
-	IUsersRepository usersRepository, 
+	IUsersRepository usersRepository,
+	//IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<UpdateUserCommand, UserDto>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
+	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -33,6 +35,8 @@ public class UpdateUserCommandHandler(
 		request.Adapt(existUser);
 
 		_usersRepository.Update(existUser);
+
+		//await _redisCacheService.RemoveValuesByPatternAsync("users_*");
 
 		return _mapper.Map<UserDto>(existUser);
 	}

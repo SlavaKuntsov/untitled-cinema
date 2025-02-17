@@ -41,12 +41,13 @@ public class AuthController : ControllerBase
 			refreshToken), 
 			cancellationToken);
 
-		var authResultDto = await _mediator.Send(new GenerateTokensCommand(
-			userRoleDto.Id,
-			userRoleDto.Role),
+		var authResultDto = await _mediator.Send(
+			new GenerateTokensCommand(userRoleDto.Id, userRoleDto.Role),
 			cancellationToken);
 
-		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
+		HttpContext.Response.Cookies.Append(
+			JwtConstants.REFRESH_COOKIE_NAME, 
+			authResultDto.RefreshToken);
 
 		return Ok(new { authResultDto.AccessToken });
 	}
@@ -61,7 +62,9 @@ public class AuthController : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		var user = await _mediator.Send(new GetUserByIdQuery(userId), cancellationToken);
+		var user = await _mediator.Send(
+			new GetUserByIdQuery(userId), 
+			cancellationToken);
 
 		return Ok(user);
 		//return Ok(_mapper.Map<UserDto>(user!));

@@ -2,11 +2,11 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 
-using MovieService.Application.Interfaces.Caching;
-
 using StackExchange.Redis;
 
-namespace MovieService.Infrastructure.Caching;
+using UserService.Application.Interfaces.Caching;
+
+namespace UserService.Infrastructure.Caching;
 
 public class RedisCacheService : IRedisCacheService
 {
@@ -24,7 +24,7 @@ public class RedisCacheService : IRedisCacheService
 		var data = await _distributedCache.GetStringAsync(key);
 
 		if (data is null)
-			return default(T);
+			return default;
 
 		return JsonSerializer.Deserialize<T>(data)!;
 	}

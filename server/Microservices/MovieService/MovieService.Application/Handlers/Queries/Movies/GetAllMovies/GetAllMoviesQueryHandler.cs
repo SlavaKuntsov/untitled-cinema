@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Application.DTOs;
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -27,12 +28,12 @@ public class GetAllMoviesQueryHandler(
 			.Zip(request.FilterValues, (field, value) => new FilterDto(field, value))
 			.ToList();
 
-		string cacheKey = @$"movies_
-            {string.Join("_", filters.Select(f => $"{f.Field}_{f.Value}"))}_
-            {request.SortBy}_
-            {request.SortDirection}_
-            {request.Offset}_
-            {request.Limit}";
+		//string cacheKey = @$"movies_
+  //          {string.Join("_", filters.Select(f => $"{f.Field}_{f.Value}"))}_
+  //          {request.SortBy}_
+  //          {request.SortDirection}_
+  //          {request.Offset}_
+  //          {request.Limit}";
 
 		//var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
 
@@ -62,6 +63,8 @@ public class GetAllMoviesQueryHandler(
 				};
 			}
 		}
+
+		var totalMovies = await _unitOfWork.MoviesRepository.GetCount(query);
 
 		if (request.SortDirection.ToLower() == "asc")
 		{
@@ -96,8 +99,6 @@ public class GetAllMoviesQueryHandler(
 		var movieModels = _mapper.Map<IList<MovieModel>>(movies);
 
 		//await _redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
-
-		var totalMovies = movies.Count;
 
 		return new PaginationWrapperDto<MovieModel>(
 			movieModels,

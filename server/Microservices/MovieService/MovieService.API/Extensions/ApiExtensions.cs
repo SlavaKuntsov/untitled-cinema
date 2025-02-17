@@ -29,8 +29,6 @@ using Protobufs.Auth;
 
 using Serilog;
 
-using StackExchange.Redis;
-
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Extensions;
@@ -175,20 +173,6 @@ public static class ApiExtensions
 		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-		services.AddStackExchangeRedisCache(options =>
-		{
-			options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
-			options.InstanceName = string.Empty;
-		});
-
-		services.AddSingleton<IConnectionMultiplexer>(sp =>
-		{
-			var configuration =
-				ConfigurationOptions.Parse(
-					Environment.GetEnvironmentVariable("REDIS_CONFIGURATION"), true);
-			return ConnectionMultiplexer.Connect(configuration);
-		});
 
 		return services;
 	}

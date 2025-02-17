@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 
 using FluentValidation;
@@ -15,6 +14,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using MovieService.Application.Validators;
+
 using Serilog;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -24,10 +25,8 @@ using UserService.API.Consumers;
 using UserService.API.Contracts.Examples;
 using UserService.API.ExceptionHandlers;
 using UserService.API.Middlewares;
-using UserService.API.Validators;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Infrastructure.Auth;
-using UserService.Infrastructure.Email;
 using UserService.Infrastructure.Notification;
 
 namespace UserService.API.Extensions;

@@ -42,16 +42,16 @@ public class UserController : ControllerBase
 	[SwaggerRequestExample(typeof(CreateLoginRequest), typeof(CreateLoginRequestExample))]
 	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request, CancellationToken cancellationToken)
 	{
-		var existUser = await _mediator.Send(new LoginQuery(
-			request.Email,
-			request.Password), cancellationToken);
-
-		var authResultDto = await _mediator.Send(new GenerateTokensCommand(
-			existUser.Id,
-			existUser.Role),
+		var existUser = await _mediator.Send(
+			new LoginQuery(request.Email, request.Password), 
 			cancellationToken);
 
-		HttpContext.Response.Cookies.Append(JwtConstants.REFRESH_COOKIE_NAME, authResultDto.RefreshToken);
+		var authResultDto = await _mediator.Send(
+			new GenerateTokensCommand(existUser.Id, existUser.Role), cancellationToken);
+
+		HttpContext.Response.Cookies.Append(
+			JwtConstants.REFRESH_COOKIE_NAME, 
+			authResultDto.RefreshToken);
 
 		return Ok(new { authResultDto.AccessToken });
 	}
@@ -93,10 +93,8 @@ public class UserController : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		await _mediator.Send(new ChangeBalanceCommand(
-			userId,
-			amount,
-			true),
+		await _mediator.Send(
+			new ChangeBalanceCommand(userId, amount, true),
 			cancellationToken);
 
 		return Ok();
@@ -139,7 +137,9 @@ public class UserController : ControllerBase
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users(CancellationToken cancellationToken)
 	{
-		var users = await _mediator.Send(new GetAllUsersQuery(), cancellationToken);
+		var users = await _mediator.Send(
+			new GetAllUsersQuery(), 
+			cancellationToken);
 
 		return Ok(_mapper.Map<IList<UserDto>>(users));
 	}

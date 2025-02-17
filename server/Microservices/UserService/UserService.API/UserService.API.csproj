@@ -6,6 +6,7 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<UserSecretsId>809f3c3b-9c56-45fc-9c95-71f3c5bb4d47</UserSecretsId>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
   </PropertyGroup>
 
   <ItemGroup>

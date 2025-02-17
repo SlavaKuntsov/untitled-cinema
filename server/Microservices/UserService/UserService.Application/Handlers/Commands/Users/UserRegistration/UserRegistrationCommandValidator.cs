@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
 
 using FluentValidation;
-using UserService.Application.Handlers.Commands.Users.UserRegistration;
 
-namespace UserService.API.Validators.Users;
+using MovieService.Application.Validators;
+
+namespace UserService.Application.Handlers.Commands.Users.UserRegistration;
 
 public class UserRegistrationCommandValidator : BaseCommandValidator<UserRegistrationCommand>
 {
@@ -19,7 +20,6 @@ public class UserRegistrationCommandValidator : BaseCommandValidator<UserRegistr
 			.Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
 			.Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
 			.Matches("[0-9]").WithMessage("Password must contain at least one number.");
-			//.Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
 
 		RuleFor(x => x.FirstName)
 			.NotEmpty().WithMessage("FirstName cannot be null or empty.");

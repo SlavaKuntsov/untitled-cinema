@@ -32,7 +32,7 @@ public class UserRegistrationCommandHandler(
 
 		var id = await _usersRepository.GetIdAsync(request.Email, cancellationToken);
 
-		if (id is not null)
+		if (id!.Value != Guid.Empty)
 			throw new AlreadyExistsException($"User with email {request.Email} already exists");
 
 		var userModel = new UserModel(

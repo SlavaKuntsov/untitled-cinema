@@ -6,9 +6,13 @@ using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;
 
-public class DeleteUserCommandHandler(IUsersRepository usersRepository) : IRequestHandler<DeleteUserCommand>
+public class DeleteUserCommandHandler(
+	IUsersRepository usersRepository
+	//IRedisCacheService redisCacheService,
+	) : IRequestHandler<DeleteUserCommand>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
+	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
 	public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 	{
@@ -24,7 +28,6 @@ public class DeleteUserCommandHandler(IUsersRepository usersRepository) : IReque
 
 		if (role is Role.User)
 		{
-			//_usersRepository.Delete(user, user.RefreshToken);
 			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
 		else if (role is Role.Admin)
@@ -34,8 +37,9 @@ public class DeleteUserCommandHandler(IUsersRepository usersRepository) : IReque
 			if (admins.Count == 1)
 				throw new UnprocessableContentException("Cannot delete the last Admin");
 
-			//_usersRepository.Delete(user, user.RefreshToken);
 			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
+
+		//await _redisCacheService.RemoveValuesByPatternAsync("users_*");
 	}
 }
