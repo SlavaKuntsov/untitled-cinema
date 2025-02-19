@@ -6,7 +6,7 @@ import { provideAnimations } from "@angular/platform-browser/animations";
 import { MessageService } from "primeng/api";
 
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
-import MyPreset from "../shared/assets/styles/utils/mypreset";
+import MyPreset from "../shared/assets/styles/utils/my-preset";
 import { routes } from "./app.routes";
 import { authTokenInterceptor } from "./core/interceptors/auth/auth.interceptor";
 

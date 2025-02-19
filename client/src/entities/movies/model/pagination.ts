@@ -3,15 +3,16 @@ export interface PaginationWrapper<T> {
   limit: number;
   offset: number;
   total: number;
-	nextRef: string,
-	prevRef: string
+  nextRef: string;
+  prevRef: string;
 }
 
-export interface PaginationPayload {
+export interface MoviesPaginationPayload {
   limit: number;
   offset: number;
-  filter: string;
-  filterValue: string;
+  filters: string[];
+  filterValues: string[];
   sortBy: string;
   sortDirection: "asc" | "desc";
+  date: string;
 }

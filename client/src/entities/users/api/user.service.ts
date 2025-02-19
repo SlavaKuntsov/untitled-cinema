@@ -3,7 +3,7 @@ import { effect, inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable, tap } from "rxjs";
 import { UpdateUser, User } from "..";
-import { userBaseUrl } from "../../../shared/config/backend";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -30,7 +30,7 @@ export class UserService {
 
   update(payload: UpdateUser): Observable<User> {
     return this.http
-      .patch<User>(`${userBaseUrl}/users`, payload, {
+      .patch<User>(`${environment.userBaseUrl}/users`, payload, {
         withCredentials: true,
       })
       .pipe(
@@ -42,7 +42,7 @@ export class UserService {
 
   delete() {
     return this.http
-      .delete(`${userBaseUrl}/users/me`, {
+      .delete(`${environment.userBaseUrl}/users/me`, {
         withCredentials: true,
       })
       .pipe(

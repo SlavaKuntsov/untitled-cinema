@@ -3,8 +3,8 @@ import { inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { catchError, map, Observable, tap, throwError } from "rxjs";
 import { Login, Registration, User } from "..";
-import { userBaseUrl } from "../../../shared/config/backend";
 import { UserService } from "./user.service";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -31,7 +31,7 @@ export class AuthService {
 
   login(payload: Login): Observable<string> {
     return this.http
-      .post<{ accessToken: string }>(`${userBaseUrl}/users/login`, payload, {
+      .post<{ accessToken: string }>(`${environment.userBaseUrl}/users/login`, payload, {
         withCredentials: true,
         responseType: "json",
       })
@@ -59,7 +59,7 @@ export class AuthService {
   registration(payload: Registration): Observable<string> {
     return this.http
       .post<{ accessToken: string }>(
-        `${userBaseUrl}/users/registration`,
+        `${environment.userBaseUrl}/users/registration`,
         payload,
         {
           withCredentials: true,
@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   authorize(): Observable<User> {
-    return this.http.get<User>(`${userBaseUrl}/auth/authorize`).pipe(
+    return this.http.get<User>(`${environment.userBaseUrl}/auth/authorize`).pipe(
       tap((res) => {
         this.userService.user.set(res);
         console.log("AUTH");
@@ -88,12 +88,13 @@ export class AuthService {
 
   refreshToken(): Observable<string> {
     return this.http
-      .get<{ accessToken: string }>(`${userBaseUrl}/auth/refreshToken`, {
+      .get<{ accessToken: string }>(`${environment.userBaseUrl}/auth/refreshToken`, {
         responseType: "json",
       })
       .pipe(
         map((res) => res.accessToken),
         tap((res) => {
+
           this.saveTokens(res); 
         }),
         catchError((error) => {
@@ -104,7 +105,7 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.get(`${userBaseUrl}/auth/unauthorize`).pipe(
+    return this.http.get(`${environment.userBaseUrl}/auth/unauthorize`).pipe(
       tap(() => {
         console.log("LOGOOOOOOUT");
         localStorage.removeItem("yummy-apple");

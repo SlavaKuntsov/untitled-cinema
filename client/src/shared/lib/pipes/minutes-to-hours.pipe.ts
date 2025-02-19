@@ -6,19 +6,21 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class MinutesToHoursPipe implements PipeTransform {
   transform(minutes: number): string {
     if (isNaN(minutes)) {
-      return ""; // Возвращаем пустую строку, если значение не является числом
+      return "";
     }
 
-    const hours = Math.floor(minutes / 60); // Получаем количество часов
-    const remainingMinutes = minutes % 60; // Получаем оставшиеся минуты
+    const hours = Math.floor(minutes / 60); 
+    const remainingMinutes = minutes % 60; 
 
-    // Форматируем результат
     if (hours === 0) {
-      return `${remainingMinutes} мин`; // Только минуты, если часов нет
+      return `${remainingMinutes} min`; 
+      // return `${remainingMinutes} мин`; 
     } else if (remainingMinutes === 0) {
-      return `${hours} ч`; // Только часы, если минут нет
+      return `${hours} h`;
+      // return `${hours} ч`;
     } else {
-      return `${hours} ч ${remainingMinutes} мин`; // Часы и минуты
+			return `${hours} h ${remainingMinutes} min`; 
+			// return `${hours} ч ${remainingMinutes} мин`; 
     }
   }
 }

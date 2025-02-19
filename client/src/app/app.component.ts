@@ -40,13 +40,12 @@ export class AppComponent implements OnDestroy {
     });
 
     effect(() => {
-      const hasUser = !!this.user();
-      const hasToken = this.accessTokenExist();
 
-      if (hasUser && hasToken) {
+      if (this.userService.user() != null) {
         console.log("User authenticated, starting notifications...");
         this.notificationService.startConnection();
-      } else {
+      } 
+			else {
         console.log("User logged out, stopping notifications...");
         this.notificationService.stopConnection();
       }

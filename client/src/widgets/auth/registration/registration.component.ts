@@ -15,7 +15,7 @@ import { ToastService, ToastStatus } from "../../../app/core/services/toast";
 import { IError } from "../../../entities/error/model/error";
 import { Registration, User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
-import { passwordValidator } from "../../../shared/lib/model/passwordValidation";
+import { passwordValidator } from "../../../shared/lib/model/password-validation";
 import { ButtonComponent } from "../../../shared/ui/components/button/button.component";
 import { InputComponent } from "../../../shared/ui/components/input/input.component";
 

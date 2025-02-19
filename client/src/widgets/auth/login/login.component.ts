@@ -13,7 +13,7 @@ import { ToastService, ToastStatus } from "../../../app/core/services/toast";
 import { IError } from "../../../entities/error/model/error";
 import { Login, User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
-import { passwordValidator } from "../../../shared/lib/model/passwordValidation";
+import { passwordValidator } from "../../../shared/lib/model/password-validation";
 import { ButtonComponent } from "../../../shared/ui/components/button/button.component";
 import { InputComponent } from "../../../shared/ui/components/input/input.component";
 
@@ -67,32 +67,26 @@ export class LoginComponent {
 
       this.authService.login(loginData).subscribe({
         next: (res: string) => {
-          console.log("11111111");
-          console.log(res);
-
           localStorage.setItem("yummy-apple", res);
           this.toastService.showToast(ToastStatus.Success, "Login Success");
-
-          this.router.navigate(["/"]);
           this.authService.accessToken.set(res);
-          // }
         },
         error: (error: IError) => {
           const errorMessage = this.errorService.getErrorMessage(error);
           this.toastService.showToast(ToastStatus.Error, errorMessage);
         },
         complete: () => {
-          console.log("qweqewqewq");
           this.authService.authorize().subscribe({
             next: (res: User) => {
               console.log("after login auth");
               console.log(res);
             },
           });
+
+          this.router.navigate(["/"]);
         },
       });
 
-      // this.authService.authorize().subscribe();
       return;
     }
 

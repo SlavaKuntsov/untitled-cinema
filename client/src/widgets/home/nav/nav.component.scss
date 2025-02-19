@@ -1,5 +1,5 @@
 :host {
-  @apply h-full w-full;
+  @apply h-fit w-full;
 }
 
 .anim-bounce::after {
@@ -26,6 +26,6 @@ a.active {
   @apply text-indigo-400;
 }
 
-button.active{
+button.active {
   @apply bg-indigo-700;
 }

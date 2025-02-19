@@ -3,7 +3,7 @@ import { inject, Injectable, Signal, signal } from "@angular/core";
 import * as signalR from "@microsoft/signalr";
 import { Observable, tap } from "rxjs";
 import { ToastService, ToastStatus } from "../../../app/core/services/toast";
-import { userBaseUrl } from "../../../shared/config/backend";
+import { environment } from "../../../environments/environment";
 import { AuthService } from "../../users/api/auth.service";
 import { CustomNotification } from "../model/customNotification";
 
@@ -44,13 +44,13 @@ export class NotificationService {
     this.hubConnection.on(
       "ReceiveNotification",
       (message: CustomNotification) => {
-				console.log('UPDATE')
-				console.log(this.notifications())
+        console.log("UPDATE");
+        console.log(this.notifications());
         this.notifications.update((notifications) => [
           ...notifications,
           message,
         ]);
-				console.log(this.notifications())
+        console.log(this.notifications());
 
         this.toastService.showToast(ToastStatus.Success, message.message);
       },
@@ -68,16 +68,20 @@ export class NotificationService {
 
   send(message: string): Observable<void> {
     return this.http
-      .post<void>(`${userBaseUrl}/notifications`, JSON.stringify(message), {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      })
+      .post<void>(
+        `${environment.userBaseUrl}/notifications`,
+        JSON.stringify(message),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        },
+      )
       .pipe(tap(() => {}));
   }
 
   get(): Observable<CustomNotification[]> {
     return this.http
-      .get<CustomNotification[]>(`${userBaseUrl}/notifications`, {
+      .get<CustomNotification[]>(`${environment.userBaseUrl}/notifications`, {
         withCredentials: true,
       })
       .pipe(
@@ -89,7 +93,7 @@ export class NotificationService {
 
   delete(id: string): Observable<void> {
     return this.http
-      .delete<void>(`${userBaseUrl}/notifications/${id}`, {
+      .delete<void>(`${environment.userBaseUrl}/notifications/${id}`, {
         withCredentials: true,
       })
       .pipe(

@@ -1,0 +1,95 @@
+.custom-datepicker .p-inputtext {
+  @apply bg-transparent;
+}
+
+.custom-datepicker .p-inputtext:disabled {
+  @apply cursor-not-allowed bg-[#27272a];
+}
+
+.custom-datepicker .p-datepicker-panel {
+  @apply !bg-zinc-900 opacity-100;
+}
+
+.custom-datepicker .p-datepicker-day-view {
+  @apply p-2 text-2xl;
+}
+
+.custom-datepicker .p-datepicker-weekday-cell {
+  @apply !p-4;
+}
+
+.custom-datepicker .p-datepicker-day {
+  @apply !p-5;
+}
+
+.custom-dialog .p-dialog-title {
+  @apply text-4xl;
+}
+.custom-dialog {
+  @apply !w-1/2;
+}
+
+.custom-dialog .p-dialog {
+  @apply !w-1/2 px-6 py-4;
+}
+
+.custom-chip {
+  @apply relative !rounded-3xl !border-[3px] !border-zinc-800 !bg-transparent !py-3 !pl-5 !pr-14 !text-2xl !font-medium !text-zinc-500 !transition-colors !duration-500 !ease-in-out hover:!border-zinc-600 hover:!text-white;
+}
+
+.custom-chip .p-chip-icon {
+  @apply absolute right-4 ml-3 mt-[1px] !h-7 !w-7 !text-zinc-300;
+}
+
+.custom-chip .p-chip-remove-icon .p-icon {
+  @apply !h-full !w-full !text-zinc-400;
+}
+
+.i-p-badge .p-badge {
+  @apply min-h-7 min-w-7 rounded-full bg-indigo-600 text-lg text-white;
+  transform: translate(65%, -50%) !important;
+}
+
+.custom-paginator .p-paginator button {
+  @apply h-14 w-14 text-2xl;
+}
+
+.custom-toggleswitch .p-toggleswitch .p-toggleswitch-slider {
+  @apply h-10 min-w-16;
+}
+
+.custom-toggleswitch .p-toggleswitch .p-toggleswitch-handle {
+  @apply -left-1 top-[35%] h-6 w-6;
+}
+
+.custom-message .p-message-content {
+  @apply items-start !gap-0 !py-5 !pl-5 !pr-3;
+}
+
+.custom-message .p-message-text {
+  @apply ml-5 mr-0 !flex !min-h-[3rem] !items-center !text-xl;
+}
+
+.custom-message .p-message-icon {
+  @apply mb-1 mt-1 flex !h-7 !w-8 flex-col items-center !text-3xl;
+}
+
+.custom-message .p-message-close-button svg {
+  @apply h-7 w-8;
+}
+
+.custom-message .p-message-close-button {
+  @apply p-6;
+}
+
+.custom-dialog .p-button {
+  @apply px-5 py-3 text-2xl;
+}
+
+.custom-scrollpanel {
+  @apply block !h-1/2 !w-full;
+}
+
+.p-scrollpanel .custombar .p-scrollpanel-bar {
+  background-color: black;
+}

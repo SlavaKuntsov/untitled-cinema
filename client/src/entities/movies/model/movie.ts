@@ -15,3 +15,8 @@ export interface Movie {
 	createdAt: string,
 	updatedAt: string,
 }
+
+export interface Genre{
+	id: string,
+	name: string
+}

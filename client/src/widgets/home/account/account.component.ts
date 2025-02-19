@@ -9,11 +9,11 @@ import {
 import { AvatarModule } from "primeng/avatar";
 import { AvatarGroupModule } from "primeng/avatargroup";
 import { ProgressSpinner } from "primeng/progressspinner";
-import { User } from "../../../../entities/users";
-import { AuthService } from "../../../../entities/users/api/auth.service";
-import { UserService } from "../../../../entities/users/api/user.service";
-import { PROFILE } from "../../../../shared/router/routes";
-import { DividerComponent } from "../../../../shared/ui/components/divider/divider.component";
+import { User } from "../../../entities/users";
+import { AuthService } from "../../../entities/users/api/auth.service";
+import { UserService } from "../../../entities/users/api/user.service";
+import { PROFILE } from "../../../shared/router/routes";
+import { DividerComponent } from "../../../shared/ui/components/divider/divider.component";
 
 @Component({
   selector: "app-account",
@@ -25,7 +25,7 @@ import { DividerComponent } from "../../../../shared/ui/components/divider/divid
     AvatarModule,
     AvatarGroupModule,
     ProgressSpinner,
-		DividerComponent
+    DividerComponent,
   ],
   templateUrl: "./account.component.html",
   styleUrl: "./account.component.scss",

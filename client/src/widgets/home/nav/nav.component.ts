@@ -23,7 +23,7 @@ import { CustomNotification } from "../../../entities/notifications/model/custom
 import { User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
 import { UserService } from "../../../entities/users/api/user.service";
-import { getChildRoutes } from "../../../shared/lib/model/getChildRoutes";
+import { getChildRoutes } from "../../../shared/lib/model/get-child-routes";
 import { ACCOUNT, AUTH } from "../../../shared/router/routes";
 import { DividerComponent } from "../../../shared/ui/components/divider/divider.component";
 
@@ -62,15 +62,21 @@ export class NavComponent {
   account = ACCOUNT;
 
   isLoad: boolean = false;
+  isNotificationsLoaded: boolean = false;
 
   constructor() {
     this.routes = getChildRoutes(this.router, "");
 
-    this.notificationService.get().subscribe();
-
+		
     effect(() => {
-      console.log("NAV");
+			console.log("NAV");
       console.log(this.notifications());
+			
+			if (this.user() && !this.isNotificationsLoaded) {
+				this.notificationService.get().subscribe();
+
+				this.isNotificationsLoaded = true;
+			}
     });
   }
 
