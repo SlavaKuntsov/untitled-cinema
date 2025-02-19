@@ -48,7 +48,8 @@ public class MovieController : ControllerBase
 			request.Filters,
 			request.FilterValues,
 			request.SortBy,
-			request.SortDirection), cancellationToken);
+			request.SortDirection,
+			request.Date), cancellationToken);
 
 		var (nextRef, prevRef) = GeneratePaginationLinks(request, paginatedMovies.Total);
 
@@ -62,8 +63,7 @@ public class MovieController : ControllerBase
 	[HttpGet("/movies/{id:Guid}")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		var movies = await _mediator.Send(new GetMovieByIdQuery(id), cancellationToken)
-			?? throw new NotFoundException($"Movie with id '{id.ToString()}' not found.");
+		var movies = await _mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
 
 		return Ok(movies);
 	}

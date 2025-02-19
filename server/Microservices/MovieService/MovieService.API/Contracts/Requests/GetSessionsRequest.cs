@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 
 namespace MovieService.API.Contracts.Requests;
+
 public class GetSessionsRequest
 {
 	[DefaultValue(10)]

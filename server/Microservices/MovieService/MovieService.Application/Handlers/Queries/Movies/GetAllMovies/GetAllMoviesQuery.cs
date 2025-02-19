@@ -11,4 +11,5 @@ public record GetAllMoviesQuery(
 	string[] Filters,
 	string[] FilterValues,
 	string SortBy,
-	string SortDirection) : IRequest<PaginationWrapperDto<MovieModel>>;
+	string SortDirection,
+	string Date) : IRequest<PaginationWrapperDto<MovieModel>>;

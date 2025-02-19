@@ -16,7 +16,6 @@ public class MovieEntity
 	public DateTime UpdatedAt { get; set; }
 
 	public virtual ICollection<MovieGenreEntity> MovieGenres { get; set; } = [];
-	//public virtual ICollection<MovieInRoleEntity> MovieInRoles { get; set; } = [];
 	public virtual ICollection<SessionEntity> Sessions { get; set; } = [];
 	public virtual ICollection<MovieFrameEntity> MovieFrames { get; set; } = [];
 }
