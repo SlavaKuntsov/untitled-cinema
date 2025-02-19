@@ -3,6 +3,7 @@
 using MediatR;
 
 using MovieService.Application.Extensions;
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Constants;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -13,9 +14,11 @@ namespace MovieService.Application.Handlers.Commands.Sessions.FillSession;
 
 public class FillSessionCommandHandler(
 	IUnitOfWork unitOfWork,
+	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<FillSessionCommand, Guid>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<Guid> Handle(FillSessionCommand request, CancellationToken cancellationToken)
@@ -66,6 +69,8 @@ public class FillSessionCommandHandler(
 		await _unitOfWork.Repository<SessionEntity>().CreateAsync(_mapper.Map<SessionEntity>(session), cancellationToken);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return session.Id;
 	}

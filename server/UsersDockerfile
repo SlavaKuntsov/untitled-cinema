@@ -25,6 +25,6 @@ RUN apk add --no-cache ca-certificates \
 
 COPY --from=build /app/publish . 
 
-ENV ASPNETCORE_URLS=https://+:7001
+# ENV ASPNETCORE_URLS=https://+:7001
 
 ENTRYPOINT ["dotnet", "UserService.API.dll"]

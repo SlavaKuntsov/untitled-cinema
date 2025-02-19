@@ -48,6 +48,9 @@ public class NotificationHub(ILogger<NotificationHub> logger) : Hub
 
 	public static IEnumerable<string> GetConnections(Guid userId)
 	{
-		return _userConnections.TryGetValue(userId, out var connections) ? connections : Enumerable.Empty<string>();
+		return _userConnections
+			.TryGetValue(userId, out var connections) ? 
+			connections : 
+			Enumerable.Empty<string>();
 	}
 }

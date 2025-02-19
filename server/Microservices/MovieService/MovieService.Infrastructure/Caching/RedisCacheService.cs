@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -12,11 +13,20 @@ public class RedisCacheService : IRedisCacheService
 {
 	private readonly IDistributedCache _distributedCache;
 	private readonly IConnectionMultiplexer _redis;
+	private readonly JsonSerializerOptions _serializerOptions;
 
 	public RedisCacheService(IDistributedCache distributedCache, IConnectionMultiplexer redis)
 	{
 		_distributedCache = distributedCache;
 		_redis = redis;
+
+		_serializerOptions = new JsonSerializerOptions
+		{
+			PropertyNamingPolicy = null,
+			IncludeFields = true,
+			PropertyNameCaseInsensitive = true,
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		};
 	}
 
 	public async Task<T> GetValueAsync<T>(string key)
@@ -24,9 +34,9 @@ public class RedisCacheService : IRedisCacheService
 		var data = await _distributedCache.GetStringAsync(key);
 
 		if (data is null)
-			return default(T);
+			return default(T)!;
 
-		return JsonSerializer.Deserialize<T>(data)!;
+		return JsonSerializer.Deserialize<T>(data, _serializerOptions)!;
 	}
 
 	public async Task SetValueAsync<T>(string key, T value, TimeSpan? expiry = null)
@@ -37,7 +47,7 @@ public class RedisCacheService : IRedisCacheService
 			SlidingExpiration = TimeSpan.FromMinutes(5)
 		};
 
-		var data = JsonSerializer.Serialize(value);
+		var data = JsonSerializer.Serialize(value, _serializerOptions);
 
 		await _distributedCache.SetStringAsync(key, data, options);
 	}

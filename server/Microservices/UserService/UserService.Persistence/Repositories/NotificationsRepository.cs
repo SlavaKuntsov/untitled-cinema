@@ -25,7 +25,8 @@ public class NotificationsRepository : INotificationsRepository
 	{
 		return await _context.Notifications
 			.AsNoTracking()
-			.Where(u => u.UserId == id)
+			.Where(n => n.UserId == id)
+			.Where(n => n.IsDeleted == false)
 			.ToListAsync(cancellationToken);
 	}
 

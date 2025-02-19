@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: server/UsersDockerfile
     ports:
-      - "7001:7001"
+      - "7101:7001"
     environment:
       - APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
@@ -52,7 +52,7 @@ services:
       context: .
       dockerfile: server/MoviesDockerfile
     ports:
-      - "7002:7002"
+      - "7102:7002"
     environment:
       - APP_PORT=7002
       - USERS_APP_PORT=7001
@@ -77,7 +77,7 @@ services:
       context: .
       dockerfile: server/BookingsDockerfile
     ports:
-      - "7003:7003"
+      - "7103:7003"
     environment:
       - APP_PORT=7003
       - USERS_APP_PORT=7001

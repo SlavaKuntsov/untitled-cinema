@@ -20,6 +20,9 @@ public static class InfrastructureExtensions
 
 		var connectionString = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
 
+		if (string.IsNullOrEmpty(connectionString))
+			connectionString = configuration.GetConnectionString("Redis");
+
 		services.AddStackExchangeRedisCache(options =>
 		{
 			options.Configuration = connectionString;

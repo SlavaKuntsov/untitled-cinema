@@ -1,5 +1,6 @@
 ﻿using MediatR;
 
+using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Enums;
 using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
@@ -7,12 +8,11 @@ using UserService.Domain.Interfaces.Repositories;
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;
 
 public class DeleteUserCommandHandler(
-	IUsersRepository usersRepository
-	//IRedisCacheService redisCacheService,
-	) : IRequestHandler<DeleteUserCommand>
+	IUsersRepository usersRepository,
+	IRedisCacheService redisCacheService) : IRequestHandler<DeleteUserCommand>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
-	//private readonly IRedisCacheService _redisCacheService = redisCacheService;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
 	public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 	{
@@ -40,6 +40,6 @@ public class DeleteUserCommandHandler(
 			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
 
-		//await _redisCacheService.RemoveValuesByPatternAsync("users_*");
+		await _redisCacheService.RemoveValuesByPatternAsync("users_*");
 	}
 }
