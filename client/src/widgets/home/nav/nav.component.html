@@ -61,13 +61,17 @@
             [routerLink]="[account]"
             routerLinkActive="active"
           >
-            <i class="pi pi-user !text-3xl"></i>
+            @if (isUserLoaded) {
+              <i class="pi pi-user !text-3xl"></i>
 
-            @if (!user()) {
-              <span
-                class="absolute -right-5 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
-                >Login</span
-              >
+              @if (!user()) {
+                <span
+                  class="absolute -right-5 -top-1 rounded-lg bg-amber-500 px-1 font-bold text-black"
+                  >Login</span
+                >
+              }
+            } @else {
+              <i class="pi pi-users text-indigo-600 !text-3xl"></i>
             }
           </button>
         </div>

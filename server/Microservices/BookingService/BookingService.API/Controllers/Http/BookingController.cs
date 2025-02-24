@@ -1,4 +1,6 @@
-﻿using BookingService.Application.Handlers.Commands.Bookings.CancelBooking;
+﻿using System.Security.Claims;
+
+using BookingService.Application.Handlers.Commands.Bookings.CancelBooking;
 using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
 using BookingService.Application.Handlers.Commands.Bookings.PayBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
@@ -47,6 +49,14 @@ public class BookingController : ControllerBase
 	[HttpPost("/bookings")]
 	public async Task<IActionResult> Create([FromBody] CreateBookingCommand request)
 	{
+		//var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+		//	?? throw new UnauthorizedAccessException("User ID not found in claims.");
+
+		//if (!Guid.TryParse(userIdClaim.Value, out var userId))
+		//	throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		//var command = request with { UserId = userId };
+
 		_logger.LogInformation("Starting to create bookings {UserId} - {SessionId}.",
 			request.UserId,
 			request.SessionId);
@@ -57,7 +67,8 @@ public class BookingController : ControllerBase
 			request.UserId,
 			request.SessionId);
 
-		return Ok(bookingId);
+		return Accepted();
+		//return Ok(bookingId);
 	}
 
 	[HttpPatch("/bookings/pay/{bookingId:Guid}/user/{userId:Guid}")]

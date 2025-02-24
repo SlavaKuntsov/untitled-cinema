@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
 
-using MediatR;
-
 using Microsoft.AspNetCore.Authorization;
 
 using MovieService.Domain.Interfaces.Grpc;
@@ -10,12 +8,10 @@ namespace MovieService.API.Extensions;
 
 public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 {
-	private readonly IMediator _mediator;
 	private readonly IAuthGrpcService _authGrpcService;
 
-	public ActiveAdminHandler(IMediator mediator, IAuthGrpcService authGrpcService)
+	public ActiveAdminHandler(IAuthGrpcService authGrpcService)
 	{
-		_mediator = mediator;
 		_authGrpcService = authGrpcService;
 	}
 
@@ -37,7 +33,7 @@ public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 
 			if (!admin)
 			{
-				context.Fail(); 
+				context.Fail();
 				return;
 			}
 		}

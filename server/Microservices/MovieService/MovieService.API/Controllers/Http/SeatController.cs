@@ -8,8 +8,9 @@ using MovieService.Application.Handlers.Commands.Seats.CreateSeatType;
 using MovieService.Application.Handlers.Commands.Seats.DeleteSeatType;
 using MovieService.Application.Handlers.Commands.Seats.UpdateSeat;
 using MovieService.Application.Handlers.Commands.Seats.UpdateSeatType;
+using MovieService.Application.Handlers.Queries.Seats.GetAllSeatTypes;
 using MovieService.Application.Handlers.Queries.Seats.GetSeatById;
-using MovieService.Application.Handlers.Queries.Seats.GetSeatTypes;
+using MovieService.Application.Handlers.Queries.Seats.GetSeatTypesByHallId;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -59,6 +60,16 @@ public class SeatController : ControllerBase
 	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
 		var seatTypes = await _mediator.Send(new GetAllSeatTypesQuery(), cancellationToken);
+
+		return Ok(seatTypes);
+	}
+
+	[HttpGet("/seats/types/hall/{hallId:Guid}")]
+	public async Task<IActionResult> GetByHall([FromRoute] Guid hallId, CancellationToken cancellationToken)
+	{
+		var seatTypes = await _mediator.Send(
+			new GetSeatTypesByHallIdQuery(hallId), 
+			cancellationToken);
 
 		return Ok(seatTypes);
 	}

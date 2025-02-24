@@ -23,7 +23,6 @@ using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Behaviors;
 using UserService.API.Consumers;
 using UserService.API.Contracts.Examples;
-using UserService.API.ExceptionHandlers;
 using UserService.API.Middlewares;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Infrastructure.Auth;

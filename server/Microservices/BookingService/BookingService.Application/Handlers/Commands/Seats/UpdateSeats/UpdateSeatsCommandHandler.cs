@@ -36,9 +36,7 @@ public class UpdateSeatsCommandHandler(
 		{
 			isExist = false;
 
-			var data = new SessionSeatsRequest(
-				request.SessionId,
-				request.Seats);
+			var data = new SessionSeatsRequest(request.SessionId);
 
 			var response = await _rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
 				data,

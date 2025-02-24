@@ -3,8 +3,8 @@
 using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Exceptions;
 using UserService.Application.Interfaces.Caching;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Queries.Users.GetUserById;

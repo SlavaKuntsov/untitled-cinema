@@ -8,7 +8,8 @@ using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
 using MovieService.Application.Handlers.Commands.Sessions.FillSession;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
-using MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
+using MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
+using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -34,15 +35,24 @@ public class SessionController : ControllerBase
 	{
 		_logger.LogInformation("Fetch all sessions.");
 
-		var movies = await _mediator.Send(new GetAllSessionsQuery(
+		var sessions = await _mediator.Send(new GetAllSessionsQuery(
 			request.Limit,
 			request.Offset,
+			request.Movie,
 			request.Date,
 			request.Hall), cancellationToken);
 
 		_logger.LogInformation("Successfully fetched {Count} movies.", request.Limit);
 
-		return Ok(movies);
+		return Ok(sessions);
+	}
+
+	[HttpGet("/sessions/{id:Guid}")]
+	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+	{
+		var sessions = await _mediator.Send(new GetSessionByIdQuery(id), cancellationToken);
+
+		return Ok(sessions);
 	}
 
 	[HttpPost("/sessions")]
@@ -50,9 +60,9 @@ public class SessionController : ControllerBase
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Fill([FromBody] FillSessionCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request, cancellationToken);
+		var sessions = await _mediator.Send(request, cancellationToken);
 
-		return Ok(movie);
+		return Ok(sessions);
 	}
 
 	[HttpPatch("/sessions")]
@@ -60,9 +70,9 @@ public class SessionController : ControllerBase
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Update([FromBody] UpdateSessionCommand request, CancellationToken cancellationToken)
 	{
-		var movie = await _mediator.Send(request, cancellationToken);
+		var sessions = await _mediator.Send(request, cancellationToken);
 
-		return Ok(movie);
+		return Ok(sessions);
 	}
 
 	[HttpDelete("/sessions/{id:Guid}")]
@@ -75,7 +85,7 @@ public class SessionController : ControllerBase
 	}
 
 	[HttpGet("/sessions/seats/{sessionId:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid sessionId, CancellationToken cancellationToken)
+	public async Task<IActionResult> GetSeats([FromRoute] Guid sessionId, CancellationToken cancellationToken)
 	{
 		var seats = await _mediator.Send(new GetSeatsBySessionIdQuery(sessionId), cancellationToken);
 

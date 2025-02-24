@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { Genre, Movie } from "../model/movie";
@@ -16,6 +16,14 @@ export class MoviesService {
 
   movies = signal<PaginationWrapper<Movie> | null>(null);
   genres = signal<Genre[] | null>(null);
+
+  selectedMovieId = signal<string | null>(localStorage.getItem("movieId"));
+
+  constructor() {
+    effect(() => {
+      localStorage.setItem("movieId", this.selectedMovieId()!);
+    });
+  }
 
   get(payload: MoviesPaginationPayload): Observable<PaginationWrapper<Movie>> {
     let params = new HttpParams()

@@ -8,4 +8,6 @@ public interface ISeatsRepository
 	Task<IList<SeatEntity>> GetBySessionIdAsync(Guid id, CancellationToken cancellationToken);
 	Task CreateRangeAsync(IList<SeatEntity> seats, CancellationToken cancellationToken);
 	void DeleteBySessionId(Guid id);
+	Task<IList<SeatTypeEntity>> GetTypeByHallIdAsync(Guid id, CancellationToken cancellationToken);
+	void DeleteByHallId(Guid id);
 }

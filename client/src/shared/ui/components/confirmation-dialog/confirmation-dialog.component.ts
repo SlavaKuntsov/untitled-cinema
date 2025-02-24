@@ -25,18 +25,18 @@ import { ToastModule } from "primeng/toast";
   styleUrl: "./confirmation-dialog.component.scss",
 })
 export class ConfirmationDialogComponent {
-  @Input() label: string = "Confirm"; // Текст кнопки
-  @Input() buttonClasses: string = ""; // Классы для кнопки
-  @Input() dialogKey: string = ""; // Ключ диалога
-  @Input() header: string = "Are you sure?"; // Заголовок диалога
-  @Input() message: string = "Please confirm to proceed."; // Сообщение диалога
-  @Input() acceptLabel: string = "Confirm"; // Текст кнопки подтверждения
-  @Input() colorClass: string = "bg-green-600"; // Класс для цвета иконки
+  @Input() label: string = "Confirm";
+  @Input() buttonClasses: string = "";
+  @Input() dialogKey: string = "";
+  @Input() header: string = "Are you sure?";
+  @Input() message: string = "Please confirm to proceed.";
+  @Input() acceptLabel: string = "Confirm";
+  @Input() colorClass: string = "bg-green-600";
   @Input() acceptButtonClass: string =
-    "!bg-green-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-green-500 !border-[2px] hover:!border-white !border-green-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3"; // Класс для кнопки подтверждения
+    "!bg-green-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-green-500 !border-[2px] hover:!border-white !border-green-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3";
 
-  @Output() confirm = new EventEmitter<void>(); // Событие подтверждения
-  @Output() cancel = new EventEmitter<void>(); // Событие отмены
+  @Output() confirm = new EventEmitter<void>();
+  @Output() cancel = new EventEmitter<void>();
 
   constructor(private confirmationService: ConfirmationService) {}
 

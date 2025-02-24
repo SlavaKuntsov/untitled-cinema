@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Domain.Exceptions;
+using UserService.Application.Exceptions;
 
-namespace UserService.API.ExceptionHandlers;
+namespace UserService.API.Middlewares;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -18,6 +18,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 	{
 		_problemDetailsService = problemDetailsService;
 	}
+
 	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
 	{
 		{ typeof(AlreadyExistsException), (StatusCodes.Status400BadRequest, "Resource Already Exists") },

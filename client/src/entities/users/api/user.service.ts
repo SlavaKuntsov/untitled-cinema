@@ -12,21 +12,12 @@ export class UserService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  // userObject = new BehaviorSubject<User | null>(null);
-  // user$ = this.userObject.asObservable();
-
   user = signal<User | null>(null);
 
   constructor() {
     effect(() => {
-      console.log("EFFECT_______________________");
-      console.log(this.user());
     });
   }
-
-  // get isUser(): boolean {
-  //   return !!this.userObject;
-  // }
 
   update(payload: UpdateUser): Observable<User> {
     return this.http

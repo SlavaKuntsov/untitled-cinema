@@ -8,7 +8,12 @@ public class SessionSeatsModel
 	public IList<SeatModel> ReservedSeats { get; private set; } = [];
 	public DateTime UpdatedAt { get; private set; }
 
-	public SessionSeatsModel(Guid id, Guid sessionId, IList<SeatModel> availableSeats, IList<SeatModel> reservedSeats, DateTime updatedAt)
+	public SessionSeatsModel(
+		Guid id,
+		Guid sessionId,
+		IList<SeatModel> availableSeats,
+		IList<SeatModel> reservedSeats,
+		DateTime updatedAt)
 	{
 		Id = id;
 		SessionId = sessionId;

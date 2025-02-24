@@ -9,18 +9,15 @@ export class MinutesToHoursPipe implements PipeTransform {
       return "";
     }
 
-    const hours = Math.floor(minutes / 60); 
-    const remainingMinutes = minutes % 60; 
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
 
     if (hours === 0) {
-      return `${remainingMinutes} min`; 
-      // return `${remainingMinutes} мин`; 
+      return `${remainingMinutes} min`;
     } else if (remainingMinutes === 0) {
       return `${hours} h`;
-      // return `${hours} ч`;
     } else {
-			return `${hours} h ${remainingMinutes} min`; 
-			// return `${hours} ч ${remainingMinutes} мин`; 
+      return `${hours} h ${remainingMinutes} min`;
     }
   }
 }

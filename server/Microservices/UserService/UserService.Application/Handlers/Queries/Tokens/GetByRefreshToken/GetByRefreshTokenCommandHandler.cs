@@ -1,13 +1,14 @@
 ﻿using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Exceptions;
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
 
-public class GetByRefreshTokenCommandHandler(IUsersRepository usersRepository, IJwt jwt) : IRequestHandler<GetByRefreshTokenCommand, UserRoleDto>
+public class GetByRefreshTokenCommandHandler(IUsersRepository usersRepository, IJwt jwt) 
+	: IRequestHandler<GetByRefreshTokenCommand, UserRoleDto>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
 	private readonly IJwt _jwt = jwt;

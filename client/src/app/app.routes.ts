@@ -15,12 +15,12 @@ import { LoginComponent } from "../widgets/auth/login/login.component";
 import { RegistrationComponent } from "../widgets/auth/registration/registration.component";
 import { AccountComponent } from "../widgets/home/account/account.component";
 import { BookingHistoryComponent } from "../widgets/home/booking-history/booking-history.component";
+import { HallComponent } from "../widgets/home/hall/hall.component";
 import { MovieComponent } from "../widgets/home/movie/movie.component";
 import { PosterComponent } from "../widgets/home/poster/poster.component";
 import { ProfileComponent } from "../widgets/home/profile/profile.component";
 import { canActivateAuth } from "./core/guards/auth/access.guard";
 import { canActivateHome } from "./core/guards/home/home.guad";
-import { HallComponent } from "../widgets/home/hall/hall.component";
 
 export const routes: Routes = [
   {
@@ -41,6 +41,10 @@ export const routes: Routes = [
             component: MovieComponent,
           },
         ],
+      },
+      {
+        path: "hall/:hallId",
+        component: HallComponent,
       },
       {
         path: HISTORY,

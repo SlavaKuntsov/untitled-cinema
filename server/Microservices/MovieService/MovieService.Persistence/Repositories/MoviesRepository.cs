@@ -29,8 +29,6 @@ public class MoviesRepository : IMoviesRepository
 	{
 		return _context.Movies
 			.AsNoTracking()
-			.Include(m => m.MovieGenres)
-				.ThenInclude(mg => mg.Genre)
 			.AsQueryable();
 	}
 
@@ -56,15 +54,15 @@ public class MoviesRepository : IMoviesRepository
 
 	public async Task<int> GetCount(IQueryable<MovieEntity> query)
 	{
-		return await query
-			.AsNoTracking()
-			.CountAsync();
+		return await query.AsNoTracking().CountAsync();
 	}
 
 	public async Task<IList<MovieEntity>> ToListAsync(IQueryable<MovieEntity> query, CancellationToken cancellationToken)
 	{
 		return await query
 			.AsNoTracking()
+			.Include(m => m.MovieGenres)
+				.ThenInclude(mg => mg.Genre)
 			.ToListAsync(cancellationToken);
 	}
 

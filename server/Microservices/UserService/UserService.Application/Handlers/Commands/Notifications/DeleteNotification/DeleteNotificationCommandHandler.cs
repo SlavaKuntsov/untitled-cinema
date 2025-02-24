@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-using UserService.Domain.Exceptions;
+using UserService.Application.Exceptions;
 using UserService.Persistence.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Notifications.DeleteNotification;

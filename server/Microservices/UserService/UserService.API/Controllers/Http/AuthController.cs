@@ -7,7 +7,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Application.DTOs;
 using UserService.Application.Handlers.Commands.Auth.Unauthorize;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
@@ -23,13 +22,11 @@ public class AuthController : ControllerBase
 {
 	private readonly IMediator _mediator;
 	private readonly ICookieService _cookieService;
-	private readonly IMapper _mapper;
 
-	public AuthController(IMediator mediator, ICookieService cookieService, IMapper mapper)
+	public AuthController(IMediator mediator, ICookieService cookieService)
 	{
 		_mediator = mediator;
 		_cookieService = cookieService;
-		_mapper = mapper;
 	}
 
 	[HttpGet("refreshToken")]
@@ -38,7 +35,7 @@ public class AuthController : ControllerBase
 		var refreshToken = _cookieService.GetRefreshToken();
 
 		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(
-			refreshToken), 
+			refreshToken),
 			cancellationToken);
 
 		var authResultDto = await _mediator.Send(
@@ -46,7 +43,7 @@ public class AuthController : ControllerBase
 			cancellationToken);
 
 		HttpContext.Response.Cookies.Append(
-			JwtConstants.REFRESH_COOKIE_NAME, 
+			JwtConstants.REFRESH_COOKIE_NAME,
 			authResultDto.RefreshToken);
 
 		return Ok(new { authResultDto.AccessToken });
@@ -63,11 +60,10 @@ public class AuthController : ControllerBase
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
 		var user = await _mediator.Send(
-			new GetUserByIdQuery(userId), 
+			new GetUserByIdQuery(userId),
 			cancellationToken);
 
 		return Ok(user);
-		//return Ok(_mapper.Map<UserDto>(user!));
 	}
 
 	[HttpGet("unauthorize")]

@@ -8,9 +8,9 @@
       dateFormat="dd-mm-yy"
       class="custom-datepicker"
       inline="true"
-      [minDate]="dateNow"
-      styleClass="!absolute !left-0 !top-36 !order-none !text-2xl !bg-zinc-900 z-40"
-    />
+      styleClass="!absolute !left-0 !top-36 !order-none !text-2xl !bg-zinc-900 z-50"
+			/>
+      <!-- [minDate]="dateNow" -->
   }
   <div class="flex flex-row items-center gap-16">
     <button
@@ -143,9 +143,11 @@
               class="absolute inset-y-0 left-0 z-0 w-full bg-gradient-to-b from-zinc-800 to-zinc-400"
             ></div>
 
-            <div class="relative z-30 flex h-full flex-col justify-end gap-4">
+            <div
+              class="relative z-40 flex h-full flex-col items-start justify-end gap-4 text-start"
+            >
               <span
-                class="absolute left-0 top-0 flex h-12 w-14 items-center justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800/50 text-2xl font-semibold text-white pt-1"
+                class="absolute left-0 top-0 flex h-12 w-14 items-center justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800/50 pt-1 text-2xl font-semibold text-white"
               >
                 {{ movie.ageLimit }}+
               </span>
@@ -162,6 +164,10 @@
                 {{ movie.durationMinutes | minutesToHours }}
               </p>
             </div>
+
+            <div
+              class="z-[35] bottom-gradient absolute bottom-0 left-0 h-[30%] bg-gradient-to-t from-black to-transparent mb-1 mx-1 rounded-b-2xl"
+            ></div>
           </div>
         </button>
       }

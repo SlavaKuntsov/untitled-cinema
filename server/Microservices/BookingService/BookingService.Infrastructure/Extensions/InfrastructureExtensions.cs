@@ -12,6 +12,8 @@ public static class InfrastructureExtensions
 {
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
+		services.AddSignalR();
+
 		services.AddScoped<IAuthGrpcService, AuthGrpcService>();
 
 		BsonSerializer.RegisterSerializer(new BookingStatusSerialization());

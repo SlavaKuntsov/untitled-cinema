@@ -25,13 +25,20 @@ public class SeatsRepository : ISeatsRepository
 
 	public async Task<IList<SeatEntity>> GetBySessionIdAsync(Guid id, CancellationToken cancellationToken)
 	{
-		var seats = await _context.Seats
-			.AsNoTracking()
-			.Include(s => s.Hall.Sessions
-				.Where(ss => ss.Id == id))
-			.ToListAsync(cancellationToken);
+		//var seats = await _context.Seats
+		//	.AsNoTracking()
+		//	.Include(s => s.Hall.Sessions
+		//		.Where(ss => ss.Id == id))
+		//	.ToListAsync(cancellationToken);
 
-		return seats ?? [];
+		//return seats ?? [];
+
+		var seats = await _context.Seats
+		.AsNoTracking()
+		.Where(s => s.Hall.Sessions.Any(ss => ss.Id == id))
+		.ToListAsync(cancellationToken);
+
+		return seats;
 	}
 
 	public async Task<SeatTypeEntity?> GetTypeAsync(string name, CancellationToken cancellationToken)
@@ -40,6 +47,16 @@ public class SeatsRepository : ISeatsRepository
 			.AsNoTracking()
 			.Where(m => m.Name.ToLower() == name.ToLower())
 			.FirstOrDefaultAsync(cancellationToken);
+	}
+
+	public async Task<IList<SeatTypeEntity>> GetTypeByHallIdAsync(Guid id, CancellationToken cancellationToken)
+	{
+		return await _context.Seats
+			.AsNoTracking()
+			.Where(s => s.HallId == id)
+			.Select(s => s.SeatType)
+			.Distinct() 
+			.ToListAsync(cancellationToken);
 	}
 
 	public async Task<Guid> CreateAsync(SeatEntity seat, CancellationToken cancellationToken)
@@ -59,6 +76,17 @@ public class SeatsRepository : ISeatsRepository
 		var seatsToDelete = _context.Seats
 			.Include(s => s.Hall.Sessions.
 				Where(ss => ss.Id == id))
+			.ToList();
+
+		_context.Seats.RemoveRange(seatsToDelete);
+
+		return;
+	}
+
+	public void DeleteByHallId(Guid id)
+	{
+		var seatsToDelete = _context.Seats
+			.Where(s => s.HallId == id)
 			.ToList();
 
 		_context.Seats.RemoveRange(seatsToDelete);

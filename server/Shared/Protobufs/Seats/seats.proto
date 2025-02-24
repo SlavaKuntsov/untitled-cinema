@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "Protobufs.Seats";
+
+
+message CreateSeatsRequest {
+  string refreshToken = 1;
+}
+message CreateSeatsResponse {
+  string accessToken = 1;
+}
+
+
+service SeatsService {
+  rpc CreateSeats (CreateSeatsRequest) returns (CreateSeatsResponse);
+}

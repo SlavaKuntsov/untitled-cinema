@@ -5,7 +5,6 @@ export const getChildRoutes = (
   rootPath: string,
 ): { route: string; title: string }[] => {
   const rootRoute = router.config.find((r) => r.path === rootPath);
-	console.log(rootRoute)
   if (rootRoute && rootRoute.children) {
     return rootRoute.children
       .filter((r) => r.path && r.data?.["isVisible"])

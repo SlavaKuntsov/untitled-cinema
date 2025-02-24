@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, Signal, signal } from "@angular/core";
 import * as signalR from "@microsoft/signalr";
 import { Observable, tap } from "rxjs";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
 import { environment } from "../../../environments/environment";
+import { ToastService, ToastStatus } from "../../toast";
 import { AuthService } from "../../users/api/auth.service";
 import { CustomNotification } from "../model/customNotification";
 
@@ -24,8 +24,6 @@ export class NotificationService {
     if (this.isConnected) return;
     this.isConnected = true;
 
-    console.log("------------START SIGNALR CONNECTION");
-
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`https://localhost:7001/notify`, {
         accessTokenFactory: () => this.accessToken() ?? "",
@@ -44,13 +42,10 @@ export class NotificationService {
     this.hubConnection.on(
       "ReceiveNotification",
       (message: CustomNotification) => {
-        console.log("UPDATE");
-        console.log(this.notifications());
         this.notifications.update((notifications) => [
           ...notifications,
           message,
         ]);
-        console.log(this.notifications());
 
         this.toastService.showToast(ToastStatus.Success, message.message);
       },
@@ -60,7 +55,6 @@ export class NotificationService {
   stopConnection() {
     if (this.hubConnection && this.isConnected) {
       this.hubConnection.stop().then(() => {
-        console.log("SignalR Disconnected");
         this.isConnected = false;
       });
     }
@@ -92,14 +86,11 @@ export class NotificationService {
   }
 
   delete(id: string): Observable<void> {
-    return this.http
-      .delete<void>(`${environment.userBaseUrl}/notifications/${id}`, {
+    return this.http.delete<void>(
+      `${environment.userBaseUrl}/notifications/${id}`,
+      {
         withCredentials: true,
-      })
-      .pipe(
-        tap(() => {
-          // Обновление состояния notifications происходит в компоненте
-        }),
-      );
+      },
+    );
   }
 }

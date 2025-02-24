@@ -12,10 +12,10 @@ public class CreateCustomHallRequestExample : IExamplesProvider<CreateCustomHall
 			name: "Большой зал",
 			totalSeats: 14,
 			seats: [
+				[-1, 1, 1, -1],
 				[1, 1, 1, 1],
-				[2, 3, 3, 2],
-				[0, 0, 0, 0],
-				[-1, 0, 0, -1]
+				[1, 1, 1, 1],
+				[1, 1, 1, 1]
 			]);
 	}
 }

@@ -6,7 +6,7 @@ export interface User {
   role: string;
   firstName: string;
   lastName: string;
-  balance: number | DecimalPipe;
+  balance: number;
   dateOfBirth: string;
 }
 

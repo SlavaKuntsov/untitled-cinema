@@ -1,6 +1,4 @@
-﻿using MapsterMapper;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,6 @@ using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Application.Handlers.Queries.Movies.GetAllGenres;
 using MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 using MovieService.Application.Handlers.Queries.Movies.GetMovieById;
-using MovieService.Domain.Exceptions;
 
 using Swashbuckle.AspNetCore.Filters;
 

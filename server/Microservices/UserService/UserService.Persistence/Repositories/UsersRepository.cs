@@ -90,17 +90,6 @@ public class UsersRepository : IUsersRepository
 		return (result?.Id, result?.Password, result?.Role);
 	}
 
-	public async Task<(Guid?, string?)> GetIdWithPasswordAsync(string email, CancellationToken cancellationToken)
-	{
-		var result = await _context.Users
-			.AsNoTracking()
-			.Where(u => u.Email == email)
-			.Select(u => new { u.Id, u.Password})
-			.FirstOrDefaultAsync(cancellationToken);
-
-		return (result?.Id, result?.Password);
-	}
-
 	public async Task<Guid?> GetIdAsync(string email, CancellationToken cancellationToken)
 	{
 		return await _context.Users

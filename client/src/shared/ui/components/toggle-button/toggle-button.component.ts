@@ -1,6 +1,5 @@
-import { Component, Input } from "@angular/core";
-import { Genre } from "../../../../entities/movies/model/movie";
 import { CommonModule } from "@angular/common";
+import { Component, Input } from "@angular/core";
 
 @Component({
   selector: "app-toggle-button",

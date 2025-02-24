@@ -11,6 +11,9 @@ public class GetSessionsRequest
 	public byte Offset { get; set; } = 1;
 
 	[DefaultValue(null)]
+	public Guid? Movie { get; set; }
+
+	[DefaultValue(null)]
 	public string? Date { get; set; }
 
 	[DefaultValue(null)]

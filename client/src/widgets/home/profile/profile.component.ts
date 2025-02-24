@@ -15,9 +15,9 @@ import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
 import { ToastModule } from "primeng/toast";
 import { ToggleSwitch } from "primeng/toggleswitch";
-import { ErrorService } from "../../../app/core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
+import { ErrorService } from "../../../entities/error";
 import { IError } from "../../../entities/error/model/error";
+import { ToastService, ToastStatus } from "../../../entities/toast";
 import { UpdateUser, User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
 import { UserService } from "../../../entities/users/api/user.service";
@@ -77,11 +77,8 @@ export class ProfileComponent {
       const user = this.user();
       if (user) {
         this.form.patchValue({
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
           dateOfBirth: user.dateOfBirth
-            ? parse(user.dateOfBirth, "dd-MM-yyyy", new Date())
+            ? parse(user.dateOfBirth, "yyyy-MM-dd", new Date())
             : null,
         });
       }
@@ -148,9 +145,7 @@ export class ProfileComponent {
     });
   }
 
-  onCancel() {
-    console.log("User canceled action");
-  }
+  onCancel() {}
 
   onFormChange() {
     this.tempUser = {

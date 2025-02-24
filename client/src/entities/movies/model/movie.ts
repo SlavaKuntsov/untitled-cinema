@@ -6,7 +6,7 @@ export interface Movie {
 	genres: string[],
 	description: string,
 	poster: string
-	price: number | DecimalPipe,
+	price: number,
 	durationMinutes: number,
 	producer: string,
 	inRoles: string,

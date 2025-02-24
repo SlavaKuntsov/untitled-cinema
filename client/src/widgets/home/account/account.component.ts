@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, CurrencyPipe } from "@angular/common";
 import { Component, inject, Signal } from "@angular/core";
 import {
   Router,
@@ -25,6 +25,7 @@ import { DividerComponent } from "../../../shared/ui/components/divider/divider.
     AvatarModule,
     AvatarGroupModule,
     ProgressSpinner,
+		CurrencyPipe,
     DividerComponent,
   ],
   templateUrl: "./account.component.html",

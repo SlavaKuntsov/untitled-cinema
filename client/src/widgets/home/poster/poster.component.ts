@@ -18,8 +18,7 @@ import { PaginatorModule, PaginatorState } from "primeng/paginator";
 import { ScrollPanelModule } from "primeng/scrollpanel";
 import { SkeletonModule } from "primeng/skeleton";
 import { SliderModule } from "primeng/slider";
-import { ErrorService } from "../../../app/core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
+import { ErrorService } from "../../../entities/error";
 import { IError } from "../../../entities/error/model/error";
 import { MoviesService } from "../../../entities/movies/api/movies.service";
 import { Genre, Movie } from "../../../entities/movies/model/movie";
@@ -27,6 +26,7 @@ import {
   MoviesPaginationPayload,
   PaginationWrapper,
 } from "../../../entities/movies/model/pagination";
+import { ToastService, ToastStatus } from "../../../entities/toast";
 import { Base64ToImagePipe } from "../../../shared/lib/pipes/base64-to-image.pipe";
 import { MinutesToHoursPipe } from "../../../shared/lib/pipes/minutes-to-hours.pipe";
 import { ToggleButtonComponent } from "../../../shared/ui/components/toggle-button/toggle-button.component";
@@ -80,7 +80,6 @@ export class PosterComponent {
     filterValues: [],
     sortBy: "title",
     sortDirection: "asc",
-    // date: "05-01-2025"
     date: format(new Date(), "dd-MM-yyyy"),
   });
   isMoviesLoaded: boolean = false;
@@ -89,38 +88,31 @@ export class PosterComponent {
   selectedGenres = signal<string[]>([]);
 
   constructor() {
-    this.isMoviesLoaded = false;
     effect(() => {
-      console.log("effect_________________");
-      console.log(this.payload());
-
       if (!this.isMoviesLoaded) {
         this.fetchMovies();
-
-        this.moviesService.getGenres().subscribe({
-          next: (res: Genre[]) => {},
-        });
+        this.isMoviesLoaded = true;
       }
     });
   }
 
   first: number = 0;
 
-  private fetchMovies() {
-    console.log("PAYLOAD");
-    console.log(this.payload());
-
+  fetchMovies() {
     this.moviesService.movies.set(null);
 
     this.moviesService.get(this.payload()).subscribe({
       next: (res: PaginationWrapper<Movie>) => {
         this.total.set(res.total);
-        this.isMoviesLoaded = true;
       },
       error: (error: IError) => {
         const errorMessage = this.errorService.getErrorMessage(error);
         this.toastService.showToast(ToastStatus.Error, errorMessage);
       },
+    });
+
+    this.moviesService.getGenres().subscribe({
+      next: (res: Genre[]) => {},
     });
   }
 
@@ -139,9 +131,6 @@ export class PosterComponent {
   }
 
   removeFilter(name: string) {
-    console.log(this.selectedGenres());
-    console.log(`remove ${name}`);
-
     this.payload.update((val) => {
       const indexToRemove = val.filterValues.indexOf(name);
 
@@ -194,17 +183,17 @@ export class PosterComponent {
       date: format(this.dateNow, "dd-MM-yyyy"),
     }));
 
-    this.fetchMovies();
+    if (!this.isMoviesLoaded) {
+      this.fetchMovies();
+      this.isMoviesLoaded = true;
+    }
   }
 
   onDatepickerChange(date: Date) {
     if (date && date.getDate() !== this.dateNow.getDate()) {
-      console.log("Выбранная дата отличается от сегодняшней:", date);
-
       this.payload.update((val) => ({
         ...val,
         date: format(date, "dd-MM-yyyy"),
-        // date: "06-01-2025"
       }));
 
       this.fetchMovies();
@@ -218,8 +207,6 @@ export class PosterComponent {
       this.dateHeading = formattedDate;
     } else {
       this.dateHeading = "Today";
-      console.log("Выбрана сегодняшняя дата");
-
       this.payload.update((val) => ({
         ...val,
         date: format(this.dateNow, "dd-MM-yyyy"),
@@ -233,12 +220,9 @@ export class PosterComponent {
 
   onDatepickerChangeInDialog(date: Date) {
     if (date && date.getDate() !== this.dateNow.getDate()) {
-      console.log("Выбранная дата отличается от сегодняшней:", date);
-
       this.payload.update((val) => ({
         ...val,
         date: format(date, "dd-MM-yyyy"),
-        // date: "06-01-2025"
       }));
 
       const formatter = new Intl.DateTimeFormat("en-US", {
@@ -250,7 +234,6 @@ export class PosterComponent {
       this.dateHeadingTemp = formattedDate;
     } else {
       this.dateHeadingTemp = "Today";
-      console.log("Выбрана сегодняшняя дата");
 
       this.payload.update((val) => ({
         ...val,
@@ -262,11 +245,6 @@ export class PosterComponent {
   }
 
   onGenreToggle(genre: string): void {
-    console.log("toggle");
-    console.log(this.genres());
-    console.log(this.selectedGenres());
-    console.log(genre);
-
     if (this.selectedGenres().some((g: string) => g === genre)) {
       this.selectedGenres.update((genres) =>
         genres.filter((g: string) => g !== genre),

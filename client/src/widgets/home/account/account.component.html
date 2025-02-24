@@ -1,6 +1,8 @@
 @if (user(); as user) {
   <div class="grid w-full grid-cols-4">
-    <div class="avatar justify-items-center text-center">
+    <div
+      class="avatar flex flex-col items-center justify-items-center gap-10 text-center"
+    >
       <p-avatar
         [style.width]="'15rem'"
         [style.height]="'15rem'"
@@ -11,6 +13,10 @@
         size="xlarge"
         shape="circle"
       />
+      <div class="flex flex-col items-start justify-center gap-4">
+        <h3 class="text-3xl font-bold">Balance:</h3>
+        <p class="text-2xl">{{ user.balance | currency }}</p>
+      </div>
     </div>
     <div class="col-span-3 ml-10 flex flex-col">
       <h1 class="mb-20 text-7xl font-extrabold">

@@ -8,14 +8,9 @@ using UserService.Application.Handlers.Queries.Users.GetUserExist;
 
 namespace UserService.API.Extensions;
 
-public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
+public class ActiveAdminHandler(IMediator mediator) : AuthorizationHandler<ActiveAdminRequirement>
 {
-	private readonly IMediator _mediator;
-
-	public ActiveAdminHandler(IMediator mediator)
-	{
-		_mediator = mediator;
-	}
+	private readonly IMediator _mediator = mediator;
 
 	protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveAdminRequirement requirement)
 	{

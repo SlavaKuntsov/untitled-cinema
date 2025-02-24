@@ -15,11 +15,11 @@ import {
 } from "@angular/router";
 import { BadgeModule } from "primeng/badge";
 import { Message } from "primeng/message";
-import { ErrorService } from "../../../app/core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
+import { ErrorService } from "../../../entities/error";
 import { IError } from "../../../entities/error/model/error";
 import { NotificationService } from "../../../entities/notifications/api/notification.service";
 import { CustomNotification } from "../../../entities/notifications/model/customNotification";
+import { ToastService, ToastStatus } from "../../../entities/toast";
 import { User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
 import { UserService } from "../../../entities/users/api/user.service";
@@ -54,6 +54,7 @@ export class NavComponent {
   routes: { route: string; title: string }[] = [];
 
   user: Signal<User | null> = this.userService.user;
+  isUserLoaded: boolean = false;
 
   notifications: Signal<CustomNotification[]> =
     this.notificationService.notifications;
@@ -67,16 +68,18 @@ export class NavComponent {
   constructor() {
     this.routes = getChildRoutes(this.router, "");
 
-		
     effect(() => {
-			console.log("NAV");
-      console.log(this.notifications());
-			
-			if (this.user() && !this.isNotificationsLoaded) {
-				this.notificationService.get().subscribe();
-
-				this.isNotificationsLoaded = true;
+			if(this.user !== null){
+				this.isUserLoaded = true;
 			}
+			else{
+				this.isUserLoaded = false
+			}
+      if (this.user() && !this.isNotificationsLoaded) {
+        this.notificationService.get().subscribe();
+
+        this.isNotificationsLoaded = true;
+      }
     });
   }
 
@@ -93,7 +96,6 @@ export class NavComponent {
   deleteNotification(id: string) {
     this.notificationService.delete(id).subscribe({
       next: () => {
-        console.log("Notification deleted:", id);
         this.notificationService.notifications.update((notifications) => {
           return notifications.filter((i) => i.id !== id);
         });

@@ -55,11 +55,14 @@ public class UpdateSessionCommandHandler(
 			calculateEndTime,
 			cancellationToken);
 
-		if (sameExistSessions.Any())
+		if (sameExistSessions.Count > 1)
 		{
-			var overlappingMovieIds = sameExistSessions.Select(s => s.MovieId).Distinct();
-			throw new UnprocessableContentException(
-				$"Conflicting sessions found for movies: {string.Join(", ", overlappingMovieIds)}");
+			if (sameExistSessions.Any())
+			{
+				var overlappingMovieIds = sameExistSessions.Select(s => s.MovieId).Distinct();
+				throw new UnprocessableContentException(
+					$"Conflicting sessions found for movies: {string.Join(", ", overlappingMovieIds)}");
+			}
 		}
 
 		request.Adapt(existSession);

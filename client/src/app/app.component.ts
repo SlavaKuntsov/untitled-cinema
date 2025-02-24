@@ -2,13 +2,13 @@ import { Component, effect, inject, OnDestroy, Signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { ToastModule } from "primeng/toast";
+import { ErrorService } from "../entities/error";
 import { IError } from "../entities/error/model/error";
 import { NotificationService } from "../entities/notifications/api/notification.service";
+import { ToastService, ToastStatus } from "../entities/toast";
 import { User } from "../entities/users";
 import { AuthService } from "../entities/users/api/auth.service";
 import { UserService } from "../entities/users/api/user.service";
-import { ErrorService } from "./core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "./core/services/toast";
 
 @Component({
   selector: "app-root",
@@ -29,9 +29,6 @@ export class AppComponent implements OnDestroy {
   accessTokenExist: Signal<boolean> = this.authService.accessTokenExist;
 
   constructor() {
-    console.log("START");
-    console.log(this.authService.accessToken());
-
     this.authService.authorize().subscribe({
       error: (error: IError) => {
         const errorMessage = this.errorService.getErrorMessage(error);
@@ -40,12 +37,10 @@ export class AppComponent implements OnDestroy {
     });
 
     effect(() => {
-
       if (this.userService.user() != null) {
         console.log("User authenticated, starting notifications...");
         this.notificationService.startConnection();
-      } 
-			else {
+      } else {
         console.log("User logged out, stopping notifications...");
         this.notificationService.stopConnection();
       }

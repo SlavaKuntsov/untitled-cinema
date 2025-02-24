@@ -10,9 +10,8 @@ import { format, parse } from "date-fns";
 import { ButtonModule } from "primeng/button";
 import { DatePickerModule } from "primeng/datepicker";
 import { ToastModule } from "primeng/toast";
-import { ErrorService } from "../../../app/core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
-import { IError } from "../../../entities/error/model/error";
+import { ErrorService, IError } from "../../../entities/error";
+import { ToastService, ToastStatus } from "../../../entities/toast";
 import { Registration, User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
 import { passwordValidator } from "../../../shared/lib/model/password-validation";
@@ -106,11 +105,8 @@ export class RegistrationComponent {
           this.toastService.showToast(ToastStatus.Error, errorMessage);
         },
         complete: () => {
-          console.log("qweqewqewq");
           this.authService.authorize().subscribe({
             next: (res: User) => {
-              console.log("after login auth");
-              console.log(res);
             },
           });
         },

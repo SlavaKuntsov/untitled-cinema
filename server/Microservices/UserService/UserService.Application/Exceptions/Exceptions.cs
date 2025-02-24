@@ -1,4 +1,4 @@
-﻿namespace UserService.Domain.Exceptions;
+﻿namespace UserService.Application.Exceptions;
 
 /// <summary>
 /// Represents an exception that is thrown when an age restriction already exists.

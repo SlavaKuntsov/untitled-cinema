@@ -21,7 +21,10 @@ public class SessionsRepository : ISessionsRepository
 
 	public async Task<List<SessionEntity>> ToListAsync(IQueryable<SessionEntity> query, CancellationToken cancellationToken)
 	{
-		return await query.ToListAsync(cancellationToken);
+		return await query
+			.Include(s => s.Hall)
+			.OrderBy(s => s.StartTime)
+			.ToListAsync(cancellationToken);
 	}
 
 	public async Task<IList<(Guid Id, Guid MovieId)>> GetOverlappingAsync(

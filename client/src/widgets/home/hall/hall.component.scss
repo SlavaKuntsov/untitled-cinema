@@ -1,0 +1,27 @@
+:host {
+  @apply block h-full w-full;
+}
+
+.poster {
+  height: calc(75% - 202px);
+}
+
+.spinner {
+  height: calc(100dvh - 200px);
+}
+
+.error {
+  height: calc(100dvh - 200px);
+}
+
+@media (max-width: 576px) {
+	.poster {
+		height: calc(75% - 50px);
+	}
+}
+
+@media (max-width: 480px) {
+	.poster {
+		height: calc(75%);
+	}
+}

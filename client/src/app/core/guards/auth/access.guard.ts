@@ -10,13 +10,8 @@ export const canActivateAuth = () => {
 
   const user$ = toObservable(userService.user);
 
-  console.log("QQQQQQQQ");
-  console.log(userService.user());
-
   return user$.pipe(
     switchMap((user) => {
-      console.log("GUARD");
-      console.log(user);
       if (user) {
         return [true];
       } else {

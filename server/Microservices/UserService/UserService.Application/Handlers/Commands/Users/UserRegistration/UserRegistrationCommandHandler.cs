@@ -3,11 +3,11 @@
 using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Exceptions;
 using UserService.Application.Extensions;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;
 
@@ -17,8 +17,7 @@ public class UserRegistrationCommandHandler(
 		IUsersRepository usersRepository,
 		IPasswordHash passwordHash,
 		IJwt jwt,
-		IMapper mapper)
-		: IRequestHandler<UserRegistrationCommand, AuthDto>
+		IMapper mapper) : IRequestHandler<UserRegistrationCommand, AuthDto>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
 	private readonly IPasswordHash _passwordHash = passwordHash;

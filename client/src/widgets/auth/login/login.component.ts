@@ -8,9 +8,9 @@ import {
 import { Router, RouterLink } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { ToastModule } from "primeng/toast";
-import { ErrorService } from "../../../app/core/services/error/api/error.service";
-import { ToastService, ToastStatus } from "../../../app/core/services/toast";
+import { ErrorService } from "../../../entities/error";
 import { IError } from "../../../entities/error/model/error";
+import { ToastService, ToastStatus } from "../../../entities/toast";
 import { Login, User } from "../../../entities/users";
 import { AuthService } from "../../../entities/users/api/auth.service";
 import { passwordValidator } from "../../../shared/lib/model/password-validation";
@@ -78,8 +78,6 @@ export class LoginComponent {
         complete: () => {
           this.authService.authorize().subscribe({
             next: (res: User) => {
-              console.log("after login auth");
-              console.log(res);
             },
           });
 
