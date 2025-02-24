@@ -2,17 +2,20 @@
 
 using MediatR;
 
-using UserService.Domain;
-using UserService.Domain.Exceptions;
+using UserService.Application.Exceptions;
+using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Models;
 
 namespace UserService.Application.Handlers.Commands.Users.ChangeBalance;
 
 public class ChangeBalanceCommandHandler(
 	IUsersRepository usersRepository,
+	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<ChangeBalanceCommand, UserModel>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<UserModel> Handle(ChangeBalanceCommand request, CancellationToken cancellationToken)
@@ -29,6 +32,8 @@ public class ChangeBalanceCommandHandler(
 			existUser.Balance -= request.Amount;
 
 		_usersRepository.Update(existUser);
+
+		await _redisCacheService.RemoveValuesByPatternAsync("users_*");
 
 		return _mapper.Map<UserModel>(existUser);
 	}

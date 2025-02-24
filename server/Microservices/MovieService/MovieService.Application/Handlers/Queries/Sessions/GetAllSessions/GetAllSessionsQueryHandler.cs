@@ -2,21 +2,21 @@
 
 using MediatR;
 
+using MovieService.Application.DTOs;
 using MovieService.Application.Extensions;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
-using MovieService.Domain.Models;
 
-namespace MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
+namespace MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
 
 public class GetAllSessionsQueryHandler(
 	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<GetAllSessionsQuery, IList<SessionModel>>
+	IMapper mapper) : IRequestHandler<GetAllSessionsQuery, IList<SessionWithHallDto>>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
 	private readonly IMapper _mapper = mapper;
 
-	public async Task<IList<SessionModel>> Handle(GetAllSessionsQuery request, CancellationToken cancellationToken)
+	public async Task<IList<SessionWithHallDto>> Handle(GetAllSessionsQuery request, CancellationToken cancellationToken)
 	{
 		var query = _unitOfWork.SessionsRepository.Get();
 
@@ -31,6 +31,19 @@ public class GetAllSessionsQueryHandler(
 				query = query.Where(s => s.DayId == day.Id);
 			else
 				query = query.Where(s => false);
+		}
+
+		if (request.Movie != null)
+		{
+			if (request.Movie.Value != Guid.Empty)
+			{
+				var movie = await _unitOfWork.MoviesRepository.GetAsync(request.Movie.Value, cancellationToken);
+
+				if (movie is not null)
+					query = query.Where(s => s.MovieId == movie.Id);
+				else
+					query = query.Where(s => false);
+			}
 		}
 
 		if (!string.IsNullOrWhiteSpace(request.Hall))
@@ -49,6 +62,6 @@ public class GetAllSessionsQueryHandler(
 
 		var sessions = await _unitOfWork.SessionsRepository.ToListAsync(query, cancellationToken);
 
-		return _mapper.Map<IList<SessionModel>>(sessions);
+		return _mapper.Map<IList<SessionWithHallDto>>(sessions);
 	}
 }

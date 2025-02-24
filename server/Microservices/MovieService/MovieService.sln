@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protobufs", "..\..\Shared\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brokers", "..\..\Shared\Brokers\Brokers.csproj", "{4C8CEEA5-2C57-4308-BBD4-9FE10CC18D23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Tests", "MovieService.Tests\MovieService.Tests.csproj", "{51CC14C1-CE7A-452E-AEF8-1429BC394487}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{4C8CEEA5-2C57-4308-BBD4-9FE10CC18D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C8CEEA5-2C57-4308-BBD4-9FE10CC18D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C8CEEA5-2C57-4308-BBD4-9FE10CC18D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51CC14C1-CE7A-452E-AEF8-1429BC394487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51CC14C1-CE7A-452E-AEF8-1429BC394487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51CC14C1-CE7A-452E-AEF8-1429BC394487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51CC14C1-CE7A-452E-AEF8-1429BC394487}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

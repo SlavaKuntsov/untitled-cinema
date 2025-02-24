@@ -17,7 +17,7 @@ using Microsoft.OpenApi.Models;
 
 using MovieService.API.Behaviors;
 using MovieService.API.Consumers;
-using MovieService.API.Contracts.Examples.Movies;
+using MovieService.API.Contracts.RequestExamples.Movies;
 using MovieService.API.ExceptionHandlers;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
@@ -28,8 +28,6 @@ using MovieService.Infrastructure.Auth;
 using Protobufs.Auth;
 
 using Serilog;
-
-using StackExchange.Redis;
 
 using Swashbuckle.AspNetCore.Filters;
 
@@ -145,6 +143,9 @@ public static class ApiExtensions
 		{
 			options.AddDefaultPolicy(policy =>
 			{
+				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("http://localhost:7000");
+				policy.WithOrigins("https://localhost:7003");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
@@ -172,20 +173,6 @@ public static class ApiExtensions
 		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-		services.AddStackExchangeRedisCache(options =>
-		{
-			options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
-			options.InstanceName = string.Empty;
-		});
-
-		services.AddSingleton<IConnectionMultiplexer>(sp =>
-		{
-			var configuration =
-				ConfigurationOptions.Parse(
-					Environment.GetEnvironmentVariable("REDIS_CONFIGURATION"), true);
-			return ConnectionMultiplexer.Connect(configuration);
-		});
 
 		return services;
 	}

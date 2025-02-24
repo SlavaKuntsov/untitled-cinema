@@ -1,16 +1,22 @@
-﻿using MapsterMapper;
+﻿using Mapster;
+
+using MapsterMapper;
 
 using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;
 
-namespace UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
+namespace UserService.Application.Handlers.Commands.Tokens.GenerateTokens;
 
-public class GenerateTokensCommandHandler(ITokensRepository tokensRepository, IJwt jwt, IMapper mapper) : IRequestHandler<GenerateTokensCommand, AuthDto>
+public class GenerateTokensCommandHandler(
+	ITokensRepository tokensRepository,
+	IJwt jwt,
+	IMapper mapper) : IRequestHandler<GenerateTokensCommand, AuthDto>
 {
 	private readonly ITokensRepository _tokensRepository = tokensRepository;
 	private readonly IJwt _jwt = jwt;
@@ -23,18 +29,25 @@ public class GenerateTokensCommandHandler(ITokensRepository tokensRepository, IJ
 
 		var newRefreshTokenModel = new RefreshTokenModel(
 				request.Id,
-				request.Role,
 				newRefreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 
-		var existRefreshToken = await _tokensRepository.GetRefreshTokenAsync(request.Id, cancellationToken);
+		var existRefreshToken = await _tokensRepository.GetAsync(
+			request.Id, 
+			cancellationToken);
 
 		if (existRefreshToken is not null)
-			_tokensRepository.UpdateRefreshToken(existRefreshToken);
+		{
+			newRefreshTokenModel.Adapt(existRefreshToken);
+
+			_tokensRepository.Update(existRefreshToken);
+		}
 		else
-			await _tokensRepository.AddRefreshTokenAsync(
+		{
+			await _tokensRepository.CreateAsync(
 				_mapper.Map<RefreshTokenEntity>(newRefreshTokenModel),
 				cancellationToken);
+		}
 
 		return new AuthDto(accessToken, newRefreshToken);
 	}

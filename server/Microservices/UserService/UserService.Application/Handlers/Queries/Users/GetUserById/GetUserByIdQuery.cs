@@ -1,10 +1,7 @@
 ﻿using MediatR;
 
-using UserService.Domain;
+using UserService.Application.DTOs;
 
-namespace UserService.Application.Handlers.Queries.Users.GetUser;
+namespace UserService.Application.Handlers.Queries.Users.GetUserById;
 
-public partial class GetUserByIdQuery(Guid id) : IRequest<UserModel?>
-{
-    public Guid Id { get; init; } = id;
-}
+public record GetUserByIdQuery(Guid Id) : IRequest<UserWithStringDateOfBirthDto?>;

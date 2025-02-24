@@ -1,0 +1,159 @@
+@if (!movieErrorText) {
+  @if (movie) {
+    <div
+      class="absolute left-0 top-0 flex h-full w-full flex-col items-center gap-10 px-10"
+    >
+      <div class="poster flex h-full w-full flex-col items-center">
+        <div class="h-0 flex-1">
+          <div
+            class="absolute inset-0 z-10 h-4/6 w-full bg-cover bg-center"
+            [ngStyle]="{
+              'background-image': 'url(' + (movie.poster | base64ToImage) + ')',
+            }"
+          ></div>
+
+          <div
+            class="absolute inset-0 z-20 h-4/6 w-full border-b-2 bg-black/50"
+            style="
+              border-image: linear-gradient(to right, #27272a, #a1a1aa, #27272a)
+                1;
+            "
+          ></div>
+        </div>
+
+        <div
+          class="container relative z-30 flex flex-1 flex-col justify-end gap-10"
+        >
+          <div class="flex flex-row items-end justify-between pb-6">
+            <div class="flex flex-col gap-6">
+              <h1 class="flex items-end text-7xl font-extrabold text-white">
+                {{ movie.title }}
+              </h1>
+
+              <h3 class="text-4xl text-zinc-400">
+                In cinema since {{ movie.releaseDate | transformDate }}
+              </h3>
+
+              <span
+                class="flex h-14 w-16 items-center justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800/50 pt-1 text-3xl font-semibold text-white"
+              >
+                {{ movie.ageLimit }}+
+              </span>
+            </div>
+
+            <app-button
+              [label]="'Buy a ticket'"
+              [buttonClasses]="
+                'w-full bg-indigo-600 hover:bg-white hover:text-indigo-600 border-[2px] border-indigo-600 px-10'
+              "
+              type="submit"
+              (click)="buyTicket()"
+            >
+            </app-button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="container mt-10 grid w-full grid-cols-2 items-start justify-center gap-10"
+      >
+        <div class="flex flex-row gap-24 text-nowrap">
+          <div class="grid grid-rows-4 gap-8 text-xl font-bold text-white">
+            <h4>Genres:</h4>
+            <h4>Duration time:</h4>
+            <h4>Producer:</h4>
+            <h4>In roles:</h4>
+          </div>
+          <div class="grid grid-rows-4 gap-8 text-lg font-medium text-zinc-400">
+            <p>{{ movie.genres.join(", ") }}.</p>
+            <p>{{ movie.durationMinutes | minutesToHours }}.</p>
+            <p>{{ movie.producer }}.</p>
+            <p>{{ movie.inRoles }}.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <h4 class="text-xl font-bold text-white">Descroption:</h4>
+          <p class="text-lg font-medium text-zinc-400">
+            {{ movie.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p-dialog
+      header="Choose session"
+      [modal]="true"
+      class="custom-dialog"
+      [(visible)]="isFilterDialogVisible"
+      [style]="{ width: '25rem' }"
+      [styleClass]="'text-3xl'"
+    >
+      <p-datepicker
+        [(ngModel)]="selectedDate"
+        (ngModelChange)="onDatepickerChangeInDialog($event)"
+        placeholder="date of birth"
+        [showIcon]="true"
+        dateFormat="dd-mm-yy"
+        class="custom-datepicker"
+        inline="true"
+        fluid="true"
+				/>
+        <!-- [minDate]="dateNow" -->
+
+      <div class="mt-8 flex flex-col gap-4">
+        <div class="flex flex-row items-center justify-between">
+          <p class="text-2xl text-zinc-300">Sessions:</p>
+          <p class="text-xl text-zinc-400">count: {{ sessions?.length }}</p>
+        </div>
+
+        <div class="flex min-h-36 flex-wrap gap-4">
+          @if (sessions) {
+            @if (sessions.length == 0) {
+              <div
+                class="flex min-h-full w-full flex-1 items-center justify-center"
+              >
+                <p class="text-2xl font-semibold text-zinc-600">
+                  Sessions not found :(
+                </p>
+              </div>
+            } @else {
+              @for (session of sessions; track $index) {
+                <button
+                  [routerLink]="['/hall', session.hall.hallId]"
+									(click)="selectSession(session.id)"
+                  class="flex w-fit min-w-64 max-w-72 flex-col items-center gap-4 rounded-xl border-[1px] border-zinc-600 bg-zinc-800/50 px-6 py-4 transition-colors duration-300 ease-in-out hover:border-zinc-400"
+                >
+                  <p class="text-zinc-600">
+                    {{ session.startTime | extractTime }}
+                  </p>
+
+                  <span class="h-[1px] w-full bg-zinc-700"></span>
+
+                  <p class="text-2xl text-zinc-400">
+                    {{ session.hall.hallName }}
+                  </p>
+                </button>
+              }
+            }
+          } @else {
+            <div class="my-4 flex w-full items-center justify-center">
+              <p-progress-spinner
+                ariaLabel="loading"
+                [style]="{ width: '50px', height: '50px' }"
+              />
+            </div>
+          }
+        </div>
+      </div>
+    </p-dialog>
+  } @else if (!movie) {
+    <div class="spinner flex w-full items-center justify-center">
+      <p-progress-spinner ariaLabel="loading" />
+    </div>
+  }
+} @else {
+  <div class="error flex h-full w-full items-center justify-center">
+    <h3 class="text-3xl font-bold">{{ movieErrorText }}</h3>
+  </div>
+}

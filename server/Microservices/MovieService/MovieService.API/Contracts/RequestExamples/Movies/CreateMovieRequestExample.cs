@@ -2,20 +2,25 @@
 
 using Swashbuckle.AspNetCore.Filters;
 
-namespace MovieService.API.Contracts.Examples.Movies;
+namespace MovieService.API.Contracts.RequestExamples.Movies;
 
 public class CreateMovieRequestExample : IExamplesProvider<CreateMovieCommand>
 {
 	public CreateMovieCommand GetExamples()
 	{
+		var posterPath = Path.Combine("Contracts", "RequestExamples", "Movies", "Assets", "poster.jpg");
+		var posterBytes = File.ReadAllBytes(posterPath);
+
 		return new CreateMovieCommand(
-			title: "Гладиатор",
-			genres: ["боевик", "драма"],
-			description: "После того как его дом завоевывают тиранические императоры, возглавляющие Рим, Луций, сын Луциллы и Максимуса, вынужден выйти на арену Колизея и обратиться к своему прошлому, чтобы найти в себе силы вернуть славу Рима его народу.",
-			price: 20.0m,
-			durationMinutes: 165,
-			producer: "Ридли Скотт",
-			ageLimit: 18,
-			releaseDate: "23-12-2024 15:00");
+			Title: "Сент-Экзюпери",
+			Genres: ["драма", "приключения", "биография"],
+			Description: "В 1930 году Антуан де Сент-Экзюпери, пилот французской авиапочты в Аргентине, вместе с лучшим другом и коллегой Анри Гийоме решает проложить более короткий маршрут через горы. Когда Гийоме пропадает в Андах, Сент-Экзюпери отправляется в рискованный ночной полет по спасению своего товарища. Это смертельно опасное путешествие не только меняет его, но и вдохновляет на создание всемирно известной книги «Маленький принц», которая станет символом безграничной силы воображения.",
+			Poster: posterBytes,
+			Price: 25.0m,
+			DurationMinutes: 150,
+			Producer: "Пабло Агеро",
+			InRoles: "Луи Гаррель, Венсан Кассель",
+			AgeLimit: 16,
+			ReleaseDate: "06-02-2025 09:00");
 	}
 }

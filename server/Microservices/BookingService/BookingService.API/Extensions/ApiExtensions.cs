@@ -7,6 +7,7 @@ using BookingService.API.Consumers;
 using BookingService.API.Middlewares;
 using BookingService.Domain.Constants;
 using BookingService.Infrastructure.Auth;
+using BookingService.Infrastructure.Seats;
 
 using Hangfire;
 using Hangfire.Mongo;
@@ -172,6 +173,7 @@ public static class ApiExtensions
 			options.AddDefaultPolicy(policy =>
 			{
 				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("http://localhost:7000");
 				policy.WithOrigins("https://localhost:7003");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
@@ -201,6 +203,11 @@ public static class ApiExtensions
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 		return services;
+	}
+
+	public static void UseAPI(this WebApplication app)
+	{
+		app.MapHub<SeatsHub>("/seats");
 	}
 
 	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)

@@ -1,17 +1,12 @@
 ﻿using MediatR;
 
-using MovieService.Domain.Models;
+using MovieService.Application.DTOs;
 
-namespace MovieService.Application.Handlers.Queries.Sessoins.GetAllSessions;
+namespace MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
 
-public class GetAllSessionsQuery(
-	byte limit,
-	byte offset,
-	string? date,
-	string? hall) : IRequest<IList<SessionModel>>
-{
-	public byte Limit { get; private set; } = limit;
-	public byte Offset { get; private set; } = offset;
-	public string? Date { get; private set; } = date;
-	public string? Hall { get; private set; } = hall;
-}
+public record GetAllSessionsQuery(
+	byte Limit,
+	byte Offset,
+	Guid? Movie,
+	string? Date,
+	string? Hall) : IRequest<IList<SessionWithHallDto>>;

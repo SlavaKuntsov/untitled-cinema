@@ -1,0 +1,214 @@
+<div class="relative flex flex-row">
+  @if (isDatepickerOpen()) {
+    <p-datepicker
+      [(ngModel)]="selectedDate"
+      (ngModelChange)="onDatepickerChange($event)"
+      placeholder="date of birth"
+      [showIcon]="true"
+      dateFormat="dd-mm-yy"
+      class="custom-datepicker"
+      inline="true"
+      styleClass="!absolute !left-0 !top-36 !order-none !text-2xl !bg-zinc-900 z-50"
+			/>
+      <!-- [minDate]="dateNow" -->
+  }
+  <div class="flex flex-row items-center gap-16">
+    <button
+      class="open-datepicker-button rounded-xl border-2 border-indigo-600 transition-colors duration-500 ease-in-out hover:bg-indigo-950"
+      (click)="openDatepicker()"
+    >
+      <i class="pi pi-calendar px-4 py-3 !text-4xl"></i>
+    </button>
+    <div class="flex flex-row items-center gap-10">
+      @if (dateHeading == DATE_TODAY) {
+        <button>
+          <h1 class="text-8xl font-extrabold">{{ dateHeading }}</h1>
+        </button>
+      } @else {
+        <button (click)="openDatepicker()">
+          <h1 class="text-5xl font-bold">{{ dateHeading }}</h1>
+        </button>
+
+        <span class="ml-4 h-6 w-6 rounded-full bg-zinc-700"></span>
+
+        <button (click)="setDateToday()">
+          <h1 class="text-8xl font-extrabold text-zinc-600">
+            {{ DATE_TODAY }}
+          </h1>
+        </button>
+      }
+    </div>
+  </div>
+</div>
+
+<span class="my-6 h-1 w-full rounded-md bg-zinc-800"></span>
+
+<div class="mb-10 mt-2 flex flex-wrap items-center gap-8">
+  <button (click)="chooseFilters()">
+    <i
+      class="pi pi-filter rounded-full bg-indigo-700 p-2 px-4 py-3 !text-2xl"
+    ></i>
+  </button>
+  @if (selectedGenres().length == 0) {
+    <button
+      class="rounded-3xl border-[3px] border-zinc-800 px-5 py-3 text-2xl font-medium text-zinc-500 transition-colors duration-500 ease-in-out hover:border-zinc-600 hover:text-white"
+      (click)="chooseFilters()"
+    >
+      Choose Filters
+    </button>
+  }
+
+  @if (selectedGenres(); as genres) {
+    @for (genre of genres; track $index) {
+      <p-chip
+        [label]="genre"
+        class="custom-chip"
+        styleClass="cursor-pointer"
+        icon="pi pi-times-circle"
+        (click)="removeFilter(genre)"
+      />
+    }
+  }
+</div>
+
+<p-dialog
+  header="Filters"
+  [modal]="true"
+  class="custom-dialog"
+  [(visible)]="isFilterDialogVisible"
+  [style]="{ width: '25rem' }"
+  [styleClass]="'text-3xl'"
+>
+  <p-datepicker
+    [(ngModel)]="selectedDate"
+    (ngModelChange)="onDatepickerChangeInDialog($event)"
+    placeholder="date of birth"
+    [showIcon]="true"
+    dateFormat="dd-mm-yy"
+    class="custom-datepicker"
+    inline="true"
+    [minDate]="dateNow"
+    fluid="true"
+  />
+
+  <div class="my-8 flex flex-col gap-3">
+    <p class="text-2xl text-zinc-300">Genres:</p>
+
+    <div class="flex flex-wrap gap-4">
+      @if (genres(); as genres) {
+        @for (genre of genres; track $index) {
+          <app-toggle-button
+            [genre]="genre.name"
+            [selected]="selectedGenres().includes(genre.name)"
+            (click)="onGenreToggle(genre.name)"
+          >
+          </app-toggle-button>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-4">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      (click)="isFilterDialogVisible = false"
+    />
+    <p-button label="Save" (click)="saveFilters()" />
+  </div>
+</p-dialog>
+
+<div class="grid h-full grid-cols-12 gap-4">
+  @if (movies(); as movies) {
+    @if (movies.items.length > 0) {
+      @for (movie of movies.items; track $index) {
+        <button
+          [routerLink]="movie.id"
+          class="col-span-12 col-start-2 col-end-12 cursor-pointer p-2 md:col-span-6 xl:col-span-4"
+        >
+          <div
+            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 relative h-[45rem] overflow-hidden rounded-2xl border-0 p-6 md:h-[45rem] lg:h-[50rem] xl:h-[55rem]"
+          >
+            <div
+              class="absolute inset-0 z-10 m-1 rounded-xl bg-cover bg-center"
+              [ngStyle]="{
+                'background-image':
+                  'url(' + (movie.poster | base64ToImage) + ')',
+              }"
+            ></div>
+
+            <div class="absolute inset-0 z-20 bg-black/60"></div>
+
+            <div
+              class="absolute inset-y-0 left-0 z-0 w-full bg-gradient-to-b from-zinc-800 to-zinc-400"
+            ></div>
+
+            <div
+              class="relative z-40 flex h-full flex-col items-start justify-end gap-4 text-start"
+            >
+              <span
+                class="absolute left-0 top-0 flex h-12 w-14 items-center justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800/50 pt-1 text-2xl font-semibold text-white"
+              >
+                {{ movie.ageLimit }}+
+              </span>
+
+              <h3 class="text-6xl font-extrabold text-white">
+                {{ movie.title }}
+              </h3>
+
+              <p class="text-2xl font-medium text-zinc-400">
+                {{ movie.genres.join(", ") }}
+              </p>
+
+              <p class="text-2xl text-zinc-400">
+                {{ movie.durationMinutes | minutesToHours }}
+              </p>
+            </div>
+
+            <div
+              class="z-[35] bottom-gradient absolute bottom-0 left-0 h-[30%] bg-gradient-to-t from-black to-transparent mb-1 mx-1 rounded-b-2xl"
+            ></div>
+          </div>
+        </button>
+      }
+    } @else {
+      <div
+        class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 relative col-span-12 col-start-2 col-end-12 flex h-[45rem] items-center justify-center overflow-hidden rounded-2xl border-0 bg-zinc-600 p-6 text-center md:col-span-6 md:h-[45rem] lg:h-[50rem] xl:col-span-4 xl:h-[55rem]"
+      >
+        <p class="text-3xl font-semibold text-zinc-400">
+          Events on this date ended(
+        </p>
+      </div>
+    }
+  } @else {
+    <div
+      *ngFor="let i of counterArray(6); let first = first"
+      class="col-span-12 p-2 sm:col-span-6 xl:col-span-4"
+    >
+      <div
+        class="bg-surface-0 dark:bg-surface-900 rounded-xl border border-zinc-600 p-6"
+      >
+        <div class="flex flex-col items-center gap-4">
+          <p-skeleton height="20rem" class="w-full" />
+          <p-skeleton width="8rem" height="2rem" />
+          <p-skeleton width="6rem" height="1rem" />
+        </div>
+        <div class="flex items-center justify-between">
+          <p-skeleton width="4rem" height="2rem" />
+          <p-skeleton width="6rem" height="1rem" shape="circle" size="3rem" />
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="card mt-10 flex justify-center">
+  <p-paginator
+    class="custom-paginator"
+    (onPageChange)="onPageChange($event)"
+    [first]="first"
+    [rows]="payload().limit"
+    [totalRecords]="total()"
+    [rowsPerPageOptions]="[1, 3, 10, 20, 30]"
+  />
+</div>

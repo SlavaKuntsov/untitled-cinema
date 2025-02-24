@@ -18,8 +18,10 @@ public class CreateSeatCommandHandler(
 
 	public async Task<Guid> Handle(CreateSeatCommand request, CancellationToken cancellationToken)
 	{
-		var existSeat = await _unitOfWork.SeatsRepository
-			.GetAsync(request.Row, request.Column, cancellationToken);
+		var existSeat = await _unitOfWork.SeatsRepository.GetAsync(
+			request.Row, 
+			request.Column,
+			cancellationToken);
 
 		if (existSeat is not null)
 			throw new AlreadyExistsException($"Seat with row {request.Row} and column {request.Column} already exist.");

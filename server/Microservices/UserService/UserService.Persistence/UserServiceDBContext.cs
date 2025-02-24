@@ -10,6 +10,7 @@ public class UserServiceDBContext : DbContext
 {
 	public DbSet<UserEntity> Users { get; set; }
 	public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
+	public DbSet<NotificationEntity> Notifications { get; set; }
 
 	public UserServiceDBContext(DbContextOptions<UserServiceDBContext> options) : base(options)
 	{

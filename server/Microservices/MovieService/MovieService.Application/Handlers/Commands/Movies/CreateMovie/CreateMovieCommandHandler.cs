@@ -4,8 +4,8 @@ using MediatR;
 
 using MovieService.Application.Extensions;
 using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain;
 using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -32,9 +32,11 @@ public class CreateMovieCommandHandler(
 			Guid.NewGuid(),
 			request.Title,
 			request.Description,
+			request.Poster,
 			request.Price,
 			request.DurationMinutes,
 			request.Producer,
+			request.InRoles,
 			request.AgeLimit,
 			parsedDateTime,
 			dateNow,

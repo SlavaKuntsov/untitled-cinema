@@ -6,7 +6,7 @@ using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
-namespace MovieService.Application.Handlers.Queries.Seats.GetSeatTypes;
+namespace MovieService.Application.Handlers.Queries.Seats.GetAllSeatTypes;
 
 public class GetAllSeatTypesQueryHandler(
 	IUnitOfWork unitOfWork,

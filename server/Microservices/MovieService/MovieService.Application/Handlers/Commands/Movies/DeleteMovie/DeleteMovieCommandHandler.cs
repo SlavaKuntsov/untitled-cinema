@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
 using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 

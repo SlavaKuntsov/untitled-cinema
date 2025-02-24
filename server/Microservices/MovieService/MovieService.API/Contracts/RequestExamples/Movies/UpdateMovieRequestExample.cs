@@ -2,7 +2,7 @@
 
 using Swashbuckle.AspNetCore.Filters;
 
-namespace MovieService.API.Contracts.Examples.Movies;
+namespace MovieService.API.Contracts.RequestExamples.Movies;
 
 public class UpdateMovieRequestExample : IExamplesProvider<UpdateMovieCommand>
 {

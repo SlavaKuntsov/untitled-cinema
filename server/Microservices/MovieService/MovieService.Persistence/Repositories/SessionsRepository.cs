@@ -21,19 +21,27 @@ public class SessionsRepository : ISessionsRepository
 
 	public async Task<List<SessionEntity>> ToListAsync(IQueryable<SessionEntity> query, CancellationToken cancellationToken)
 	{
-		return await query.ToListAsync(cancellationToken);
+		return await query
+			.Include(s => s.Hall)
+			.OrderBy(s => s.StartTime)
+			.ToListAsync(cancellationToken);
 	}
 
-	public async Task<IList<SessionEntity>> GetOverlappingAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+	public async Task<IList<(Guid Id, Guid MovieId)>> GetOverlappingAsync(
+		DateTime startTime,
+		DateTime endTime,
+		CancellationToken cancellationToken)
 	{
-		var sessions = await _context.Sessions
+		return await _context.Sessions
 			.AsNoTracking()
 			.Where(s =>
 				(s.StartTime < endTime && s.EndTime > startTime) ||
 				(s.StartTime == startTime && s.EndTime == endTime)
 			)
-			.ToListAsync(cancellationToken);
-
-		return sessions ?? [];
+			.Select(s => new { s.Id, s.MovieId })
+			.ToListAsync(cancellationToken)
+			.ContinueWith(task => task.Result
+				.Select(x => (x.Id, x.MovieId))
+				.ToList());
 	}
 }

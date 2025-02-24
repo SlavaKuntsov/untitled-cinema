@@ -18,10 +18,10 @@ public static class PersistenceExtensions
 		if (string.IsNullOrEmpty(connectionString))
 			connectionString = configuration.GetConnectionString("MovieServiceDBContext");
 
-		services.AddDbContext<MovieServiceDBContext>(options =>
+		services.AddDbContextPool<MovieServiceDBContext>(options =>
 		{
 			options.UseNpgsql(connectionString);
-		});
+		}, poolSize: 128);
 
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 

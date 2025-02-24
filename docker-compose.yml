@@ -4,8 +4,8 @@ services:
     container_name: api-gateway
     restart: unless-stopped
     build:
-      context: ./server/Configs/ApiGateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Configs/ApiGateway/Dockerfile
     ports:
       - "80:80"
       - "443:443"
@@ -20,6 +20,7 @@ services:
       - movie-service
       - booking-service
 
+
   user-service:
     container_name: user-service
     restart: unless-stopped
@@ -27,11 +28,12 @@ services:
       context: .
       dockerfile: server/UsersDockerfile
     ports:
-      - "7001:7001"
+      - "7101:7001"
     environment:
       - APP_PORT=7001
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=user-postgres;Port=5432;Database=cinema_users;Username=postgres;Password=1;Timezone=Europe/Minsk;
+      - REDIS_CONFIGURATION=redis:6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - LOGSTASH_PORT=5044
@@ -39,6 +41,7 @@ services:
       - ./server/Configs/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
     depends_on:
       - user-postgres
+      - redis
       - rabbitmq
 
 
@@ -49,7 +52,7 @@ services:
       context: .
       dockerfile: server/MoviesDockerfile
     ports:
-      - "7002:7002"
+      - "7102:7002"
     environment:
       - APP_PORT=7002
       - USERS_APP_PORT=7001
@@ -74,15 +77,15 @@ services:
       context: .
       dockerfile: server/BookingsDockerfile
     ports:
-      - "7003:7003"
+      - "7103:7003"
     environment:
       - APP_PORT=7003
       - USERS_APP_PORT=7001
       - MOVIES_APP_PORT=7002
       - ASPNETCORE_ENVIRONMENT=Production
-      - CONNECTION_STRING=mongodb://root:password@booking-mongodb:27017/CinemaBookings/?authSource=admin&authMechanism=SCRAM-SHA-1
+      - CONNECTION_STRING=mongodb://root:password@booking-mongodb:27017/CinemaBookings/?authSource=admin&authMechanism=SCRAM-SHA-1&maxPoolSize=100&minPoolSize=10
       - DATABASE_NAME=CinemaBookings
-      - HANGFIRE_CONNECTION_STRING=mongodb://root:password@booking-mongodb:27017/CinemaHangfire/?authSource=admin&authMechanism=SCRAM-SHA-1
+      - HANGFIRE_CONNECTION_STRING=mongodb://root:password@booking-mongodb:27017/CinemaHangfire/?authSource=admin&authMechanism=SCRAM-SHA-1&maxPoolSize=50&minPoolSize=5
       - REDIS_CONFIGURATION=redis:6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672

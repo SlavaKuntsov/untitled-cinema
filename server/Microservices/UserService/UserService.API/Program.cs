@@ -22,7 +22,7 @@ builder.UseHttps();
 
 services.AddAPI(configuration)
 	.AddApplication()
-	.AddInfrastructure()
+	.AddInfrastructure(configuration)
 	.AddPersistence(configuration)
 	.AddRabbitMQ(configuration);
 

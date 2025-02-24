@@ -6,10 +6,10 @@ using MediatR;
 
 using MovieService.Application.Extensions;
 using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain;
-using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 

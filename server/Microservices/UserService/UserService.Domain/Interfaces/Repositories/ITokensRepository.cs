@@ -5,8 +5,8 @@ namespace UserService.Domain.Interfaces.Repositories;
 
 public interface ITokensRepository
 {
-	Task<RefreshTokenEntity?> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
-	Task<RefreshTokenEntity?> GetRefreshTokenAsync(Guid userId, CancellationToken cancellationToken);
-	Task AddRefreshTokenAsync(RefreshTokenEntity newRefreshTokenEntity, CancellationToken cancellationToken);
-	void UpdateRefreshToken(RefreshTokenEntity refreshTolkenEntity);
+	Task<RefreshTokenEntity?> GetAsync(string refreshToken, CancellationToken cancellationToken);
+	Task<RefreshTokenEntity?> GetAsync(Guid userId, CancellationToken cancellationToken);
+	Task CreateAsync(RefreshTokenEntity newRefreshTokenEntity, CancellationToken cancellationToken);
+	void Update(RefreshTokenEntity refreshTolkenEntity);
 }

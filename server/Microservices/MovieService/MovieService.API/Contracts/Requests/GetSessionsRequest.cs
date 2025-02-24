@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 
 namespace MovieService.API.Contracts.Requests;
+
 public class GetSessionsRequest
 {
 	[DefaultValue(10)]
@@ -8,6 +9,9 @@ public class GetSessionsRequest
 
 	[DefaultValue(1)]
 	public byte Offset { get; set; } = 1;
+
+	[DefaultValue(null)]
+	public Guid? Movie { get; set; }
 
 	[DefaultValue(null)]
 	public string? Date { get; set; }

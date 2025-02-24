@@ -4,70 +4,80 @@ using MapsterMapper;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
-using UserService.Application.Handlers.Commands.Tokens.RefreshToken;
-using UserService.Application.Handlers.Queries.Users.GetUser;
+using UserService.Application.Handlers.Commands.Auth.Unauthorize;
+using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
+using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
+using UserService.Application.Handlers.Queries.Users.GetUserById;
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain.Exceptions;
+using UserService.Domain.Constants;
 
 namespace UserService.API.Controllers.Http;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/auth")]
 public class AuthController : ControllerBase
 {
 	private readonly IMediator _mediator;
 	private readonly ICookieService _cookieService;
-	private readonly IMapper _mapper;
 
-	public AuthController(IMediator mediator, ICookieService cookieService, IMapper mapper)
+	public AuthController(IMediator mediator, ICookieService cookieService)
 	{
 		_mediator = mediator;
 		_cookieService = cookieService;
-		_mapper = mapper;
 	}
 
-	[HttpGet("auth/refreshToken")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	public async Task<IActionResult> RefreshToken()
+	[HttpGet("refreshToken")]
+	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
 	{
 		var refreshToken = _cookieService.GetRefreshToken();
 
-		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(refreshToken));
+		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(
+			refreshToken),
+			cancellationToken);
 
-		var accessToken = await _mediator.Send(new GenerateAccessTokenCommand(userRoleDto.Id, userRoleDto.Role));
+		var authResultDto = await _mediator.Send(
+			new GenerateTokensCommand(userRoleDto.Id, userRoleDto.Role),
+			cancellationToken);
 
-		return Ok(accessToken);
+		HttpContext.Response.Cookies.Append(
+			JwtConstants.REFRESH_COOKIE_NAME,
+			authResultDto.RefreshToken);
+
+		return Ok(new { authResultDto.AccessToken });
 	}
 
-	[HttpGet("auth/authorize")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	public async Task<IActionResult> Authorize()
+	[HttpGet("authorize")]
+	[Authorize(Policy = "UserOrAdmin")]
+	public async Task<IActionResult> Authorize(CancellationToken cancellationToken)
 	{
-		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
-		if (userIdClaim == null)
-			throw new UnauthorizedAccessException("User ID not found in claims.");
+		if (!Guid.TryParse(userIdClaim.Value, out var userId))
+			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
+
+		var user = await _mediator.Send(
+			new GetUserByIdQuery(userId),
+			cancellationToken);
+
+		return Ok(user);
+	}
+
+	[HttpGet("unauthorize")]
+	[Authorize(Policy = "UserOrAdmin")]
+	public async Task<IActionResult> Unauthorize(CancellationToken cancellationToken)
+	{
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+			?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		var userId = Guid.Parse(userIdClaim.Value);
 
-		var user = await _mediator.Send(new GetUserByIdQuery(userId))
-			?? throw new NotFoundException("User not found");
-
-		return Ok(_mapper.Map<UserDto>(user));
-	}
-
-	[HttpGet("auth/unauthorize")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	public IActionResult Unauthorize()
-	{
 		_cookieService.DeleteRefreshToken();
+
+		await _mediator.Send(new UnauthorizeCommand(userId), cancellationToken);
 
 		return Ok();
 	}

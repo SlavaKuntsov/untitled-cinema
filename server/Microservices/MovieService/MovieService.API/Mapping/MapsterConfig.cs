@@ -1,15 +1,17 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text.Json;
 
 using Mapster;
 
+using MovieService.Application.DTOs;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 using MovieService.Application.Handlers.Commands.Seats.UpdateSeat;
 using MovieService.Application.Handlers.Commands.Seats.UpdateSeatType;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
-using MovieService.Domain;
 using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Models;
 
 namespace MovieService.API.Mapping;
@@ -63,6 +65,10 @@ public class MapsterConfig : IRegister
 
 		config.NewConfig<HallModel, HallEntity>()
 			.Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.SeatsArray));
+
+		config.NewConfig<HallEntity, HallDto>()
+			.Map(dest => dest.HallId, src => src.Id)
+			.Map(dest => dest.HallName, src => src.Name);
 	}
 
 	private static DateTime ParseDateTimeOrDefault(string date)

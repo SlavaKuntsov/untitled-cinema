@@ -37,11 +37,10 @@ public class CreateBookingCommandHandler(
 
 		if (sessionSeats is null)
 		{
-			var sessionSeatsData = new SessionSeatsRequest(
-				request.SessionId,
-				request.Seats);
+			var sessionSeatsData = new SessionSeatsRequest(request.SessionId);
 
-			var sessionSeatsResponse = await _rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
+			var sessionSeatsResponse = await _rabbitMQProducer
+				.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
 				sessionSeatsData,
 				Guid.NewGuid(),
 				cancellationToken);
@@ -49,14 +48,14 @@ public class CreateBookingCommandHandler(
 			if (!string.IsNullOrWhiteSpace(sessionSeatsResponse.Error))
 				throw new NotFoundException(sessionSeatsResponse.Error);
 
-			DateTime dateNow1 = DateTime.UtcNow;
+			DateTime sessionSeatDateNow = DateTime.UtcNow;
 
 			var newSessionSeatModel = new SessionSeatsModel(
 				Guid.NewGuid(),
 				request.SessionId,
-				sessionSeatsResponse.Seats,
+				sessionSeatsResponse.Seats!,
 				[],
-				dateNow1);
+				sessionSeatDateNow);
 
 			sessionSeats = _mapper.Map<SessionSeatsEntity>(newSessionSeatModel);
 		}
@@ -94,29 +93,29 @@ public class CreateBookingCommandHandler(
 			}
 		}
 
-		var BookingPriceData = new BookingPriceRequest(
+		var bookingPriceData = new BookingPriceRequest(
 			request.SessionId,
 			request.Seats);
 
-		var BookingPriceResponse = await _rabbitMQProducer.RequestReplyAsync<BookingPriceRequest, BookingPriceResponse>(
-			BookingPriceData,
+		var bookingPriceResponse = await _rabbitMQProducer.RequestReplyAsync<BookingPriceRequest, BookingPriceResponse>(
+			bookingPriceData,
 			Guid.NewGuid(),
 			cancellationToken);
 
-		if (!string.IsNullOrWhiteSpace(BookingPriceResponse.Error))
-			throw new NotFoundException(BookingPriceResponse.Error);
+		if (!string.IsNullOrWhiteSpace(bookingPriceResponse.Error))
+			throw new NotFoundException(bookingPriceResponse.Error);
 
-		DateTime dateNow = DateTime.UtcNow;
+		DateTime bookingDateNow = DateTime.UtcNow;
 
 		var booking = new BookingModel(
 			Guid.NewGuid(),
-			request.UserId,
+			request.UserId!.Value,
 			request.SessionId,
 			request.Seats,
-			BookingPriceResponse.TotalPrice,
+			bookingPriceResponse.TotalPrice,
 			BookingStatus.Reserved.GetDescription(),
-			dateNow,
-			dateNow);
+			bookingDateNow,
+			bookingDateNow);
 
 		await _rabbitMQProducer.PublishAsync(booking, cancellationToken);
 

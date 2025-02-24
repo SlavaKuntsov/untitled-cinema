@@ -1,0 +1,31 @@
+:host {
+  @apply h-fit w-full;
+}
+
+.anim-bounce::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(0);
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0;
+}
+
+.anim-bounce:hover::after {
+  width: 10px;
+  height: 10px;
+  opacity: 1;
+  transform: translateX(-50%) translateY(150%);
+}
+
+a.active {
+  @apply text-indigo-400;
+}
+
+button.active {
+  @apply bg-indigo-700;
+}

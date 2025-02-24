@@ -1,0 +1,239 @@
+@if (!errorText) {
+  @if (hall && movie && session) {
+    <div class="flex flex-col gap-24">
+      <div class="flex h-full w-full flex-col items-center gap-10">
+        <div class="poster mt-60 flex h-full w-full flex-col items-center">
+          <div class="h-0 flex-1">
+            <div
+              class="absolute inset-0 z-10 h-4/6 w-full bg-cover bg-center"
+              [ngStyle]="{
+                'background-image':
+                  'url(' + (movie.poster | base64ToImage) + ')',
+                'mask-image':
+                  'linear-gradient(to bottom, black 0%, transparent 90%)',
+              }"
+            ></div>
+          </div>
+
+          <div
+            class="container relative z-30 flex h-fit flex-1 flex-col gap-10"
+          >
+            <div class="flex flex-row items-end justify-between pb-6">
+              <div
+                class="flex w-full flex-row items-end justify-between gap-10"
+              >
+                <div class="flex flex-col gap-6">
+                  <h1 class="flex items-end text-7xl font-extrabold text-white">
+                    {{ movie.title }}
+                  </h1>
+
+                  <div class="flex flex-wrap gap-10">
+                    <span
+                      class="flex flex-row items-center gap-4 text-zinc-400"
+                    >
+                      <i class="pi pi-ticket !text-3xl"></i>
+                      <p class="text-2xl">{{ movie.genres.join(", ") }}.</p>
+                    </span>
+
+                    <span
+                      class="flex flex-row items-center gap-4 text-zinc-400"
+                    >
+                      <i class="pi pi-clock !text-3xl"></i>
+                      <p class="text-2xl">
+                        {{ movie.durationMinutes | minutesToHours }}.
+                      </p>
+                    </span>
+                  </div>
+
+                  <span
+                    class="flex h-14 w-16 items-center justify-center rounded-xl border-2 border-zinc-600 bg-zinc-800/50 pt-1 text-3xl font-semibold text-white"
+                  >
+                    {{ movie.ageLimit }}+
+                  </span>
+
+                  @if (session) {
+                    <div class="flex flex-wrap items-center gap-10">
+                      <div
+                        class="flex flex-col items-center justify-center gap-4 rounded-xl border-[1px] border-zinc-600 bg-zinc-800/30 px-10 py-6 backdrop-blur-sm"
+                      >
+                        <p class="text-xl text-zinc-500">Date</p>
+
+                        <span class="h-[1px] w-full bg-zinc-700"></span>
+
+                        <p class="my-6 text-4xl font-bold text-zinc-200">
+                          {{ session.startTime | extractDate }}
+                        </p>
+                      </div>
+
+                      <div
+                        class="flex flex-col items-center justify-center gap-4 rounded-xl border-[1px] border-zinc-600 bg-zinc-800/30 px-10 py-6 backdrop-blur-sm"
+                      >
+                        <p class="text-xl text-zinc-500">Date</p>
+
+                        <span class="h-[1px] w-full bg-zinc-700"></span>
+
+                        <p class="my-6 text-4xl font-bold text-zinc-200">
+                          {{ session.startTime | extractTime }}
+                        </p>
+                      </div>
+
+                      <div
+                        class="flex flex-col items-center justify-center gap-4 rounded-xl border-[1px] border-zinc-600 bg-zinc-800/30 px-10 py-6 backdrop-blur-sm"
+                      >
+                        <p class="text-xl text-zinc-500">Hall</p>
+
+                        <span class="h-[1px] w-full bg-zinc-700"></span>
+
+                        <p class="my-6 text-4xl font-bold text-zinc-200">
+                          {{ hall.name }}
+                        </p>
+                      </div>
+                    </div>
+                  }
+                </div>
+                <app-button
+                  [routerLink]="['/poster', movie.id]"
+                  [label]="'Read more'"
+                  [buttonClasses]="
+                    'w-full bg-indigo-600 hover:bg-white hover:text-indigo-600 border-[2px] border-indigo-600 px-10'
+                  "
+                  type="submit"
+                >
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="container mt-32 flex w-full flex-col-reverse items-start justify-center gap-14 xl:flex-row xl:justify-between"
+        >
+          <div class="flex w-full flex-col items-center xl:items-start">
+            <div
+              class="seating-chart flex w-full max-w-4xl flex-col items-center gap-10"
+            >
+              <div
+                class="screen mb-8 w-full rounded-b-3xl bg-gradient-to-t from-zinc-800 to-zinc-900 py-4 text-center text-3xl font-bold text-zinc-500"
+              >
+                SCREEN
+              </div>
+
+              <div class="rows-container space-y-4">
+                @for (
+                  row of hall.seatsArray;
+                  track $index;
+                  let rowNumber = $index
+                ) {
+                  <div class="row flex items-center gap-4">
+                    <span
+                      class="row-number w-10 text-center text-2xl font-bold text-white"
+                    >
+                      {{ rowNumber + 1 }}
+                    </span>
+
+                    <div class="seats flex gap-4">
+                      @for (
+                        seat of row;
+                        track $index;
+                        let seatNumber = $index
+                      ) {
+                        <button
+                          [pTooltip]="tooltipContent"
+                          tooltipPosition="top"
+                          class="seat flex h-14 w-14 items-center justify-center rounded-lg text-xl transition-all duration-200"
+                          [ngClass]="{
+                            'cursor-pointer bg-indigo-500/80 hover:bg-indigo-600':
+                              seat >= 1 && !isReserved(rowNumber, seatNumber),
+                            'cursor-not-allowed bg-zinc-700/60': isReserved(
+                              rowNumber,
+                              seatNumber
+                            ),
+                          }"
+                        >
+                          @if (seat !== -1) {
+                            <span class="text-xl text-zinc-200">{{
+                              seat
+                            }}</span>
+                          }
+                        </button>
+
+                        <ng-template #tooltipContent>
+                          <div
+                            class="flex flex-row items-center gap-8 px-2 py-1"
+                          >
+                            <div class="ml-3 flex flex-col items-center gap-2">
+                              <span class="text-3xl font-extrabold">{{
+                                rowNumber + 1
+                              }}</span>
+                              <p>row</p>
+                            </div>
+
+                            <div class="flex flex-col items-center gap-2">
+                              <span class="text-3xl font-bold">{{
+                                seatNumber + 1
+                              }}</span>
+                              <p>column</p>
+                            </div>
+                          </div>
+                        </ng-template>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="flex w-full flex-col gap-24">
+            <!-- <div class="flex w-full items-center justify-center">
+              <div
+                class="flex w-full min-w-96 max-w-96 flex-col items-center justify-center gap-10 xl:w-fit xl:items-start"
+              >
+                <h3 class="text-4xl font-bold">Tickets:</h3>
+								<div class="p-4 border-[1px] border-zinc-600 rounded-xl flex flex-row gap-10">
+									
+								</div>
+              </div>
+            </div> -->
+            <div class="flex w-full items-center justify-center">
+              <div
+                class="flex w-full min-w-96 max-w-96 flex-col items-center justify-center gap-10 xl:w-fit xl:items-start"
+              >
+                <h3 class="text-4xl font-bold">Seat types:</h3>
+                @for (seatType of seatTypes; track $index) {
+                  <span
+                    class="flex w-full flex-row justify-between gap-6 rounded-xl bg-zinc-700/70 px-8 py-4"
+                  >
+                    <div class="flex flex-row gap-4">
+                      <p class="text-2xl text-zinc-400">
+                        {{ $index + 1 }}
+                      </p>
+                      <p class="text-2xl">
+                        {{ seatType.name }}
+                      </p>
+                    </div>
+                    <p class="text-2xl text-white">
+                      {{
+                        seatType.priceModifier *
+                          session.priceModifier *
+                          movie.price | currency
+                      }}
+                    </p>
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="min-h-[300px]">qwe</div>
+    </div>
+  } @else if (!movie) {
+    <div class="spinner flex w-full items-center justify-center">
+      <p-progress-spinner ariaLabel="loading" />
+    </div>
+  }
+} @else {
+  <div class="error flex h-full w-full items-center justify-center">
+    <h3 class="text-3xl font-bold">{{ errorText }}</h3>
+  </div>
+}

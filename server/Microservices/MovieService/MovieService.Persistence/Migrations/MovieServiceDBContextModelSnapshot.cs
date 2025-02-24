@@ -77,7 +77,7 @@ namespace MovieService.Persistence.Migrations
                     b.ToTable("Hall", (string)null);
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.MovieEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -95,6 +95,14 @@ namespace MovieService.Persistence.Migrations
 
                     b.Property<short>("DurationMinutes")
                         .HasColumnType("smallint");
+
+                    b.Property<string>("InRoles")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Poster")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -116,10 +124,33 @@ namespace MovieService.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Title")
+                        .HasDatabaseName("IX_Movies_Title");
+
                     b.ToTable("Movie", (string)null);
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.MovieGenreEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieFrameEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("MovieFrame", (string)null);
+                });
+
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieGenreEntity", b =>
                 {
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uuid");
@@ -215,7 +246,18 @@ namespace MovieService.Persistence.Migrations
                     b.ToTable("Session", (string)null);
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.MovieGenreEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieFrameEntity", b =>
+                {
+                    b.HasOne("MovieService.Domain.Entities.Movies.MovieEntity", "Movie")
+                        .WithMany("MovieFrames")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieGenreEntity", b =>
                 {
                     b.HasOne("MovieService.Domain.Entities.GenreEntity", "Genre")
                         .WithMany("MovieGenres")
@@ -223,7 +265,7 @@ namespace MovieService.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieService.Domain.Entities.MovieEntity", "Movie")
+                    b.HasOne("MovieService.Domain.Entities.Movies.MovieEntity", "Movie")
                         .WithMany("MovieGenres")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -267,7 +309,7 @@ namespace MovieService.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieService.Domain.Entities.MovieEntity", "Movie")
+                    b.HasOne("MovieService.Domain.Entities.Movies.MovieEntity", "Movie")
                         .WithMany("Sessions")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,8 +339,10 @@ namespace MovieService.Persistence.Migrations
                     b.Navigation("Sessions");
                 });
 
-            modelBuilder.Entity("MovieService.Domain.Entities.MovieEntity", b =>
+            modelBuilder.Entity("MovieService.Domain.Entities.Movies.MovieEntity", b =>
                 {
+                    b.Navigation("MovieFrames");
+
                     b.Navigation("MovieGenres");
 
                     b.Navigation("Sessions");

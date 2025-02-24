@@ -2,9 +2,9 @@
 
 using MediatR;
 
-using MovieService.Domain;
-using MovieService.Domain.Entities;
+using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetMovieById;
 
@@ -17,7 +17,8 @@ public class GetMovieByIdQueryHandler(
 
 	public async Task<MovieModel?> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
 	{
-		var movie = await _unitOfWork.Repository<MovieEntity>().GetAsync(request.Id, cancellationToken);
+		var movie = await _unitOfWork.MoviesRepository.GetAsync(request.Id, cancellationToken)
+			?? throw new NotFoundException($"Movie with id '{request.ToString()}' not found.");
 
 		return _mapper.Map<MovieModel>(movie);
 	}

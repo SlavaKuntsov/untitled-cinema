@@ -10,18 +10,19 @@ namespace BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
 public class GetSeatsByIdQueryHandler(
 	ISessionSeatsRepository seatsRepository,
-	IMapper mapper) : IRequestHandler<GetSeatsByIdQuery, IList<SessionSeatsModel>>
+	IMapper mapper) : IRequestHandler<GetSeatsByIdQuery, SessionSeatsModel>
 {
 	private readonly ISessionSeatsRepository _seatsRepository = seatsRepository;
 	private readonly IMapper _mapper = mapper;
 
-	public async Task<IList<SessionSeatsModel>> Handle(GetSeatsByIdQuery request, CancellationToken cancellationToken)
+	public async Task<SessionSeatsModel> Handle(GetSeatsByIdQuery request, CancellationToken cancellationToken)
 	{
-		var seats = await _seatsRepository.GetAsync(
+		var seat = await _seatsRepository.GetAsync(
 			b => b.SessionId == request.SessionId,
 			request.IsAvailable,
-			cancellationToken);
+			cancellationToken)
+			?? throw new NotFoundException("Session seat not found");
 
-		return _mapper.Map<IList<SessionSeatsModel>>(seats);
+		return _mapper.Map<SessionSeatsModel>(seat);
 	}
 }

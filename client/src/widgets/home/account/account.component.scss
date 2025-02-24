@@ -1,0 +1,7 @@
+:host {
+  @apply flex w-full h-full flex-col items-center bg-zinc-900 text-white;
+}
+
+a.active {
+  @apply text-indigo-400;
+}

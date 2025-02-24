@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 
 using FluentValidation;
@@ -15,6 +14,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using MovieService.Application.Validators;
+
 using Serilog;
 
 using Swashbuckle.AspNetCore.Filters;
@@ -22,11 +23,10 @@ using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Behaviors;
 using UserService.API.Consumers;
 using UserService.API.Contracts.Examples;
-using UserService.API.ExceptionHandlers;
 using UserService.API.Middlewares;
-using UserService.API.Validators;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Infrastructure.Auth;
+using UserService.Infrastructure.Notification;
 
 namespace UserService.API.Extensions;
 
@@ -84,7 +84,7 @@ public static class ApiExtensions
 		Mapper mapperConfig = new(typeAdapterConfig);
 		services.AddSingleton<IMapper>(mapperConfig);
 
-		JwtModel? jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
+		var jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
 
 		services
 			.AddAuthentication(options =>
@@ -110,13 +110,10 @@ public static class ApiExtensions
 				{
 					OnAuthenticationFailed = context =>
 					{
-						Debug.WriteLine(context.Request.Headers.Authorization);
-						Debug.WriteLine("Authentication failed: " + context.Exception.Message);
 						return Task.CompletedTask;
 					},
 					OnTokenValidated = context =>
 					{
-						Debug.WriteLine("Token is valid.");
 						return Task.CompletedTask;
 					}
 				};
@@ -129,6 +126,9 @@ public static class ApiExtensions
 		{
 			options.AddDefaultPolicy(policy =>
 			{
+				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("http://localhost:7000");
+				policy.WithOrigins("https://localhost:7003");
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
@@ -163,6 +163,8 @@ public static class ApiExtensions
 	public static void UseAPI(this WebApplication app)
 	{
 		app.MapGrpcService<Controllers.Grpc.AuthController>();
+
+		app.MapHub<NotificationHub>("/notify");
 	}
 
 	public static WebApplicationBuilder UseHttps(this WebApplicationBuilder builder)

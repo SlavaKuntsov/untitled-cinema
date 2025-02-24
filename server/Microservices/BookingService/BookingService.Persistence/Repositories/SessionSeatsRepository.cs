@@ -22,7 +22,7 @@ public class SessionSeatsRepository : ISessionSeatsRepository
 		return await _collection.Find(FilterDefinition<SessionSeatsEntity>.Empty).ToListAsync(cancellationToken);
 	}
 
-	public async Task<IList<SessionSeatsEntity>> GetAsync(
+	public async Task<SessionSeatsEntity?> GetAsync(
 		Expression<Func<SessionSeatsEntity, bool>> predicate,
 		bool isAvailableSeats,
 		CancellationToken cancellationToken)
@@ -38,9 +38,8 @@ public class SessionSeatsRepository : ISessionSeatsRepository
 			AvailableSeats = isAvailableSeats ? entity.AvailableSeats : null,
 			ReservedSeats = !isAvailableSeats ? entity.ReservedSeats : null,
 			UpdatedAt = entity.UpdatedAt
-		}).ToList();
+		}).FirstOrDefault();
 	}
-
 
 	public async Task<SessionSeatsEntity> GetAsync(
 		Expression<Func<SessionSeatsEntity, bool>> predicate,

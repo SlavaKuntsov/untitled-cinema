@@ -1,6 +1,6 @@
 ﻿using UserService.Domain.Enums;
 
-namespace UserService.Domain;
+namespace UserService.Domain.Models;
 
 public class UserModel
 {

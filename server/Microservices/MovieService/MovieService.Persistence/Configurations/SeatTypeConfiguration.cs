@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using MovieService.Domain.Entities;
@@ -25,5 +27,13 @@ public class SeatTypeConfiguration : IEntityTypeConfiguration<SeatTypeEntity>
 			.WithOne(s => s.SeatType)
 			.HasForeignKey(s => s.SeatTypeId)
 			.OnDelete(DeleteBehavior.Restrict);
+
+		builder.HasData(
+			new SeatTypeEntity
+			{
+				Id = Guid.NewGuid(),
+				Name = "Стандарт",
+				PriceModifier = 1
+			});
 	}
 }

@@ -3,12 +3,11 @@
 using MediatR;
 
 using UserService.Application.DTOs;
+using UserService.Application.Exceptions;
 using UserService.Application.Extensions;
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;
 
@@ -18,8 +17,7 @@ public class UserRegistrationCommandHandler(
 		IUsersRepository usersRepository,
 		IPasswordHash passwordHash,
 		IJwt jwt,
-		IMapper mapper)
-		: IRequestHandler<UserRegistrationCommand, AuthDto>
+		IMapper mapper) : IRequestHandler<UserRegistrationCommand, AuthDto>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
 	private readonly IPasswordHash _passwordHash = passwordHash;
@@ -31,9 +29,9 @@ public class UserRegistrationCommandHandler(
 		if (!request.DateOfBirth.DateFormatTryParse(out DateTime parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		var existUser = await _usersRepository.GetAsync(request.Email, cancellationToken);
+		var id = await _usersRepository.GetIdAsync(request.Email, cancellationToken);
 
-		if (existUser is not null)
+		if (id!.Value != Guid.Empty)
 			throw new AlreadyExistsException($"User with email {request.Email} already exists");
 
 		var userModel = new UserModel(
@@ -52,7 +50,6 @@ public class UserRegistrationCommandHandler(
 
 		var refreshTokenModel = new RefreshTokenModel(
 				userModel.Id,
-				role,
 				refreshToken,
 				_jwt.GetRefreshTokenExpirationDays());
 

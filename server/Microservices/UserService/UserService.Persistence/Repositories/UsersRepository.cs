@@ -1,14 +1,41 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+
+using Microsoft.EntityFrameworkCore;
 
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Persistence.Repositories;
+
 public class UsersRepository : IUsersRepository
 {
 	private readonly UserServiceDBContext _context;
+
+	private static readonly Func<UserServiceDBContext, Guid, CancellationToken, Task<UserEntity?>> s_compiledQuery =
+		EF.CompileAsyncQuery((UserServiceDBContext context, Guid id, CancellationToken cancellationToken) =>
+			context.Users
+				.AsNoTracking()
+				.Where(u => u.Id == id)
+				.FirstOrDefault());
+
+	private static readonly Func<UserServiceDBContext, Guid, CancellationToken, Task<UserWithStringDateOfBirthEntity?>> s_compiledQuery2 =
+	EF.CompileAsyncQuery((UserServiceDBContext context, Guid id, CancellationToken cancellationToken) =>
+		context.Users
+			.AsNoTracking()
+			.Where(u => u.Id == id)
+			.Select(u => new UserWithStringDateOfBirthEntity
+			{
+				Id = u.Id,
+				Email = u.Email,
+				Password = u.Password,
+				Role = u.Role,
+				FirstName = u.FirstName,
+				LastName = u.LastName,
+				DateOfBirth = u.DateOfBirth.ToString("yyyy-MM-dd"), // Преобразование в строку
+                Balance = u.Balance
+			})
+			.FirstOrDefault());
 
 	public UsersRepository(UserServiceDBContext context)
 	{
@@ -17,19 +44,58 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
-		return await _context.Users
-			.AsNoTracking()
-			.Where(u => u.Id == id)
-			.Select(user => user)
-			.FirstOrDefaultAsync(cancellationToken);
+		//var stopwatch = new Stopwatch();
+		//stopwatch.Start();
+
+		var a = await s_compiledQuery(_context, id, cancellationToken);
+
+		//stopwatch.Stop();
+		//Debug.WriteLine($"Date query executed in {stopwatch.ElapsedMilliseconds} ms.");
+
+		//stopwatch.Reset();
+		//stopwatch.Start();
+
+		//var b = await s_compiledQuery2(_context, id, cancellationToken);
+
+		//stopwatch.Stop();
+		//Debug.WriteLine($"String query executed in {stopwatch.ElapsedMilliseconds} ms.");
+
+		return a;
 	}
 
-	public async Task<UserEntity?> GetAsync(string email, CancellationToken cancellationToken)
+	public async Task<UserWithStringDateOfBirthEntity?> GetWithStringDateOfBirthAsync(Guid id, CancellationToken cancellationToken)
+	{
+		return await s_compiledQuery2(_context, id, cancellationToken);
+	}
+
+	public async Task<(Guid?, Role?, Guid?)> GetIdWithRoleAndTokenAsync(Guid userId, CancellationToken cancellationToken)
+	{
+		var result = await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Id == userId)
+			.Select(u => new { u.Id, u.Role ,RefreshTokenId = (Guid?)u.RefreshToken.Id })
+			.FirstOrDefaultAsync(cancellationToken);
+
+		return (result?.Id, result?.Role, result?.RefreshTokenId);
+	}
+
+	public async Task<(Guid?, string?, Role?)> GetIdWithRoleAndPasswordAsync(string email, CancellationToken cancellationToken)
+	{
+		var result = await _context.Users
+			.AsNoTracking()
+			.Where(u => u.Email == email)
+			.Select(u => new { u.Id, u.Password, u.Role})
+			.FirstOrDefaultAsync(cancellationToken);
+
+		return (result?.Id, result?.Password, result?.Role);
+	}
+
+	public async Task<Guid?> GetIdAsync(string email, CancellationToken cancellationToken)
 	{
 		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Email == email)
-			.Select(user => user)
+			.Select(u => u.Id)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
 
@@ -44,22 +110,18 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<IList<Guid>> GetByRole(Role role, CancellationToken cancellationToken)
 	{
-		var users = await _context.Users
+		return await _context.Users
 			.AsNoTracking()
 			.Where(u => u.Role == role)
 			.Select(u => u.Id)
 			.ToListAsync(cancellationToken);
-
-		return users ?? [];
 	}
 
 	public async Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken)
 	{
-		var users = await _context.Users
+		return await _context.Users
 			.AsNoTracking()
 			.ToListAsync(cancellationToken);
-
-		return users ?? [];
 	}
 
 	public async Task<Guid> CreateAsync(UserEntity user, RefreshTokenEntity refreshToken, CancellationToken cancellationToken)
@@ -75,14 +137,17 @@ public class UsersRepository : IUsersRepository
 		_context.Users.Attach(entity).State = EntityState.Modified;
 	}
 
-	public void Delete(UserEntity userEntity, RefreshTokenEntity refreshTolkenEntity)
+	public void Delete(Guid userId, Guid refreshTokenId)
 	{
+		var userEntity = new UserEntity { Id = userId };
+		var refreshTokenEntity = new RefreshTokenEntity { Id = refreshTokenId };
+
 		_context.Users.Attach(userEntity);
-		_context.RefreshTokens.Attach(refreshTolkenEntity);
+		_context.RefreshTokens.Attach(refreshTokenEntity);
 
 		_context.Users.Remove(userEntity);
-		_context.RefreshTokens.Remove(refreshTolkenEntity);
+		_context.RefreshTokens.Remove(refreshTokenEntity);
 
-		return;
+		_context.SaveChanges();
 	}
 }

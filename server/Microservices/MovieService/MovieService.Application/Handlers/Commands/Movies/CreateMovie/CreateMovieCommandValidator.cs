@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 using MovieService.Application.Validators;
+using MovieService.Domain.Constants;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
@@ -34,6 +35,11 @@ public class CreateMovieCommandValidator : BaseCommandValidator<CreateMovieComma
 		RuleFor(x => x.ReleaseDate)
 			.NotEmpty().WithMessage("Release date is required.")
 			.Must(GeneralValidator.BeAValidDate)
-			.WithMessage($"Release date must be a valid date with '{Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT}' format.");
+			.WithMessage($"Release date must be a valid date with '{DateTimeConstants.DATE_TIME_FORMAT}' format.");
+
+		RuleFor(x => x.Poster)
+			.NotEmpty().WithMessage("Poster is required.")
+			.Must(poster => poster.Length <= MoviesConstants.MAX_POSTER_SIZE * 1024 * 1024)
+			.WithMessage("Poster must not exceed 5 MB.");
 	}
 }

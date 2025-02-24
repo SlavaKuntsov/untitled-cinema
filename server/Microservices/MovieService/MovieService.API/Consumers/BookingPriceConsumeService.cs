@@ -17,10 +17,12 @@ namespace MovieService.API.Consumers;
 public class BookingPriceConsumeService(
 	IRabbitMQConsumer<BookingPriceResponse> rabbitMQConsuner,
 	IServiceScopeFactory serviceScopeFactory,
+	ILogger<BookingPriceConsumeService> logger,
 	IMapper mapper) : BackgroundService
 {
 	private readonly IRabbitMQConsumer<BookingPriceResponse> _rabbitMQConsuner = rabbitMQConsuner;
 	private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+	private readonly ILogger<BookingPriceConsumeService> _logger = logger;
 	private readonly IMapper _mapper = mapper;
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,6 +32,8 @@ public class BookingPriceConsumeService(
 			{
 				using var scope = _serviceScopeFactory.CreateScope();
 				var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+				_logger.LogInformation("Starting to consume booking price");
 
 				var session = await mediator.Send(new GetSessionByIdQuery(request.SessionId));
 

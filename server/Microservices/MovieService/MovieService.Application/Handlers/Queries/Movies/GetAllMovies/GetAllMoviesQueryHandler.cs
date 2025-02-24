@@ -2,47 +2,106 @@
 
 using MediatR;
 
+using MovieService.Application.DTOs;
+using MovieService.Application.Extensions;
 using MovieService.Application.Interfaces.Caching;
-using MovieService.Domain;
+using MovieService.Domain.Entities.Movies;
+using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
+using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 
 public class GetAllMoviesQueryHandler(
 	IUnitOfWork unitOfWork,
-	IMapper mapper,
-	IRedisCacheService redisCacheService) : IRequestHandler<GetAllMoviesQuery, IList<MovieModel>>
+	IRedisCacheService redisCacheService,
+	IMapper mapper
+	) : IRequestHandler<GetAllMoviesQuery, PaginationWrapperDto<MovieModel>>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
 	private readonly IRedisCacheService _redisCacheService = redisCacheService;
+	private readonly IMapper _mapper = mapper;
 
-	public async Task<IList<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
+	public async Task<PaginationWrapperDto<MovieModel>> Handle(GetAllMoviesQuery request, CancellationToken cancellationToken)
 	{
-		string cacheKey = @$"movies_
-			{request.Filter}_
-			{request.FilterValue}_
-			{request.SortBy}_
-			{request.SortDirection}_
-			{request.Offset}_
-			{request.Limit}";
+		if (request.Filters.Length != request.FilterValues.Length)
+			throw new InvalidOperationException("The number of Filters and FilterValues must be the same.");
 
-		var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>>(cacheKey);
+		var filters = request.Filters
+			.Zip(request.FilterValues, (field, value) => new FilterDto(field, value))
+			.ToList();
+
+		string cacheKey = @$"movies_{
+			string.Join("_", filters
+				.GroupBy(f => f.Field)
+				.Select(g => $"{g.Key}_{string.Join("-", g.Select(f => f.Value))}"))}_{
+			request.SortBy}_{
+			request.SortDirection}_{
+			request.Offset}_{
+			request.Limit}_{
+			request.Date}"
+			.Replace("\r", "")
+			.Replace("\n", "")
+			.Replace(" ", "");
+
+		var totalMovies = 0;
+
+		var cachedMovies = await _redisCacheService.GetValueAsync<IList<MovieModel>?>(cacheKey);
 
 		if (cachedMovies != null)
-			return cachedMovies;
-
-		var query = _unitOfWork.MoviesRepository.Get();
-
-		if (!string.IsNullOrWhiteSpace(request.Filter) && !string.IsNullOrWhiteSpace(request.FilterValue))
 		{
-			query = request.Filter!.ToLower() switch
-			{
-				"genre" => _unitOfWork.MoviesRepository.FilterByGenre(query, request.FilterValue.ToLower()),
-				"producer" => query.Where(m => m.Producer.ToLower().Contains(request.FilterValue.ToLower())),
-				_ => throw new InvalidOperationException($"Invalid filter field '{request.Filter}'.")
-			};
+			totalMovies = cachedMovies.Count;
+
+			return new PaginationWrapperDto<MovieModel>(
+				cachedMovies,
+				request.Limit,
+				request.Offset,
+				totalMovies);
 		}
+
+		IQueryable<MovieEntity>? query;
+
+		if (!string.IsNullOrWhiteSpace(request.Date))
+		{
+			if (!request.Date.DateFormatTryParse(out DateTime parsedDate))
+				throw new BadRequestException("Invalid date format.");
+
+			query = _unitOfWork.MoviesRepository.Get(parsedDate);
+		}
+		else
+		{
+			query = _unitOfWork.MoviesRepository.Get();
+		}
+
+		foreach (var filter in filters)
+		{
+			if (!string.IsNullOrWhiteSpace(filter.Field) && !string.IsNullOrWhiteSpace(filter.Value))
+			{
+				if (filter.Field.ToLower() == "genre")
+				{
+					var genreFilters = filters
+						.Where(f => f.Field.ToLower() == "genre")
+						.Select(f => f.Value.ToLower())
+						.ToList();
+
+					query = _unitOfWork.MoviesRepository.FilterByGenre(query, genreFilters);
+					break; 
+				}
+				else
+				{
+					query = filter.Field.ToLower() switch
+					{
+						"producer" => query.Where(m =>
+							m.Producer.ToLower().Contains(filter.Value.ToLower())),
+						"title" => query.Where(m =>
+							m.Title.ToLower().Contains(filter.Value.ToLower())),
+						_ => throw new InvalidOperationException($"Invalid filter field '{filter.Field}'.")
+					};
+				}
+			}
+		}
+
+		totalMovies = await _unitOfWork.MoviesRepository.GetCount(query);
 
 		if (request.SortDirection.ToLower() == "asc")
 		{
@@ -78,6 +137,10 @@ public class GetAllMoviesQueryHandler(
 
 		await _redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
 
-		return movieModels;
+		return new PaginationWrapperDto<MovieModel>(
+			movieModels,
+			request.Limit,
+			request.Offset,
+			totalMovies);
 	}
 }

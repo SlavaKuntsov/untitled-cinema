@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace MovieService.Application.Handlers.Commands.Sessoins.FillSession;
+namespace MovieService.Application.Handlers.Commands.Sessions.FillSession;
 
 public class FillSessionCommand(
 	Guid movieId,

@@ -1,0 +1,8 @@
+:host {
+  @apply block h-dvh;
+  @apply flex w-full flex-col items-center bg-zinc-900 text-white px-10;
+}
+
+li .active{
+	@apply text-white;
+}

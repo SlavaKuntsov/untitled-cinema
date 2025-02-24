@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 
 namespace MovieService.Persistence;
 
@@ -10,7 +11,9 @@ public class MovieServiceDBContext : DbContext
 {
 	public DbSet<MovieEntity> Movies { get; set; }
 	public DbSet<GenreEntity> Genres { get; set; }
+	//public DbSet<InRoleEntity> InRoles { get; set; }
 	public DbSet<MovieGenreEntity> MovieGenres { get; set; }
+	//public DbSet<MovieInRoleEntity> MovieInRoles { get; set; }
 	public DbSet<SessionEntity> Sessions { get; set; }
 	public DbSet<HallEntity> Halls { get; set; }
 	public DbSet<SeatEntity> Seats { get; set; }

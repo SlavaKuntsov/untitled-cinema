@@ -1,29 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using MongoDB.Bson.Serialization.Conventions;
-
+﻿using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace BookingService.Persistence;
 
-public class BookingServiceDBContext : DbContext
+public class BookingServiceDBContext
 {
 	private readonly IMongoDatabase _database;
 
 	static BookingServiceDBContext()
 	{
 		var conventions = new ConventionPack
-			{
-				new CamelCaseElementNameConvention(),
-				new IgnoreIfNullConvention(true),
-			};
+		{
+			new CamelCaseElementNameConvention(),
+			new IgnoreIfNullConvention(true),
+		};
 
-		ConventionRegistry.Register("DefaultConvetions", conventions, type => true);
+		ConventionRegistry.Register("DefaultConventions", conventions, _ => true);
 	}
 
-	public BookingServiceDBContext(string connectionString, string databaseName)
+	public BookingServiceDBContext(IMongoClient client, string databaseName)
 	{
-		var client = new MongoClient(connectionString);
 		_database = client.GetDatabase(databaseName);
 	}
 

@@ -1,38 +1,45 @@
 ﻿using MediatR;
 
+using UserService.Application.Exceptions;
+using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;
 
-public class DeleteUserCommandHandler(IUsersRepository usersRepository, ITokensRepository tokensRepository) : IRequestHandler<DeleteUserCommand>
+public class DeleteUserCommandHandler(
+	IUsersRepository usersRepository,
+	IRedisCacheService redisCacheService) : IRequestHandler<DeleteUserCommand>
 {
 	private readonly IUsersRepository _usersRepository = usersRepository;
-	private readonly ITokensRepository _tokensRepository = tokensRepository;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
 	public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 	{
-		var user = await _usersRepository.GetAsync(request.Id, cancellationToken)
-				?? throw new NotFoundException($"User with id {request.Id} doesn't exists");
+		var (userId, role, refreshTokenId) = await _usersRepository.GetIdWithRoleAndTokenAsync(
+			request.Id,
+			cancellationToken);
 
-		var refreshToken = await _tokensRepository.GetRefreshTokenAsync(request.Id, cancellationToken)
-				?? throw new NotFoundException($"Refresh Token for user with id {request.Id} not found");
+		if (userId is null)
+			throw new NotFoundException($"User with id {request.Id} doesn't exists");
 
-		if (user.Role is Role.User)
+		if (refreshTokenId is null)
+			throw new NotFoundException($"Refresh Token for user with id {request.Id} not found");
+
+		if (role is Role.User)
 		{
-			_usersRepository.Delete(user, refreshToken);
+			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
-		else if (user.Role is Role.Admin)
+		else if (role is Role.Admin)
 		{
 			var admins = await _usersRepository.GetByRole(Role.Admin, cancellationToken);
 
 			if (admins.Count == 1)
 				throw new UnprocessableContentException("Cannot delete the last Admin");
 
-			_usersRepository.Delete(user, refreshToken);
+			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
 
-		return;
+		await _redisCacheService.RemoveValuesByPatternAsync("users_*");
 	}
 }

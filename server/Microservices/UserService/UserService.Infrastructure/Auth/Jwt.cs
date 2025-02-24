@@ -54,7 +54,7 @@ public class Jwt : IJwt
 
 	public async Task<Guid> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
 	{
-		var storedToken = await _tokensRepository.GetRefreshTokenAsync(refreshToken, cancellationToken);
+		var storedToken = await _tokensRepository.GetAsync(refreshToken, cancellationToken);
 
 		if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.UtcNow)
 			return Guid.Empty;

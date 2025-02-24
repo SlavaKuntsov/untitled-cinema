@@ -25,6 +25,6 @@ RUN apk add --no-cache ca-certificates \
 
 COPY --from=build /app/publish . 
 
-ENV ASPNETCORE_URLS=https://+:7002
+# ENV ASPNETCORE_URLS=https://+:7002
 
 ENTRYPOINT ["dotnet", "MovieService.API.dll"]

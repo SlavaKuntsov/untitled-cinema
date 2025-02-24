@@ -13,7 +13,10 @@ public class RefreshTokenModel
 
 	public RefreshTokenModel() { }
 
-	public RefreshTokenModel(Guid userId, Role role, string token, int refreshTokenExpirationDays)
+	public RefreshTokenModel(
+		Guid userId,
+		string token,
+		int refreshTokenExpirationDays)
 	{
 		Id = Guid.NewGuid();
 		Token = token;

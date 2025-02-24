@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using MovieService.Domain.Entities;
+using MovieService.Domain.Entities.Movies;
 
 namespace MovieService.Persistence.Configurations;
 
@@ -16,6 +16,10 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 		builder.Property(m => m.Title)
 			.IsRequired()
 			.HasMaxLength(255);
+
+		builder.Property(m => m.Poster)
+			.IsRequired()
+			.HasColumnType("bytea");
 
 		builder.Property(m => m.ReleaseDate)
 			.HasColumnType("timestamptz")
@@ -44,5 +48,13 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 			   .WithOne(s => s.Movie)
 			   .HasForeignKey(s => s.MovieId)
 			   .OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasMany(m => m.MovieFrames) 
+			   .WithOne(mf => mf.Movie)
+			   .HasForeignKey(mf => mf.MovieId)
+			   .OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasIndex(m => m.Title)
+			   .HasDatabaseName("IX_Movies_Title");
 	}
 }

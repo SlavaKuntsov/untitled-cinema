@@ -5,6 +5,7 @@ using MapsterMapper;
 using MediatR;
 
 using MovieService.Application.Extensions;
+using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Constants;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Exceptions;
@@ -15,9 +16,11 @@ namespace MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
 
 public class UpdateSessionCommandHandler(
 	IUnitOfWork unitOfWork,
+	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<UpdateSessionCommand, SessionModel>
 {
 	private readonly IUnitOfWork _unitOfWork = unitOfWork;
+	private readonly IRedisCacheService _redisCacheService = redisCacheService;
 	private readonly IMapper _mapper = mapper;
 
 	public async Task<SessionModel> Handle(UpdateSessionCommand request, CancellationToken cancellationToken)
@@ -52,11 +55,14 @@ public class UpdateSessionCommandHandler(
 			calculateEndTime,
 			cancellationToken);
 
-		if (sameExistSessions.Any())
+		if (sameExistSessions.Count > 1)
 		{
-			var overlappingMovieIds = sameExistSessions.Select(s => s.MovieId).Distinct();
-			throw new UnprocessableContentException(
-				$"Conflicting sessions found for movies: {string.Join(", ", overlappingMovieIds)}");
+			if (sameExistSessions.Any())
+			{
+				var overlappingMovieIds = sameExistSessions.Select(s => s.MovieId).Distinct();
+				throw new UnprocessableContentException(
+					$"Conflicting sessions found for movies: {string.Join(", ", overlappingMovieIds)}");
+			}
 		}
 
 		request.Adapt(existSession);
@@ -64,6 +70,8 @@ public class UpdateSessionCommandHandler(
 		_unitOfWork.Repository<SessionEntity>().Update(existSession);
 
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return _mapper.Map<SessionModel>(existSession);
 	}
