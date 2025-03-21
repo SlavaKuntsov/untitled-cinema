@@ -9,13 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Consumers\Bookings\**" />
-	  <Content Remove="Consumers\Bookings\**" />
-	  <EmbeddedResource Remove="Consumers\Bookings\**" />
-	  <None Remove="Consumers\Bookings\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 		<PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />

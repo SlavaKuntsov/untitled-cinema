@@ -1,5 +1,3 @@
-using Brokers.Extensions;
-
 using HealthChecks.UI.Client;
 
 using Microsoft.AspNetCore.CookiePolicy;

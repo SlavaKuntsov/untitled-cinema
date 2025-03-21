@@ -35,6 +35,7 @@ public class BookingPriceConsumeService(
 
 				_logger.LogInformation("Starting to consume booking price");
 
+
 				var session = await mediator.Send(new GetSessionByIdQuery(request.SessionId));
 
 				if (session is null)

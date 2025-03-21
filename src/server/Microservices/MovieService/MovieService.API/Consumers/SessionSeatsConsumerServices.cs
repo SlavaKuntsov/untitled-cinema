@@ -1,6 +1,4 @@
-﻿using BookingService.Domain.Models;
-
-using Brokers.Interfaces;
+﻿using Brokers.Interfaces;
 using Brokers.Models.Request;
 using Brokers.Models.Response;
 
@@ -10,6 +8,7 @@ using MediatR;
 
 using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
+using MovieService.Domain.Models;
 
 namespace MovieService.API.Consumers;
 

@@ -10,6 +10,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<!--<PackageReference Include="Brokers" Version="1.0.0" />-->
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 		<PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
@@ -35,6 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
 	  <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
 	  <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj" />
 	  <ProjectReference Include="..\MovieService.Infrastructure\MovieService.Infrastructure.csproj" />

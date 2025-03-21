@@ -7,13 +7,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Constants\**" />
-		<EmbeddedResource Remove="Constants\**" />
-		<None Remove="Constants\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
 		<ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj" />
 	</ItemGroup>
 
