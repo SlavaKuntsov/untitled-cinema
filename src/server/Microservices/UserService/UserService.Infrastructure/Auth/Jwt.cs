@@ -29,7 +29,7 @@ public class Jwt : IJwt
 		var claims = new[]
 		{
 			new Claim(ClaimTypes.NameIdentifier, id.ToString()),
-			new Claim(ClaimTypes.Role, EnumExtensions.GetDescription(role))
+			new Claim(ClaimTypes.Role, role.GetDescription())
 		};
 
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));

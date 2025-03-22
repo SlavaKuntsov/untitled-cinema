@@ -3,9 +3,7 @@ using Grpc.Core;
 using MapsterMapper;
 
 using MediatR;
-
 using Protobufs.Auth;
-
 using UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
 using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
 using UserService.Application.Handlers.Queries.Users.GetUserExist;

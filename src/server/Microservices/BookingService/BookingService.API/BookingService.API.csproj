@@ -36,6 +36,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Shared\Infrascructure\Brokers\Brokers.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Infrascructure\Protobufs\Protobufs.csproj" />
 		<ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
 		<ProjectReference Include="..\BookingService.Application\BookingService.Application.csproj" />
 		<ProjectReference Include="..\BookingService.Infrastructure\BookingService.Infrastructure.csproj" />

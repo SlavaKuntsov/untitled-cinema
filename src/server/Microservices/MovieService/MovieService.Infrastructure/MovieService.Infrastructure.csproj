@@ -18,6 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Shared\Infrascructure\Protobufs\Protobufs.csproj" />
 	  <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
 	  <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj" />
 	  <ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj" />

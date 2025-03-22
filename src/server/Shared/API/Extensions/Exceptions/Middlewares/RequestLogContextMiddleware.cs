@@ -1,6 +1,7 @@
-﻿using Serilog.Context;
+﻿using Microsoft.AspNetCore.Http;
+using Serilog.Context;
 
-namespace UserService.API.Middlewares;
+namespace Extensions.Exceptions.Middlewares;
 
 public class RequestLogContextMiddleware
 {

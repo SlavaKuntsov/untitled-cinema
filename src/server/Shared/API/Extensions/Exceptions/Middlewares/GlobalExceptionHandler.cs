@@ -1,23 +1,15 @@
-﻿using System.Diagnostics;
-
+﻿using BookingService.Domain.Exceptions;
 using FluentValidation;
-
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
-using UserService.Application.Exceptions;
-
 namespace UserService.API.Middlewares;
 
-public class GlobalExceptionHandler : IExceptionHandler
+public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService) : IExceptionHandler
 {
-	private readonly IProblemDetailsService _problemDetailsService;
-
-	public GlobalExceptionHandler(IProblemDetailsService problemDetailsService)
-	{
-		_problemDetailsService = problemDetailsService;
-	}
+	private readonly IProblemDetailsService _problemDetailsService = problemDetailsService;
 
 	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
 	{
@@ -29,16 +21,19 @@ public class GlobalExceptionHandler : IExceptionHandler
 		{ typeof(InvalidTokenException), (StatusCodes.Status400BadRequest, "Invalid Token") },
 		{ typeof(ValidationException), (StatusCodes.Status400BadRequest, "Invalid Data") },
 		{ typeof(InvalidOperationException), (StatusCodes.Status400BadRequest, "Invalid Operation") },
-		{ typeof(UnprocessableContentException), (StatusCodes.Status422UnprocessableEntity, "Unprocessable Content") },
+		{ typeof(UnprocessableContentException), (StatusCodes.Status422UnprocessableEntity, "Unprocessable Content") }
 	};
 
-	public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+	public async ValueTask<bool> TryHandleAsync(
+		HttpContext httpContext,
+		Exception exception,
+		CancellationToken cancellationToken)
 	{
 		var (statusCode, title) = ExceptionMappings.TryGetValue(exception.GetType(), out var mapping)
 			? mapping
 			: (StatusCodes.Status500InternalServerError, "Internal Server Error");
 
-		Activity? activity = httpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+		var activity = httpContext.Features.Get<IHttpActivityFeature>()?.Activity;
 
 		httpContext.Response.StatusCode = statusCode;
 

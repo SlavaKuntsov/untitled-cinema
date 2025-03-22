@@ -35,8 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
-	<ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
+	<ProjectReference Include="..\..\..\Shared\API\Extensions\Extensions.csproj" />
+	<ProjectReference Include="..\..\..\Shared\Infrascructure\Brokers\Brokers.csproj" />
+	<ProjectReference Include="..\..\..\Shared\Infrascructure\Protobufs\Protobufs.csproj" />
 	<ProjectReference Include="..\UserService.Infrastructure\UserService.Infrastructure.csproj" />
 	<ProjectReference Include="..\UserService.Persistence\UserService.Persistence.csproj" />
   </ItemGroup>

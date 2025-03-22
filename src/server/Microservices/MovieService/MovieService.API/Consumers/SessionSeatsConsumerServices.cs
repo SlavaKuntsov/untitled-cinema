@@ -1,4 +1,5 @@
-﻿using Brokers.Interfaces;
+﻿using BookingService.Domain.Models;
+using Brokers.Interfaces;
 using Brokers.Models.Request;
 using Brokers.Models.Response;
 
@@ -8,24 +9,23 @@ using MediatR;
 
 using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
-using MovieService.Domain.Models;
 
 namespace MovieService.API.Consumers;
 
 public class SessionSeatsConsumerServices(
-	IRabbitMQConsumer<SessionSeatsResponse> rabbitMQConsuner,
+	IRabbitMQConsumer<SessionSeatsResponse> rabbitMqConsumer,
 	IServiceScopeFactory serviceScopeFactory,
 	ILogger<BookingPriceConsumeService> logger,
 	IMapper mapper) : BackgroundService
 {
-	private readonly IRabbitMQConsumer<SessionSeatsResponse> _rabbitMQConsuner = rabbitMQConsuner;
+	private readonly IRabbitMQConsumer<SessionSeatsResponse> _rabbitMQConsumer = rabbitMqConsumer;
 	private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 	private readonly ILogger<BookingPriceConsumeService> _logger = logger;
 	private readonly IMapper _mapper = mapper;
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		await _rabbitMQConsuner
+		await _rabbitMQConsumer
 			.RequestReplyAsync<SessionSeatsRequest>(async (request) =>
 			{
 				using var scope = _serviceScopeFactory.CreateScope();
