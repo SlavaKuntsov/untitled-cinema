@@ -1,5 +1,5 @@
 using System.Security.Claims;
-
+using Domain.Exceptions;
 using MapsterMapper;
 
 using MediatR;
@@ -12,7 +12,6 @@ using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Contracts;
 using UserService.API.Contracts.Examples;
 using UserService.Application.DTOs;
-using UserService.Application.Exceptions;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Commands.Users.ChangeBalance;
 using UserService.Application.Handlers.Commands.Users.DeleteUser;

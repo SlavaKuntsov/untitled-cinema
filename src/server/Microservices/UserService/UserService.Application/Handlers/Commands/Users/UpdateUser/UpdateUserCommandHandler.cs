@@ -1,11 +1,11 @@
-﻿using Mapster;
+﻿using Domain.Exceptions;
+using Mapster;
 
 using MapsterMapper;
 
 using MediatR;
 
 using UserService.Application.DTOs;
-using UserService.Application.Exceptions;
 using UserService.Application.Extensions;
 using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Interfaces.Repositories;

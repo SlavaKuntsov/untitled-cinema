@@ -1,5 +1,4 @@
 ﻿using UserService.Domain.Entities;
-using UserService.Domain.Enums;
 
 namespace UserService.Domain.Interfaces.Repositories;
 

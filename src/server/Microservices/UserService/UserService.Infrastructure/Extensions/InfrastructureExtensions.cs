@@ -29,7 +29,7 @@ public static class InfrastructureExtensions
 			options.InstanceName = string.Empty;
 		});
 
-		services.AddSingleton<IConnectionMultiplexer>(sp =>
+		services.AddSingleton<IConnectionMultiplexer>(_ =>
 		{
 			var configuration =
 				ConfigurationOptions.Parse(

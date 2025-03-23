@@ -1,7 +1,7 @@
-﻿using MediatR;
+﻿using Domain.Exceptions;
+using MediatR;
 
 using UserService.Application.DTOs;
-using UserService.Application.Exceptions;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Interfaces.Repositories;
 

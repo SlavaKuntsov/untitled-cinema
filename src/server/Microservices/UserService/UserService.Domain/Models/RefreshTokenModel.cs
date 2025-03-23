@@ -1,6 +1,4 @@
-﻿using UserService.Domain.Enums;
-
-namespace UserService.Domain.Models;
+﻿namespace UserService.Domain.Models;
 
 public class RefreshTokenModel
 {

@@ -40,7 +40,7 @@ public class CreateBookingCommandHandler(
 			var sessionSeatsData = new SessionSeatsRequest(request.SessionId);
 
 			var sessionSeatsResponse = await _rabbitMQProducer
-				.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
+				.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse<SeatModel>>(
 				sessionSeatsData,
 				Guid.NewGuid(),
 				cancellationToken);
@@ -48,7 +48,7 @@ public class CreateBookingCommandHandler(
 			if (!string.IsNullOrWhiteSpace(sessionSeatsResponse.Error))
 				throw new NotFoundException(sessionSeatsResponse.Error);
 
-			DateTime sessionSeatDateNow = DateTime.UtcNow;
+			var sessionSeatDateNow = DateTime.UtcNow;
 
 			var newSessionSeatModel = new SessionSeatsModel(
 				Guid.NewGuid(),
@@ -66,38 +66,39 @@ public class CreateBookingCommandHandler(
 		if (requestedSeats.Any(id => reservedSeats.Contains(id)))
 			throw new InvalidOperationException("One or more requested seats are already reserved.");
 
-		var existBookig = await _bookingsRepository.GetOneAsync(
+		var existBooking = await _bookingsRepository.GetOneAsync(
 				b => b.UserId == request.UserId && b.SessionId == request.SessionId,
 				cancellationToken);
 
-		if (existBookig is not null)
+		if (existBooking is not null)
 		{
-			var cancelledBookigSeats = existBookig.Seats.Select(s => s.Id).ToHashSet();
+			var cancelledBookingSeats = existBooking.Seats.Select(s => s.Id).ToHashSet();
 
-			if (cancelledBookigSeats.SequenceEqual(requestedSeats))
+			if (cancelledBookingSeats.SequenceEqual(requestedSeats))
 			{
-				if (existBookig.Status == BookingStatus.Reserved.GetDescription())
-					throw new AlreadyExistsException($"Booking with id '{existBookig.Id}' already exist.");
+				if (existBooking.Status == BookingStatus.Reserved.GetDescription())
+					throw new AlreadyExistsException($"Booking with id '{existBooking.Id}' already exist.");
 
-				existBookig.Status = BookingStatus.Reserved.GetDescription();
+				existBooking.Status = BookingStatus.Reserved.GetDescription();
 
 				await _bookingsRepository.DeleteAsync(
-					b => b.Id == existBookig.Id,
+					b => b.Id == existBooking.Id,
 					cancellationToken);
 
 				await _rabbitMQProducer.PublishAsync(
-					_mapper.Map<BookingModel>(existBookig),
+					_mapper.Map<BookingModel>(existBooking),
 					cancellationToken);
 
-				return existBookig.Id;
+				return existBooking.Id;
 			}
 		}
 
-		var bookingPriceData = new BookingPriceRequest(
+		var bookingPriceData = new BookingPriceRequest<SeatModel>(
 			request.SessionId,
 			request.Seats);
 
-		var bookingPriceResponse = await _rabbitMQProducer.RequestReplyAsync<BookingPriceRequest, BookingPriceResponse>(
+		var bookingPriceResponse = await _rabbitMQProducer
+			.RequestReplyAsync<BookingPriceRequest<SeatModel>, BookingPriceResponse>(
 			bookingPriceData,
 			Guid.NewGuid(),
 			cancellationToken);
@@ -105,7 +106,7 @@ public class CreateBookingCommandHandler(
 		if (!string.IsNullOrWhiteSpace(bookingPriceResponse.Error))
 			throw new NotFoundException(bookingPriceResponse.Error);
 
-		DateTime bookingDateNow = DateTime.UtcNow;
+		var bookingDateNow = DateTime.UtcNow;
 
 		var booking = new BookingModel(
 			Guid.NewGuid(),

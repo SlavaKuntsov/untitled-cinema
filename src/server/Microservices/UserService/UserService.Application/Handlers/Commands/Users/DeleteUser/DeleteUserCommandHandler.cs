@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using Domain.Enums;
+using Domain.Exceptions;
+using MediatR;
 
-using UserService.Application.Exceptions;
 using UserService.Application.Interfaces.Caching;
-using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;

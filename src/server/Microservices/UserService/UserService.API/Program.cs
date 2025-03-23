@@ -1,12 +1,16 @@
 using Brokers.Extensions;
-using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
-using Extensions.HealthCheck;
+using Extensions.Exceptions.Middlewares;
 using Extensions.Host;
 using Extensions.Logging;
 using Extensions.Mapper;
 using Extensions.Swagger;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
+using Serilog;
 using UserService.API.Extensions;
 using UserService.Application.Extensions;
 using UserService.Infrastructure.Extensions;
@@ -16,22 +20,61 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
-var app = builder.Build();
 
 builder.UseHttps();
 
-services.AddApplication()
-	.AddInfrastructure(configuration)
-	.AddPersistence(configuration)
+services
+	.AddCommon()
+	.AddExceptions()
+	.AddAuthorization()
 	.AddMapper()
-	.AddRabbitMQ(configuration);
+	.AddSwagger()
+	.AddRabbitMQ(configuration)
+	.AddHealthChecks();
 
-app.AddAPI(services);
+services
+	.AddAPI()
+	.AddApplication()
+	.AddInfrastructure(configuration)
+	.AddPersistence(configuration);
 
-app.AddCommon(services)
-	.AddExceptions(services)
-	.AddAuthorization(services, configuration)
-	.AddSwagger(services)
-	.AddHealthCheck(services)
-	.AddLogging(host);
+host.AddLogging();
+
+var app = builder.Build();
+
+app.AddAPI();
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.UseExceptionHandler();
+app.UseMiddleware<RequestLogContextMiddleware>();
+
+app.UseSerilogRequestLogging();
+
+app.MapHealthChecks(
+	"/health",
+	new HealthCheckOptions
+	{
+		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+	});
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+	MinimumSameSitePolicy = SameSiteMode.None,
+	HttpOnly = HttpOnlyPolicy.Always,
+	Secure = CookieSecurePolicy.Always
+});
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+	ForwardedHeaders = ForwardedHeaders.All
+});
+app.UseCors();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.Run();

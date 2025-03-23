@@ -1,6 +1,5 @@
-﻿using MediatR;
-
-using UserService.Domain.Enums;
+﻿using Domain.Enums;
+using MediatR;
 
 namespace UserService.Application.Handlers.Commands.Tokens.GenerateAccessToken;
 

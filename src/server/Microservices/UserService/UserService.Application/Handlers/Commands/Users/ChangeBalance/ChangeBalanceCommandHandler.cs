@@ -1,8 +1,8 @@
-﻿using MapsterMapper;
+﻿using Domain.Exceptions;
+using MapsterMapper;
 
 using MediatR;
 
-using UserService.Application.Exceptions;
 using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;

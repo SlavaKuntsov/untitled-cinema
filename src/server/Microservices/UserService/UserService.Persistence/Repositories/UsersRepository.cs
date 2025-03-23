@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-
+﻿using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 using UserService.Domain.Entities;
-using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Persistence.Repositories;

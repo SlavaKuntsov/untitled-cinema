@@ -1,7 +1,7 @@
-﻿using MediatR;
+﻿using Domain.Enums;
+using MediatR;
 
 using UserService.Application.DTOs;
-using UserService.Domain.Enums;
 
 namespace UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 

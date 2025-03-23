@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using UserService.Domain.Entities;
-using UserService.Domain.Enums;
 
 namespace UserService.Persistence.Configurations;
 

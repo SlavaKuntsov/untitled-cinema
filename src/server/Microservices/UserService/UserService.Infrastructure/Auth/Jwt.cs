@@ -2,12 +2,11 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-
+using Domain.Enums;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain.Enums;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Repositories;
 
