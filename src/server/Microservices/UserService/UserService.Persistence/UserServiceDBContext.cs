@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 
 using Microsoft.EntityFrameworkCore;
-
+using UserService.Application.Data;
 using UserService.Domain.Entities;
 
 namespace UserService.Persistence;
 
-public class UserServiceDBContext : DbContext
+public class UserServiceDBContext : DbContext, IDBContext
 {
 	public DbSet<UserEntity> Users { get; set; }
 	public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }

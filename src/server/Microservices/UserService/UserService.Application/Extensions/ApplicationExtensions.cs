@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
+using Utilities.Validators;
 
 namespace UserService.Application.Extensions;
 
@@ -11,6 +13,9 @@ public static class ApplicationExtensions
 		{
 			cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommandHandler>();
 		});
+
+		// services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
+		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommandValidator>>();
 
 		return services;
 	}

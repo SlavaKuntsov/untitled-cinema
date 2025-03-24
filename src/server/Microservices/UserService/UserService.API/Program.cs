@@ -6,6 +6,7 @@ using Extensions.Host;
 using Extensions.Logging;
 using Extensions.Mapper;
 using Extensions.Swagger;
+using Extensions.Authorization;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -26,7 +27,7 @@ builder.UseHttps();
 services
 	.AddCommon()
 	.AddExceptions()
-	.AddAuthorization()
+	.AddAuthorization(configuration)
 	.AddMapper()
 	.AddSwagger()
 	.AddRabbitMQ(configuration)
