@@ -19,8 +19,9 @@
         <PackageReference Include="RabbitMQ.Client" Version="7.0.0"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <!--      <ProjectReference Include="..\..\Microservices\BookingService\BookingService.Domain\BookingService.Domain.csproj" />-->
+    <ItemGroup><!--      <ProjectReference Include="..\..\Microservices\BookingService\BookingService.Domain\BookingService.Domain.csproj" />-->
+    
+      <Folder Include="Extensions\" />
     </ItemGroup>
 
 </Project>

@@ -14,7 +14,7 @@ FROM nginx:alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY server/Configs/ApiGateway/nginx.conf /etc/nginx/nginx.conf
+COPY server/nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=builder /app/client/dist/untitled-cinema/browser /usr/share/nginx/html
 

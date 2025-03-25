@@ -1,13 +1,11 @@
 ﻿using Brokers.Interfaces;
 using Brokers.Services.Consumers;
 using Brokers.Services.Producers;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using RabbitMQ.Client;
 
-namespace Brokers.Extensions;
+namespace Brokers;
 
 public static class BrokersExtension
 {

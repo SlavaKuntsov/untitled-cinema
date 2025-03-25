@@ -1,4 +1,4 @@
-using Brokers.Extensions;
+using Brokers;
 using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
@@ -21,8 +21,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
-
-builder.Configuration.AddEnvironmentVariables();
 
 builder.UseHttps();
 
@@ -62,17 +60,19 @@ app.MapHealthChecks(
 		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 	});
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-	MinimumSameSitePolicy = SameSiteMode.None,
-	HttpOnly = HttpOnlyPolicy.Always,
-	Secure = CookieSecurePolicy.Always
-});
+app.UseCookiePolicy(
+	new CookiePolicyOptions
+	{
+		MinimumSameSitePolicy = SameSiteMode.None,
+		HttpOnly = HttpOnlyPolicy.Always,
+		Secure = CookieSecurePolicy.Always
+	});
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-	ForwardedHeaders = ForwardedHeaders.All
-});
+app.UseForwardedHeaders(
+	new ForwardedHeadersOptions
+	{
+		ForwardedHeaders = ForwardedHeaders.All
+	});
 app.UseCors();
 
 app.UseSwagger();

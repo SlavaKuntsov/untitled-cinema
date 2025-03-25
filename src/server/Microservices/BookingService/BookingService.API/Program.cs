@@ -2,7 +2,7 @@ using BookingService.API.Extensions;
 using BookingService.Application.Extensions;
 using BookingService.Infrastructure.Extensions;
 using BookingService.Persistence.Extensions;
-using Brokers.Extensions;
+using Brokers;
 using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
@@ -10,7 +10,6 @@ using Extensions.Exceptions.Middlewares;
 using Extensions.Host;
 using Extensions.Logging;
 using Extensions.Mapper;
-using Extensions.Swagger;
 using Hangfire;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -22,8 +21,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
-
-builder.Configuration.AddEnvironmentVariables();
 
 builder.UseHttps();
 

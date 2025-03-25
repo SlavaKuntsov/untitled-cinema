@@ -70,7 +70,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "server\Shared\Redi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "server\Shared\Utilities\Utilities.csproj", "{90258B25-DF43-4113-96F2-8A62C3674754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "server\Shared\Database\Database.csproj", "{3B28FC36-EE1A-4615-8704-CB5409FD3EE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Databases", "server\Shared\Databases\Databases.csproj", "{3B28FC36-EE1A-4615-8704-CB5409FD3EE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{5B00339C-4464-46DD-B23E-5A7423145E51}"
+	ProjectSection(SolutionItems) = preProject
+		nginx\certificates\localhost.crt = nginx\certificates\localhost.crt
+		nginx\certificates\localhost.key = nginx\certificates\localhost.key
+		nginx\certificates\localhost.pfx = nginx\certificates\localhost.pfx
+		nginx\Dockerfile = nginx\Dockerfile
+		nginx\nginx.conf = nginx\nginx.conf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -197,5 +206,6 @@ Global
 		{9F41022D-FE0C-4EB0-921B-D73990EA3A5A} = {1274FE91-8690-4357-ACEE-1D2B71BC2A57}
 		{90258B25-DF43-4113-96F2-8A62C3674754} = {1274FE91-8690-4357-ACEE-1D2B71BC2A57}
 		{3B28FC36-EE1A-4615-8704-CB5409FD3EE1} = {1274FE91-8690-4357-ACEE-1D2B71BC2A57}
+		{5B00339C-4464-46DD-B23E-5A7423145E51} = {0F63F38A-8A9A-471F-90B8-BCF1A4B3E089}
 	EndGlobalSection
 EndGlobal

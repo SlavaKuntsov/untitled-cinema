@@ -5,14 +5,14 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: server/Configs/ApiGateway/Dockerfile
+      dockerfile: nginx/Dockerfile
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./server/Configs/ApiGateway/nginx.conf:/etc/nginx/nginx.conf
-      - ./server/Configs/ApiGateway/certificates/localhost.key:/etc/nginx/certificates/localhost.key
-      - ./server/Configs/ApiGateway/certificates/localhost.crt:/etc/nginx/certificates/localhost.crt
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certificates/localhost.key:/etc/nginx/certificates/localhost.key
+      - ./nginx/certificates/localhost.crt:/etc/nginx/certificates/localhost.crt
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -36,7 +36,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     volumes:
-      - ./server/Configs/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
+      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx  
     depends_on:
       - user-postgres
       - redis
@@ -59,7 +59,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     volumes:
-      - ./server/Configs/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx  
+      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx  
     depends_on:
       - movie-postgres
       - redis
@@ -85,7 +85,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     volumes:
-      - ./server/Configs/ApiGateway/certificates/localhost.pfx:/app/localhost.pfx
+      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx
     depends_on:
       - booking-mongodb
       - redis
@@ -136,7 +136,7 @@ services:
     image: redis:alpine
     restart: unless-stopped
     ports:
-      - 6379:6379
+      - "6379:6379"
     environment:
       REDIS_PASSWORD: 1
 
@@ -145,8 +145,8 @@ services:
     image: rabbitmq:3-management-alpine
     restart: unless-stopped
     ports:
-      - 5673:5672
-      - 15673:15672
+      - "5673:5672"
+      - "15673:15672"
       
 volumes:
   user-postgres-data:

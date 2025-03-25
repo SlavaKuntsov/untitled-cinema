@@ -17,7 +17,7 @@ public static class PersistenceExtensions
 							?? configuration["MongoDb:DatabaseName"];
 
 		if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(databaseName))
-			throw new InvalidOperationException("Database configuration is missing.");
+			throw new InvalidOperationException("Databases configuration is missing.");
 
 		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
 

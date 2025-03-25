@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 
 namespace Database;
 
-public static class DatabaseExtension
+public static class DatabasesExtension
 {
 	public static IServiceCollection AddPostgres<TContextImplementation>(
 		this IServiceCollection services,
