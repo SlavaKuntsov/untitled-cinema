@@ -1,34 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="MongoDB.Bson" Version="3.1.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Mapster" Version="7.4.0"/>
+        <PackageReference Include="MongoDB.Bson" Version="3.1.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
-    <ProjectReference Include="..\..\..\Shared\Extensions\Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Shared\Infrascructure\Protobufs\Protobufs.csproj" />
-    <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj" />
-    <ProjectReference Include="..\BookingService.Domain\BookingService.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Auth\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Auth\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Auth\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\Extensions\Extensions.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj"/>
+        <ProjectReference Include="..\BookingService.Domain\BookingService.Domain.csproj"/>
+    </ItemGroup>
 
 </Project>

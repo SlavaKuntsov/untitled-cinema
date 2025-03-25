@@ -22,7 +22,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
 
-// builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables();
 
 builder.UseHttps();
 

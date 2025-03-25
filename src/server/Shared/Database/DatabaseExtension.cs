@@ -1,23 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace Database;
 
 public static class DatabaseExtension
 {
-	public static IServiceCollection AddPostgres<T>(
+	public static IServiceCollection AddPostgres<TContextImplementation>(
 		this IServiceCollection services,
-		IConfiguration configuration) where T : DbContext
+		IConfiguration configuration) where TContextImplementation : DbContext
 	{
-		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+		var name = typeof(TContextImplementation).Name;
 
-		var name = typeof(T).Name;
+		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+								?? configuration.GetConnectionString(name);
 
-		if (string.IsNullOrEmpty(connectionString))
-			connectionString = configuration.GetConnectionString(name);
-
-		services.AddDbContextPool<T>(options => { options.UseNpgsql(connectionString); },
+		services.AddDbContextPool<TContextImplementation>(
+			options =>
+			{
+				options.UseNpgsql(connectionString);
+			},
 			128);
 
 		return services;
@@ -29,15 +32,16 @@ public static class DatabaseExtension
 		where TContextImplementation : DbContext, TContextService
 		where TContextService : class
 	{
-		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
 		var name = typeof(TContextImplementation).Name;
 
-		if (string.IsNullOrEmpty(connectionString))
-			connectionString = configuration.GetConnectionString(name);
+		var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+								?? configuration.GetConnectionString(name);
 
 		services.AddDbContextPool<TContextService, TContextImplementation>(
-			options => { options.UseNpgsql(connectionString); },
+			options =>
+			{
+				options.UseNpgsql(connectionString);
+			},
 			128);
 
 		return services;

@@ -1,17 +1,14 @@
 ﻿using BookingService.Domain.Constants;
 using BookingService.Domain.Entities;
 using BookingService.Domain.Enums;
-using BookingService.Domain.Exceptions;
-using BookingService.Domain.Extensions;
 using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
-
 using Brokers.Interfaces;
 using Brokers.Models.Request;
 using Brokers.Models.Response;
-
+using Domain.Exceptions;
+using Extensions.Enums;
 using MapsterMapper;
-
 using MediatR;
 
 namespace BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
@@ -22,28 +19,24 @@ public class CreateBookingCommandHandler(
 	IBookingsRepository bookingsRepository,
 	IMapper mapper) : IRequestHandler<CreateBookingCommand, Guid>
 {
-	private readonly IRabbitMQProducer _rabbitMQProducer = rabbitMQProducer;
-	private readonly ISessionSeatsRepository _sessionSeatsRepository = sessionSeatsRepository;
-	private readonly IBookingsRepository _bookingsRepository = bookingsRepository;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<Guid> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
 	{
 		if (request.Seats.Count > BookingConstants.MAX_SEATS_COUNT_PER_PERSONE)
 			throw new InvalidOperationException("You can't book more than 5 seats per person");
 
-		var sessionSeats = await _sessionSeatsRepository.GetAsync(
-			s => s.SessionId == request.SessionId, cancellationToken);
+		var sessionSeats = await sessionSeatsRepository.GetAsync(
+			s => s.SessionId == request.SessionId,
+			cancellationToken);
 
 		if (sessionSeats is null)
 		{
 			var sessionSeatsData = new SessionSeatsRequest(request.SessionId);
 
-			var sessionSeatsResponse = await _rabbitMQProducer
+			var sessionSeatsResponse = await rabbitMQProducer
 				.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse<SeatModel>>(
-				sessionSeatsData,
-				Guid.NewGuid(),
-				cancellationToken);
+					sessionSeatsData,
+					Guid.NewGuid(),
+					cancellationToken);
 
 			if (!string.IsNullOrWhiteSpace(sessionSeatsResponse.Error))
 				throw new NotFoundException(sessionSeatsResponse.Error);
@@ -57,7 +50,7 @@ public class CreateBookingCommandHandler(
 				[],
 				sessionSeatDateNow);
 
-			sessionSeats = _mapper.Map<SessionSeatsEntity>(newSessionSeatModel);
+			sessionSeats = mapper.Map<SessionSeatsEntity>(newSessionSeatModel);
 		}
 
 		var reservedSeats = sessionSeats.ReservedSeats.Select(s => s.Id).ToHashSet();
@@ -66,9 +59,9 @@ public class CreateBookingCommandHandler(
 		if (requestedSeats.Any(id => reservedSeats.Contains(id)))
 			throw new InvalidOperationException("One or more requested seats are already reserved.");
 
-		var existBooking = await _bookingsRepository.GetOneAsync(
-				b => b.UserId == request.UserId && b.SessionId == request.SessionId,
-				cancellationToken);
+		var existBooking = await bookingsRepository.GetOneAsync(
+			b => b.UserId == request.UserId && b.SessionId == request.SessionId,
+			cancellationToken);
 
 		if (existBooking is not null)
 		{
@@ -81,12 +74,12 @@ public class CreateBookingCommandHandler(
 
 				existBooking.Status = BookingStatus.Reserved.GetDescription();
 
-				await _bookingsRepository.DeleteAsync(
+				await bookingsRepository.DeleteAsync(
 					b => b.Id == existBooking.Id,
 					cancellationToken);
 
-				await _rabbitMQProducer.PublishAsync(
-					_mapper.Map<BookingModel>(existBooking),
+				await rabbitMQProducer.PublishAsync(
+					mapper.Map<BookingModel>(existBooking),
 					cancellationToken);
 
 				return existBooking.Id;
@@ -97,11 +90,11 @@ public class CreateBookingCommandHandler(
 			request.SessionId,
 			request.Seats);
 
-		var bookingPriceResponse = await _rabbitMQProducer
+		var bookingPriceResponse = await rabbitMQProducer
 			.RequestReplyAsync<BookingPriceRequest<SeatModel>, BookingPriceResponse>(
-			bookingPriceData,
-			Guid.NewGuid(),
-			cancellationToken);
+				bookingPriceData,
+				Guid.NewGuid(),
+				cancellationToken);
 
 		if (!string.IsNullOrWhiteSpace(bookingPriceResponse.Error))
 			throw new NotFoundException(bookingPriceResponse.Error);
@@ -118,7 +111,7 @@ public class CreateBookingCommandHandler(
 			bookingDateNow,
 			bookingDateNow);
 
-		await _rabbitMQProducer.PublishAsync(booking, cancellationToken);
+		await rabbitMQProducer.PublishAsync(booking, cancellationToken);
 
 		return booking.Id;
 	}

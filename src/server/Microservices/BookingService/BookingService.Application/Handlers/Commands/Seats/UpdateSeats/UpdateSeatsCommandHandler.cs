@@ -1,10 +1,10 @@
 ﻿using BookingService.Domain.Entities;
-using BookingService.Domain.Exceptions;
 using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
 using Brokers.Models.Request;
 using Brokers.Models.Response;
+using Domain.Exceptions;
 using MapsterMapper;
 using MediatR;
 
@@ -15,21 +15,15 @@ public class UpdateSeatsCommandHandler(
 	ISessionSeatsRepository sessionSeatsRepository,
 	IMapper mapper) : IRequestHandler<UpdateSeatsCommand>
 {
-	private readonly IMapper _mapper = mapper;
-
-	private readonly IRabbitMQProducer _rabbitMQProducer = rabbitMQProducer;
-
-	private readonly ISessionSeatsRepository _sessionSeatsRepository = sessionSeatsRepository;
-
 	public async Task Handle(UpdateSeatsCommand request, CancellationToken cancellationToken)
 	{
 		var isExist = true;
 
-		var seatEntity = await _sessionSeatsRepository.GetAsync(
+		var seatEntity = await sessionSeatsRepository.GetAsync(
 			s => s.SessionId == request.SessionId,
 			cancellationToken);
 
-		var sessionSeatsModel = _mapper.Map<SessionSeatsModel>(seatEntity);
+		var sessionSeatsModel = mapper.Map<SessionSeatsModel>(seatEntity);
 
 		var dateNow = DateTime.UtcNow;
 
@@ -40,7 +34,7 @@ public class UpdateSeatsCommandHandler(
 			var data = new SessionSeatsRequest(request.SessionId);
 
 			var response =
-				await _rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse<SeatModel>>(
+				await rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse<SeatModel>>(
 					data,
 					Guid.NewGuid(),
 					cancellationToken);
@@ -82,12 +76,12 @@ public class UpdateSeatsCommandHandler(
 			}
 
 		if (isExist)
-			await _sessionSeatsRepository.UpdateAsync(
-				_mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
+			await sessionSeatsRepository.UpdateAsync(
+				mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
 				cancellationToken);
 		else
-			await _sessionSeatsRepository.CreateAsync(
-				_mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
+			await sessionSeatsRepository.CreateAsync(
+				mapper.Map<SessionSeatsEntity>(sessionSeatsModel),
 				cancellationToken);
 	}
 }
