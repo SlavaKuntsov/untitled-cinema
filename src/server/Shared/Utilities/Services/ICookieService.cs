@@ -1,4 +1,4 @@
-﻿namespace UserService.Application.Interfaces.Auth;
+﻿namespace Utilities.Service;
 
 public interface ICookieService
 {

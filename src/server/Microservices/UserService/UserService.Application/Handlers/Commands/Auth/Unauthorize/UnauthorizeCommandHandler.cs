@@ -1,29 +1,27 @@
 ﻿using MediatR;
-
-using UserService.Application.Interfaces.Caching;
+using Redis.Service;
+using UserService.Application.Data;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Auth.Unauthorize;
 
 public class UnauthorizeCommandHandler(
 	ITokensRepository tokensRepository,
-	IRedisCacheService redisCacheService) : IRequestHandler<UnauthorizeCommand>
+	IRedisCacheService redisCacheService,
+	IDBContext dbContext) : IRequestHandler<UnauthorizeCommand>
 {
-	private readonly ITokensRepository _tokensRepository = tokensRepository;
-	private readonly IRedisCacheService _redisCacheService = redisCacheService;
-
 	public async Task Handle(UnauthorizeCommand request, CancellationToken cancellationToken)
 	{
-		var existRefreshToken = await _tokensRepository.GetAsync(
+		var existRefreshToken = await tokensRepository.GetAsync(
 			request.Id,
 			cancellationToken);
 
 		existRefreshToken!.IsRevoked = true;
 
-		_tokensRepository.Update(existRefreshToken);
+		tokensRepository.Update(existRefreshToken);
+		
+		await dbContext.SaveChangesAsync(cancellationToken);
 
-		await _redisCacheService.RemoveValuesByPatternAsync("users_*");
-
-		return;
+		await redisCacheService.RemoveValuesByPatternAsync("users_*");
 	}
 }

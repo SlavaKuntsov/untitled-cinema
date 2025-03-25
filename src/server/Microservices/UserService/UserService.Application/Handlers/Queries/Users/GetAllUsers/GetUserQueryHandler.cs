@@ -11,13 +11,10 @@ public class GetUserQueryHandler(
 	IUsersRepository usersRepository,
 	IMapper mapper) : IRequestHandler<GetAllUsersQuery, IList<UserModel>>
 {
-	private readonly IUsersRepository _usersRepository = usersRepository;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<IList<UserModel>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
 	{
-		var entities = await _usersRepository.GetAsync(cancellationToken);
+		var entities = await usersRepository.GetAsync(cancellationToken);
 
-		return _mapper.Map<IList<UserModel>>(entities);
+		return mapper.Map<IList<UserModel>>(entities);
 	}
 }

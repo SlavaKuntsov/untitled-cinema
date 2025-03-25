@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-
+using Domain.Constants;
 using Mapster;
 
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
@@ -42,7 +42,7 @@ public class MapsterConfig : IRegister
 	{
 		return DateTime.TryParseExact(
 			dateOfBirthString,
-			Domain.Constants.DateTimeConstants.DATE_FORMAT,
+			DateTimeConstants.DATE_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out var parsedDateTime)

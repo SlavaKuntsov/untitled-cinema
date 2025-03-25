@@ -2,12 +2,16 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+
 using Domain.Enums;
+
+using Extensions.Authorization;
+using Extensions.Enums;
+
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using UserService.Application.Interfaces.Auth;
-using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Infrastructure.Auth;
@@ -57,7 +61,7 @@ public class Jwt : IJwt
 
 		if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.UtcNow)
 			return Guid.Empty;
-		
+
 		return storedToken.UserId.Value;
 	}
 

@@ -1,22 +1,20 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
-
-using UserService.Application.Interfaces.Caching;
+using Redis.Service;
+using UserService.Application.Data;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Users.DeleteUser;
 
 public class DeleteUserCommandHandler(
 	IUsersRepository usersRepository,
-	IRedisCacheService redisCacheService) : IRequestHandler<DeleteUserCommand>
+	IRedisCacheService redisCacheService,
+	IDBContext dbContext) : IRequestHandler<DeleteUserCommand>
 {
-	private readonly IUsersRepository _usersRepository = usersRepository;
-	private readonly IRedisCacheService _redisCacheService = redisCacheService;
-
 	public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
 	{
-		var (userId, role, refreshTokenId) = await _usersRepository.GetIdWithRoleAndTokenAsync(
+		var (userId, role, refreshTokenId) = await usersRepository.GetIdWithRoleAndTokenAsync(
 			request.Id,
 			cancellationToken);
 
@@ -28,18 +26,20 @@ public class DeleteUserCommandHandler(
 
 		if (role is Role.User)
 		{
-			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
+			usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
 		else if (role is Role.Admin)
 		{
-			var admins = await _usersRepository.GetByRole(Role.Admin, cancellationToken);
+			var admins = await usersRepository.GetByRole(Role.Admin, cancellationToken);
 
 			if (admins.Count == 1)
 				throw new UnprocessableContentException("Cannot delete the last Admin");
 
-			_usersRepository.Delete(userId.Value, refreshTokenId.Value);
+			usersRepository.Delete(userId.Value, refreshTokenId.Value);
 		}
 
-		await _redisCacheService.RemoveValuesByPatternAsync("users_*");
+		await redisCacheService.RemoveValuesByPatternAsync("users_*");
+
+		await dbContext.SaveChangesAsync(cancellationToken);
 	}
 }

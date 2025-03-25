@@ -6,7 +6,6 @@ namespace Extensions.Exceptions;
 
 public static class ExceptionsExtension
 {
-
 	public static IServiceCollection AddExceptions(this IServiceCollection services)
 	{
 		services.AddExceptionHandler<GlobalExceptionHandler>();

@@ -1,4 +1,4 @@
-﻿namespace UserService.Domain.Constants;
+﻿namespace Domain.Constants;
 
 public static class JwtConstants
 {

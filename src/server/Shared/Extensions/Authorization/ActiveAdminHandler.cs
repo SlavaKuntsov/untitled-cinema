@@ -1,7 +1,12 @@
 ﻿using System.Security.Claims;
+
+using Domain.Enums;
+
+using Extensions.Enums;
+
 using Microsoft.AspNetCore.Authorization;
 
-namespace UserService.API.Extensions;
+namespace Extensions.Authorization;
 
 public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 {
@@ -11,20 +16,30 @@ public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 	{
 		// Проверяем, есть ли claim с идентификатором пользователя
 		var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+		var userRole = context.User.FindFirst(ClaimTypes.Role);
 
-		if (userIdClaim == null)
+		//if (userRole.Value != Role.Admin.GetDescription() ||
+		//	userRole.Value != Role.User.GetDescription())
+		//{
+		//	context.Fail();
+		//	return Task.CompletedTask;
+		//}
+
+		if (userIdClaim == null || userRole == null)
 		{
-			context.Fail(); // Нет claim с идентификатором пользователя
+			context.Fail();
 
 			return Task.CompletedTask;
 		}
 
-		// Проверяем, есть ли у пользователя роль "Admin"
-		if (context.User.IsInRole("Admin"))
-			context.Succeed(requirement); // Пользователь является администратором
-		else
-			context.Fail(); // Пользователь не является администратором
+		if (!context.User.IsInRole(Role.Admin.GetDescription()) &&
+			!context.User.IsInRole(Role.User.GetDescription()))
+		{
+			context.Fail();
+			return Task.CompletedTask;
+		}
 
+		context.Succeed(requirement);
 		return Task.CompletedTask;
 	}
 }

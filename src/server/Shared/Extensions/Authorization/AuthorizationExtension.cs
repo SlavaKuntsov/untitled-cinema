@@ -1,22 +1,17 @@
 ﻿using System.Text;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using UserService.API.Extensions;
-using UserService.Infrastructure.Auth;
 
 namespace Extensions.Authorization;
 
 public static class AuthorizationExtension
 {
 	public static IServiceCollection AddAuthorization(
-		IServiceCollection services,
+		this IServiceCollection services,
 		IConfiguration configuration)
 	{
 		var jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
@@ -82,7 +77,7 @@ public static class AuthorizationExtension
 				});
 
 		services.AddScoped<IAuthorizationHandler, ActiveAdminHandler>();
-		
+
 		return services;
 	}
 }

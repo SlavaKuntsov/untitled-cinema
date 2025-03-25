@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace UserService.Application.Extensions;
+namespace Extensions.Strings;
 
 public static class StringExtensions
 {

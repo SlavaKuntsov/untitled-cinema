@@ -11,15 +11,12 @@ public class GetUserNotificationsQueryHandler(
 	INotificationsRepository notificationsRepository,
 	IMapper mapper) : IRequestHandler<GetUserNotificationsQuery, IList<NotificationModel>>
 {
-	private readonly INotificationsRepository _notificationsRepository = notificationsRepository;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<IList<NotificationModel>> Handle(GetUserNotificationsQuery request, CancellationToken cancellationToken)
 	{
-		var entity = await _notificationsRepository.GetByUserIdAsync(
+		var entity = await notificationsRepository.GetByUserIdAsync(
 			request.Id, 
 			cancellationToken);
 
-		return _mapper.Map<IList<NotificationModel>>(entity);
+		return mapper.Map<IList<NotificationModel>>(entity);
 	}
 }

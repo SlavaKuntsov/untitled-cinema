@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using StackExchange.Redis;
+using Redis;
+using Redis.Service;
 
 using UserService.Application.Interfaces.Auth;
-using UserService.Application.Interfaces.Caching;
 using UserService.Application.Interfaces.Notification;
 using UserService.Infrastructure.Auth;
-using UserService.Infrastructure.Caching;
 using UserService.Infrastructure.Notification;
+
+using Utilities.Service;
 
 namespace UserService.Infrastructure.Extensions;
 
@@ -18,24 +19,7 @@ public static class InfrastructureExtensions
 	{
 		services.AddSignalR();
 
-		var connectionString = Environment.GetEnvironmentVariable("REDIS_CONFIGURATION");
-
-		if (string.IsNullOrEmpty(connectionString))
-			connectionString = configuration.GetConnectionString("Redis");
-
-		services.AddStackExchangeRedisCache(options =>
-		{
-			options.Configuration = connectionString;
-			options.InstanceName = string.Empty;
-		});
-
-		services.AddSingleton<IConnectionMultiplexer>(_ =>
-		{
-			var configuration =
-				ConfigurationOptions.Parse(
-					connectionString, true);
-			return ConnectionMultiplexer.Connect(configuration);
-		});
+		services.AddRedis(configuration);
 
 		services.AddScoped<IRedisCacheService, RedisCacheService>();
 		services.AddScoped<ICookieService, CookieService>();

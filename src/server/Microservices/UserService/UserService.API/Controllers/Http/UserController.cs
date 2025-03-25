@@ -1,14 +1,11 @@
 using System.Security.Claims;
+using Domain.Constants;
 using Domain.Exceptions;
 using MapsterMapper;
-
 using MediatR;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using Swashbuckle.AspNetCore.Filters;
-
 using UserService.API.Contracts;
 using UserService.API.Contracts.Examples;
 using UserService.Application.DTOs;
@@ -19,7 +16,6 @@ using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Users.GetAllUsers;
 using UserService.Application.Handlers.Queries.Users.Login;
-using UserService.Domain.Constants;
 
 namespace UserService.API.Controllers.Http;
 
@@ -27,8 +23,9 @@ namespace UserService.API.Controllers.Http;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-	private readonly IMediator _mediator;
 	private readonly IMapper _mapper;
+
+	private readonly IMediator _mediator;
 
 	public UserController(IMediator mediator, IMapper mapper)
 	{
@@ -41,14 +38,15 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request, CancellationToken cancellationToken)
 	{
 		var existUser = await _mediator.Send(
-			new LoginQuery(request.Email, request.Password), 
+			new LoginQuery(request.Email, request.Password),
 			cancellationToken);
 
 		var authResultDto = await _mediator.Send(
-			new GenerateTokensCommand(existUser.Id, existUser.Role), cancellationToken);
+			new GenerateTokensCommand(existUser.Id, existUser.Role),
+			cancellationToken);
 
 		HttpContext.Response.Cookies.Append(
-			JwtConstants.REFRESH_COOKIE_NAME, 
+			JwtConstants.REFRESH_COOKIE_NAME,
 			authResultDto.RefreshToken);
 
 		return Ok(new { authResultDto.AccessToken });
@@ -56,7 +54,9 @@ public class UserController : ControllerBase
 
 	[HttpPost("/users/registration")]
 	[SwaggerRequestExample(typeof(CreateUserRequest), typeof(CreateUserRequestExample))]
-	public async Task<IActionResult> Registration([FromBody] UserRegistrationCommand request, CancellationToken cancellationToken)
+	public async Task<IActionResult> Registration(
+		[FromBody] UserRegistrationCommand request,
+		CancellationToken cancellationToken)
 	{
 		var authResultDto = await _mediator.Send(request, cancellationToken);
 
@@ -69,7 +69,7 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+						?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
@@ -86,7 +86,7 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Balance([FromRoute] decimal amount, CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+						?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
@@ -103,7 +103,7 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+						?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
@@ -121,7 +121,7 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Delete(CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-			?? throw new UnauthorizedAccessException("User ID not found in claims.");
+						?? throw new UnauthorizedAccessException("User ID not found in claims.");
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
@@ -136,7 +136,7 @@ public class UserController : ControllerBase
 	public async Task<IActionResult> Users(CancellationToken cancellationToken)
 	{
 		var users = await _mediator.Send(
-			new GetAllUsersQuery(), 
+			new GetAllUsersQuery(),
 			cancellationToken);
 
 		return Ok(_mapper.Map<IList<UserDto>>(users));

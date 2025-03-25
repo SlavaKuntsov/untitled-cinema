@@ -6,20 +6,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Constants\**" />
-    <EmbeddedResource Remove="Constants\**" />
-    <None Remove="Constants\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UserService.Domain\UserService.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Extensions\Extensions.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Redis\Redis.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\UserService.Domain\UserService.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

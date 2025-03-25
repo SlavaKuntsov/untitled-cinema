@@ -1,12 +1,10 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions;
+using Extensions.Strings;
 using MapsterMapper;
-
 using MediatR;
-
+using UserService.Application.Data;
 using UserService.Application.DTOs;
-
-using UserService.Application.Extensions;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repositories;
@@ -15,49 +13,47 @@ using UserService.Domain.Models;
 namespace UserService.Application.Handlers.Commands.Users.UserRegistration;
 
 public class UserRegistrationCommandHandler(
-		IUsersRepository usersRepository,
-		IPasswordHash passwordHash,
-		IJwt jwt,
-		IMapper mapper) : IRequestHandler<UserRegistrationCommand, AuthDto>
+	IUsersRepository usersRepository,
+	IPasswordHash passwordHash,
+	IJwt jwt,
+	IDBContext dbContext,
+	IMapper mapper) : IRequestHandler<UserRegistrationCommand, AuthDto>
 {
-	private readonly IUsersRepository _usersRepository = usersRepository;
-	private readonly IPasswordHash _passwordHash = passwordHash;
-	private readonly IJwt _jwt = jwt;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<AuthDto> Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.DateOfBirth.DateFormatTryParse(out DateTime parsedDateTime))
+		if (!request.DateOfBirth.DateFormatTryParse(out var parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		var id = await _usersRepository.GetIdAsync(request.Email, cancellationToken);
+		var id = await usersRepository.GetIdAsync(request.Email, cancellationToken);
 
 		if (id!.Value != Guid.Empty)
 			throw new AlreadyExistsException($"User with email {request.Email} already exists");
 
 		var userModel = new UserModel(
-					Guid.NewGuid(),
-					request.Email,
-					_passwordHash.Generate(request.Password),
-					Role.User,
-					request.FirstName,
-					request.LastName,
-					parsedDateTime);
+			Guid.NewGuid(),
+			request.Email,
+			passwordHash.Generate(request.Password),
+			Role.User,
+			request.FirstName,
+			request.LastName,
+			parsedDateTime);
 
-		var role = Role.User;
+		const Role role = Role.User;
 
-		var accessToken = _jwt.GenerateAccessToken(userModel.Id, role);
-		var refreshToken = _jwt.GenerateRefreshToken();
+		var accessToken = jwt.GenerateAccessToken(userModel.Id, role);
+		var refreshToken = jwt.GenerateRefreshToken();
 
 		var refreshTokenModel = new RefreshTokenModel(
-				userModel.Id,
-				refreshToken,
-				_jwt.GetRefreshTokenExpirationDays());
+			userModel.Id,
+			refreshToken,
+			jwt.GetRefreshTokenExpirationDays());
 
-		await _usersRepository.CreateAsync(
-			_mapper.Map<UserEntity>(userModel),
-			_mapper.Map<RefreshTokenEntity>(refreshTokenModel),
+		await usersRepository.CreateAsync(
+			mapper.Map<UserEntity>(userModel),
+			mapper.Map<RefreshTokenEntity>(refreshTokenModel),
 			cancellationToken);
+
+		await dbContext.SaveChangesAsync(cancellationToken);
 
 		return new AuthDto(accessToken, refreshToken);
 	}

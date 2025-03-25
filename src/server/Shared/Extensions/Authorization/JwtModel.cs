@@ -1,4 +1,4 @@
-﻿namespace UserService.Infrastructure.Auth;
+﻿namespace Extensions.Authorization;
 
 public class JwtModel
 {

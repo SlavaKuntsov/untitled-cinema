@@ -1,15 +1,17 @@
 ﻿using System.Globalization;
-
+using Domain.Constants;
 using FluentValidation;
-
-using MovieService.Application.Validators;
+using Microsoft.Extensions.Logging;
+using Utilities.Validators;
 
 namespace UserService.Application.Handlers.Commands.Users.UserRegistration;
 
 public class UserRegistrationCommandValidator : BaseCommandValidator<UserRegistrationCommand>
 {
-	public UserRegistrationCommandValidator()
+	public UserRegistrationCommandValidator(ILogger<UserRegistrationCommandValidator> logger)
 	{
+		logger.LogError("UserRegistrationCommandValidator initialized");
+		
 		RuleFor(x => x.Email)
 			.NotEmpty().WithMessage("Email cannot be null or empty.")
 			.EmailAddress().WithMessage("Invalid email format.");
@@ -39,7 +41,7 @@ public class UserRegistrationCommandValidator : BaseCommandValidator<UserRegistr
 
 		return DateTime.TryParseExact(
 			dateOfBirth,
-			Domain.Constants.DateTimeConstants.DATE_FORMAT,
+			DateTimeConstants.DATE_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out _);

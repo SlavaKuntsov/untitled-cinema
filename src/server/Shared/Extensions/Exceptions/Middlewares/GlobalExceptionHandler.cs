@@ -9,8 +9,6 @@ namespace Extensions.Exceptions.Middlewares;
 
 public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService) : IExceptionHandler
 {
-	private readonly IProblemDetailsService _problemDetailsService = problemDetailsService;
-
 	private static readonly Dictionary<Type, (int StatusCode, string Title)> ExceptionMappings = new()
 	{
 		{ typeof(AlreadyExistsException), (StatusCodes.Status400BadRequest, "Resource Already Exists") },
@@ -37,7 +35,7 @@ public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService
 
 		httpContext.Response.StatusCode = statusCode;
 
-		return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+		return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
 		{
 			HttpContext = httpContext,
 			Exception = exception,

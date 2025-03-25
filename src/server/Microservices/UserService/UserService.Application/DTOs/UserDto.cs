@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Domain.Constants;
 
 namespace UserService.Application.DTOs;
 
@@ -15,11 +16,11 @@ public class UserDto
 
 	public string DateOfBirth
 	{
-		get => _dateOfBirth.ToString(Domain.Constants.DateTimeConstants.DATE_FORMAT);
+		get => _dateOfBirth.ToString(DateTimeConstants.DATE_FORMAT);
 		set
 		{
 			if (DateTime.TryParseExact(value,
-				[Domain.Constants.DateTimeConstants.DATE_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
+				[DateTimeConstants.DATE_FORMAT, "dd.MM.yyyy HH:mm:ss", "MM/dd/yyyy", "MM/dd/yyyy HH:mm:ss"],
 				CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
 			{
 				_dateOfBirth = date;

@@ -1,4 +1,6 @@
-﻿using Domain.Enums;
+﻿using BCrypt.Net;
+
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

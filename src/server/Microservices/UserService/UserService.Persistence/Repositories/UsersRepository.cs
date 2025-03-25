@@ -42,21 +42,7 @@ public class UsersRepository : IUsersRepository
 
 	public async Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
-		//var stopwatch = new Stopwatch();
-		//stopwatch.Start();
-
 		var a = await s_compiledQuery(_context, id, cancellationToken);
-
-		//stopwatch.Stop();
-		//Debug.WriteLine($"Date query executed in {stopwatch.ElapsedMilliseconds} ms.");
-
-		//stopwatch.Reset();
-		//stopwatch.Start();
-
-		//var b = await s_compiledQuery2(_context, id, cancellationToken);
-
-		//stopwatch.Stop();
-		//Debug.WriteLine($"String query executed in {stopwatch.ElapsedMilliseconds} ms.");
 
 		return a;
 	}
@@ -84,6 +70,9 @@ public class UsersRepository : IUsersRepository
 			.Where(u => u.Email == email)
 			.Select(u => new { u.Id, u.Password, u.Role})
 			.FirstOrDefaultAsync(cancellationToken);
+
+		if (result == null)
+			return (null, null, null);
 
 		return (result?.Id, result?.Password, result?.Role);
 	}
