@@ -3,13 +3,16 @@ using Brokers.Models.Request;
 using Brokers.Models.Response;
 using MapsterMapper;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MovieService.Application.Handlers.Queries.Movies.GetMovieById;
 using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
 using MovieService.Application.Handlers.Queries.Seats.GetSeatTypeById;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 using MovieService.Domain.Models;
 
-namespace MovieService.API.Consumers;
+namespace MovieService.Application.Consumers;
 
 public class BookingPriceConsumeService(
 	IRabbitMQConsumer<BookingPriceResponse> rabbitMQConsumer,
@@ -17,23 +20,16 @@ public class BookingPriceConsumeService(
 	ILogger<BookingPriceConsumeService> logger,
 	IMapper mapper) : BackgroundService
 {
-	private readonly ILogger<BookingPriceConsumeService> _logger = logger;
-
-	private readonly IMapper _mapper = mapper;
-
-	private readonly IRabbitMQConsumer<BookingPriceResponse> _rabbitMqConsumer = rabbitMQConsumer;
-
-	private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		await _rabbitMqConsumer
-			.RequestReplyAsync<BookingPriceRequest<SeatModel>>(async request =>
+		await rabbitMQConsumer
+			.RequestReplyAsync<BookingPriceRequest<SeatModel>>(
+				async request =>
 				{
-					using var scope = _serviceScopeFactory.CreateScope();
+					using var scope = serviceScopeFactory.CreateScope();
 					var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-					_logger.LogInformation("Starting to consume booking price");
+					logger.LogInformation("Starting to consume booking price");
 
 
 					var session = await mediator.Send(new GetSessionByIdQuery(request.SessionId), stoppingToken);
@@ -45,13 +41,15 @@ public class BookingPriceConsumeService(
 						new GetSeatsBySessionIdQuery(request.SessionId),
 						stoppingToken);
 
-					var seatsRequest = _mapper.Map<IList<SeatModel>>(request.Seats);
+					var seatsRequest = mapper.Map<IList<SeatModel>>(request.Seats);
 
 					var missingIds = seatsRequest
-						.Where(reqSeat => !seats.Any(seat =>
-							seat.Id == reqSeat.Id &&
-							seat.Row == reqSeat.Row &&
-							seat.Column == reqSeat.Column))
+						.Where(
+							reqSeat => !seats.Any(
+								seat =>
+									seat.Id == reqSeat.Id &&
+									seat.Row == reqSeat.Row &&
+									seat.Column == reqSeat.Column))
 						.Select(reqSeat => reqSeat.Id)
 						.ToList();
 

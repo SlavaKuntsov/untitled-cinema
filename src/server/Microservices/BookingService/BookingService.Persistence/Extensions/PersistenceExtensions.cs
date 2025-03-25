@@ -21,7 +21,7 @@ public static class PersistenceExtensions
 		if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(databaseName))
 			throw new InvalidOperationException("Database configuration is missing.");
 
-		services.AddSingleton<IMongoClient>(sp => new MongoClient(connectionString));
+		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
 
 		services.AddScoped(sp =>
 		{

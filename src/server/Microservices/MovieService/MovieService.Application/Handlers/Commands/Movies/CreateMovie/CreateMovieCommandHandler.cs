@@ -1,14 +1,12 @@
-﻿using MapsterMapper;
-
+﻿using Domain.Exceptions;
+using Extensions.Strings;
+using MapsterMapper;
 using MediatR;
-
-using MovieService.Application.Extensions;
-using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Entities.Movies;
-using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
+using Redis.Service;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
@@ -17,16 +15,12 @@ public class CreateMovieCommandHandler(
 	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IRedisCacheService _redisCacheService = redisCacheService;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.ReleaseDate.DateTimeFormatTryParse(out DateTime parsedDateTime))
+		if (!request.ReleaseDate.DateTimeFormatTryParse(out var parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
 
-		DateTime dateNow = DateTime.UtcNow;
+		var dateNow = DateTime.UtcNow;
 
 		var movie = new MovieModel(
 			Guid.NewGuid(),
@@ -46,15 +40,15 @@ public class CreateMovieCommandHandler(
 
 		foreach (var genreName in request.Genres)
 		{
-			var existingGenre = await _unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
+			var existingGenre = await unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
 
 			if (existingGenre == null)
 			{
 				var genre = new GenreModel(Guid.NewGuid(), genreName);
 
-				var genreEntity = _mapper.Map<GenreEntity>(genre);
+				var genreEntity = mapper.Map<GenreEntity>(genre);
 
-				await _unitOfWork.Repository<GenreEntity>().CreateAsync(genreEntity, cancellationToken);
+				await unitOfWork.Repository<GenreEntity>().CreateAsync(genreEntity, cancellationToken);
 				genreEntities.Add(genreEntity);
 			}
 			else
@@ -63,19 +57,21 @@ public class CreateMovieCommandHandler(
 			}
 		}
 
-		var movieEntity = _mapper.Map<MovieEntity>(movie);
+		var movieEntity = mapper.Map<MovieEntity>(movie);
 
-		movieEntity.MovieGenres = genreEntities.Select(genre => new MovieGenreEntity
-		{
-			MovieId = movieEntity.Id,
-			GenreId = genre.Id
-		}).ToList();
+		movieEntity.MovieGenres = genreEntities.Select(
+				genre => new MovieGenreEntity
+				{
+					MovieId = movieEntity.Id,
+					GenreId = genre.Id
+				})
+			.ToList();
 
-		await _unitOfWork.Repository<MovieEntity>().CreateAsync(movieEntity, cancellationToken);
+		await unitOfWork.Repository<MovieEntity>().CreateAsync(movieEntity, cancellationToken);
 
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 
-		await _redisCacheService.RemoveValuesByPatternAsync("movies_*");
+		await redisCacheService.RemoveValuesByPatternAsync("movies_*");
 
 		return movie.Id;
 	}

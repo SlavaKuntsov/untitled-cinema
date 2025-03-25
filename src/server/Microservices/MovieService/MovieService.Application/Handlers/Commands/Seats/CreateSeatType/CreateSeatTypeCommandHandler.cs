@@ -1,9 +1,7 @@
-﻿using MapsterMapper;
-
+﻿using Domain.Exceptions;
+using MapsterMapper;
 using MediatR;
-
 using MovieService.Domain.Entities;
-using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -13,12 +11,9 @@ public class CreateSeatTypeCommandHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<CreateSeatTypeCommand, Guid>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<Guid> Handle(CreateSeatTypeCommand request, CancellationToken cancellationToken)
 	{
-		var existSeatType = await _unitOfWork.SeatsRepository
+		var existSeatType = await unitOfWork.SeatsRepository
 			.GetTypeAsync(request.Name, cancellationToken);
 
 		if (existSeatType is not null)
@@ -29,9 +24,10 @@ public class CreateSeatTypeCommandHandler(
 			request.Name,
 			request.PriceModifier);
 
-		await _unitOfWork.Repository<SeatTypeEntity>().CreateAsync(_mapper.Map<SeatTypeEntity>(seatType), cancellationToken);
+		await unitOfWork.Repository<SeatTypeEntity>()
+			.CreateAsync(mapper.Map<SeatTypeEntity>(seatType), cancellationToken);
 
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return seatType.Id;
 	}

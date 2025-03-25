@@ -1,7 +1,5 @@
 ﻿using MapsterMapper;
-
 using MediatR;
-
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -11,13 +9,10 @@ public class GetSeatsBySessionIdQueryHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<GetSeatsBySessionIdQuery, IList<SeatModel>>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<IList<SeatModel>> Handle(GetSeatsBySessionIdQuery request, CancellationToken cancellationToken)
 	{
-		var seats = await _unitOfWork.SeatsRepository.GetBySessionIdAsync(request.SessionId, cancellationToken);
+		var seats = await unitOfWork.SeatsRepository.GetBySessionIdAsync(request.SessionId, cancellationToken);
 
-		return _mapper.Map<IList<SeatModel>>(seats);
+		return mapper.Map<IList<SeatModel>>(seats);
 	}
 }

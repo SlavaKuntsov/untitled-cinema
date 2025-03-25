@@ -7,35 +7,25 @@ using UserService.Application.Handlers.Commands.Auth.Unauthorize;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
 using UserService.Application.Handlers.Queries.Users.GetUserById;
-using UserService.Application.Interfaces.Auth;
 using Utilities.Service;
 
 namespace UserService.API.Controllers.Http;
 
 [ApiController]
 [Route("/auth")]
-public class AuthController : ControllerBase
+public class AuthController(IMediator mediator, ICookieService cookieService) : ControllerBase
 {
-	private readonly ICookieService _cookieService;
-
-	private readonly IMediator _mediator;
-
-	public AuthController(IMediator mediator, ICookieService cookieService)
-	{
-		_mediator = mediator;
-		_cookieService = cookieService;
-	}
-
 	[HttpGet("refreshToken")]
 	public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
 	{
-		var refreshToken = _cookieService.GetRefreshToken();
+		var refreshToken = cookieService.GetRefreshToken();
 
-		var userRoleDto = await _mediator.Send(new GetByRefreshTokenCommand(
+		var userRoleDto = await mediator.Send(
+			new GetByRefreshTokenCommand(
 				refreshToken),
 			cancellationToken);
 
-		var authResultDto = await _mediator.Send(
+		var authResultDto = await mediator.Send(
 			new GenerateTokensCommand(userRoleDto.Id, userRoleDto.Role),
 			cancellationToken);
 
@@ -56,7 +46,7 @@ public class AuthController : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		var user = await _mediator.Send(
+		var user = await mediator.Send(
 			new GetUserByIdQuery(userId),
 			cancellationToken);
 
@@ -72,9 +62,9 @@ public class AuthController : ControllerBase
 
 		var userId = Guid.Parse(userIdClaim.Value);
 
-		_cookieService.DeleteRefreshToken();
+		cookieService.DeleteRefreshToken();
 
-		await _mediator.Send(new UnauthorizeCommand(userId), cancellationToken);
+		await mediator.Send(new UnauthorizeCommand(userId), cancellationToken);
 
 		return Ok();
 	}

@@ -1,6 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Filters;
 
 namespace UserService.API.Contracts.Examples;
+
 public class CreateUserRequestExample : IExamplesProvider<CreateUserRequest>
 {
 	public CreateUserRequest GetExamples()

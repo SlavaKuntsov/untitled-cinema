@@ -1,7 +1,5 @@
 ﻿using MapsterMapper;
-
 using MediatR;
-
 using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
@@ -12,13 +10,10 @@ public class GetAllSeatTypesQueryHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<GetAllSeatTypesQuery, IList<SeatTypeModel>>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<IList<SeatTypeModel>> Handle(GetAllSeatTypesQuery request, CancellationToken cancellationToken)
 	{
-		var seatTypes = await _unitOfWork.Repository<SeatTypeEntity>().GetAsync(cancellationToken);
+		var seatTypes = await unitOfWork.Repository<SeatTypeEntity>().GetAsync(cancellationToken);
 
-		return _mapper.Map<IList<SeatTypeModel>>(seatTypes);
+		return mapper.Map<IList<SeatTypeModel>>(seatTypes);
 	}
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.Json;
-
+using Domain.Constants;
 using Mapster;
-
 using MovieService.Application.DTOs;
 using MovieService.Application.Handlers.Commands.Halls.UpdateHall;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
@@ -30,35 +28,36 @@ public class MapsterConfig : IRegister
 			.Map(dest => dest.ReleaseDate, src => ParseDateTimeOrDefault(src.ReleaseDate));
 
 		config.NewConfig<UpdateHallCommand, HallEntity>()
-			 .Map(dest => dest.Id, src => src.Id)
-			 .Map(dest => dest.Name, src => src.Name)
-			 .Map(dest => dest.TotalSeats, src => src.TotalSeats)
-			 .Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.Seats));
+			.Map(dest => dest.Id, src => src.Id)
+			.Map(dest => dest.Name, src => src.Name)
+			.Map(dest => dest.TotalSeats, src => src.TotalSeats)
+			.Map(dest => dest.SeatsArrayJson, src => SerializeSeatsArray(src.Seats));
 
 		config.NewConfig<UpdateSessionCommand, SessionEntity>()
-			 .Map(dest => dest.Id, src => src.Id)
-			 .Map(dest => dest.MovieId, src => src.MovieId)
-			 .Map(dest => dest.HallId, src => src.HallId)
-			 .Map(dest => dest.StartTime, src => ParseDateTimeOrDefault(src.StartTime));
+			.Map(dest => dest.Id, src => src.Id)
+			.Map(dest => dest.MovieId, src => src.MovieId)
+			.Map(dest => dest.HallId, src => src.HallId)
+			.Map(dest => dest.StartTime, src => ParseDateTimeOrDefault(src.StartTime));
 
 		config.NewConfig<UpdateSeatTypeCommand, SeatTypeEntity>()
-			 .Map(dest => dest.Id, src => src.Id)
-			 .Map(dest => dest.Name, src => src.Name)
-			 .Map(dest => dest.PriceModifier, src => src.PriceModifier);
+			.Map(dest => dest.Id, src => src.Id)
+			.Map(dest => dest.Name, src => src.Name)
+			.Map(dest => dest.PriceModifier, src => src.PriceModifier);
 
 		config.NewConfig<UpdateSeatCommand, SeatEntity>()
-			 .Map(dest => dest.Id, src => src.Id)
-			 .Map(dest => dest.HallId, src => src.HallId)
-			 .Map(dest => dest.SeatTypeId, src => src.SeatTypeId)
-			 .Map(dest => dest.Row, src => src.Row)
-			 .Map(dest => dest.Column, src => src.Column);
+			.Map(dest => dest.Id, src => src.Id)
+			.Map(dest => dest.HallId, src => src.HallId)
+			.Map(dest => dest.SeatTypeId, src => src.SeatTypeId)
+			.Map(dest => dest.Row, src => src.Row)
+			.Map(dest => dest.Column, src => src.Column);
 
 		config.NewConfig<MovieModel, MovieEntity>()
 			.Map(dest => dest.MovieGenres, src => new List<MovieGenreEntity>());
 
 		config.NewConfig<MovieEntity, MovieModel>()
-			.Map(dest => dest.Genres,
-				 src => src.MovieGenres.Select(mg => mg.Genre.Name).ToList());
+			.Map(
+				dest => dest.Genres,
+				src => src.MovieGenres.Select(mg => mg.Genre.Name).ToList());
 
 		config.NewConfig<HallEntity, HallModel>()
 			.Map(dest => dest.SeatsArray, src => DeserializeSeatsArray(src.SeatsArrayJson));
@@ -75,7 +74,7 @@ public class MapsterConfig : IRegister
 	{
 		return DateTime.TryParseExact(
 			date,
-			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
+			DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out var parsedDateTime)

@@ -1,9 +1,7 @@
-﻿using MapsterMapper;
-
+﻿using Domain.Exceptions;
+using Extensions.Strings;
+using MapsterMapper;
 using MediatR;
-
-using MovieService.Application.Extensions;
-using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -13,17 +11,14 @@ public class GetDayByDateQueryHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<GetDayByDateQuery, DayModel?>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<DayModel?> Handle(GetDayByDateQuery request, CancellationToken cancellationToken)
 	{
-		if (!request.Date.DateFormatTryParse(out DateTime parsedDate))
+		if (!request.Date.DateFormatTryParse(out var parsedDate))
 			throw new BadRequestException("Invalid date format.");
 
-		var day = await _unitOfWork.DaysRepository.GetAsync(parsedDate, cancellationToken)
-			?? throw new NotFoundException(message: $"Day '{request.Date}' not found.");
+		var day = await unitOfWork.DaysRepository.GetAsync(parsedDate, cancellationToken)
+				?? throw new NotFoundException($"Day '{request.Date}' not found.");
 
-		return _mapper.Map<DayModel>(day);
+		return mapper.Map<DayModel>(day);
 	}
 }

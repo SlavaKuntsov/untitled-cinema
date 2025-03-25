@@ -12,7 +12,12 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services)
 	{
-		services.AddGrpc(options => { options.Interceptors.Add<GlobalGrpcExceptionInterceptor>(); });
+		services.AddGrpc(
+			options =>
+			{
+				options.Interceptors.Add<GlobalGrpcExceptionInterceptor>();
+			});
+
 		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
+using Domain.Constants;
 
-namespace MovieService.Application.Validators;
+namespace Utilities.Validators;
 
 public static class GeneralValidator
 {
@@ -11,7 +12,7 @@ public static class GeneralValidator
 
 		return DateTime.TryParseExact(
 			dateOfBirth,
-			Domain.Constants.DateTimeConstants.DATE_TIME_FORMAT,
+			DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,
 			DateTimeStyles.None,
 			out _);

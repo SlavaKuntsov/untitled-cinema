@@ -1,4 +1,5 @@
 using Brokers.Extensions;
+using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
 using Extensions.Exceptions.Middlewares;
@@ -6,7 +7,6 @@ using Extensions.Host;
 using Extensions.Logging;
 using Extensions.Mapper;
 using Extensions.Swagger;
-using Extensions.Authorization;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -62,17 +62,19 @@ app.MapHealthChecks(
 		ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 	});
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-	MinimumSameSitePolicy = SameSiteMode.None,
-	HttpOnly = HttpOnlyPolicy.Always,
-	Secure = CookieSecurePolicy.Always
-});
+app.UseCookiePolicy(
+	new CookiePolicyOptions
+	{
+		MinimumSameSitePolicy = SameSiteMode.None,
+		HttpOnly = HttpOnlyPolicy.Always,
+		Secure = CookieSecurePolicy.Always
+	});
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-	ForwardedHeaders = ForwardedHeaders.All
-});
+app.UseForwardedHeaders(
+	new ForwardedHeadersOptions
+	{
+		ForwardedHeaders = ForwardedHeaders.All
+	});
 app.UseCors();
 
 app.UseSwagger();

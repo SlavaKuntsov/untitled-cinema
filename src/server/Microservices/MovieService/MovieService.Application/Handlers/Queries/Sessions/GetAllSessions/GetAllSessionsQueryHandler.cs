@@ -1,10 +1,8 @@
-﻿using MapsterMapper;
-
+﻿using Domain.Exceptions;
+using Extensions.Strings;
+using MapsterMapper;
 using MediatR;
-
 using MovieService.Application.DTOs;
-using MovieService.Application.Extensions;
-using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
 namespace MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
@@ -13,19 +11,18 @@ public class GetAllSessionsQueryHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<GetAllSessionsQuery, IList<SessionWithHallDto>>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
-	public async Task<IList<SessionWithHallDto>> Handle(GetAllSessionsQuery request, CancellationToken cancellationToken)
+	public async Task<IList<SessionWithHallDto>> Handle(
+		GetAllSessionsQuery request,
+		CancellationToken cancellationToken)
 	{
-		var query = _unitOfWork.SessionsRepository.Get();
+		var query = unitOfWork.SessionsRepository.Get();
 
 		if (!string.IsNullOrWhiteSpace(request.Date))
 		{
-			if (!request.Date.DateFormatTryParse(out DateTime parsedDate))
+			if (!request.Date.DateFormatTryParse(out var parsedDate))
 				throw new BadRequestException("Invalid date format.");
 
-			var day = await _unitOfWork.DaysRepository.GetAsync(parsedDate, cancellationToken);
+			var day = await unitOfWork.DaysRepository.GetAsync(parsedDate, cancellationToken);
 
 			if (day is not null)
 				query = query.Where(s => s.DayId == day.Id);
@@ -34,21 +31,19 @@ public class GetAllSessionsQueryHandler(
 		}
 
 		if (request.Movie != null)
-		{
 			if (request.Movie.Value != Guid.Empty)
 			{
-				var movie = await _unitOfWork.MoviesRepository.GetAsync(request.Movie.Value, cancellationToken);
+				var movie = await unitOfWork.MoviesRepository.GetAsync(request.Movie.Value, cancellationToken);
 
 				if (movie is not null)
 					query = query.Where(s => s.MovieId == movie.Id);
 				else
 					query = query.Where(s => false);
 			}
-		}
 
 		if (!string.IsNullOrWhiteSpace(request.Hall))
 		{
-			var hall = await _unitOfWork.HallsRepository.GetAsync(request.Hall, cancellationToken);
+			var hall = await unitOfWork.HallsRepository.GetAsync(request.Hall, cancellationToken);
 
 			if (hall is not null)
 				query = query.Where(s => s.HallId == hall.Id);
@@ -60,8 +55,8 @@ public class GetAllSessionsQueryHandler(
 			.Skip((request.Offset - 1) * request.Limit)
 			.Take(request.Limit);
 
-		var sessions = await _unitOfWork.SessionsRepository.ToListAsync(query, cancellationToken);
+		var sessions = await unitOfWork.SessionsRepository.ToListAsync(query, cancellationToken);
 
-		return _mapper.Map<IList<SessionWithHallDto>>(sessions);
+		return mapper.Map<IList<SessionWithHallDto>>(sessions);
 	}
 }

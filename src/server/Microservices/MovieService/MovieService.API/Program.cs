@@ -1,44 +1,59 @@
 using Brokers.Extensions;
+using Extensions.Authorization;
+using Extensions.Common;
+using Extensions.Exceptions;
+using Extensions.Exceptions.Middlewares;
+using Extensions.Host;
+using Extensions.Logging;
+using Extensions.Mapper;
+using Extensions.Swagger;
 using HealthChecks.UI.Client;
-
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
-
 using MovieService.API.Extensions;
-using MovieService.API.Middlewares;
 using MovieService.Application.Extensions;
 using MovieService.Infrastructure.Extensions;
 using MovieService.Persistence.Extensions;
-
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-var services  = builder.Services;
+var services = builder.Services;
 var configuration = builder.Configuration;
+var host = builder.Host;
 
-builder.Configuration.AddEnvironmentVariables();
+// builder.Configuration.AddEnvironmentVariables();
 
 builder.UseHttps();
 
-services.AddAPI(configuration)
+services
+	.AddCommon()
+	.AddExceptions()
+	.AddAuthorization(configuration)
+	.AddMapper()
+	.AddSwagger()
+	.AddRabbitMQ(configuration)
+	.AddHealthChecks();
+
+services
+	.AddAPI(configuration)
 	.AddApplication()
 	.AddInfrastructure(configuration)
-	.AddPersistence(configuration)
-	.AddRabbitMQ(configuration);
+	.AddPersistence(configuration);
 
-builder.Host.AddLogging(configuration);
+host.AddLogging();
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseExceptionHandler();
-
 app.UseMiddleware<RequestLogContextMiddleware>();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSerilogRequestLogging();
 
 app.MapHealthChecks(
 	"/health",
@@ -53,16 +68,14 @@ app.UseCookiePolicy(new CookiePolicyOptions
 	HttpOnly = HttpOnlyPolicy.Always,
 	Secure = CookieSecurePolicy.Always
 });
-app.UseHttpsRedirection();
+
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
 	ForwardedHeaders = ForwardedHeaders.All
 });
 app.UseCors();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using Domain.Constants;
 using Mapster;
-
 using UserService.Application.Handlers.Commands.Users.UpdateUser;
 using UserService.Domain.Entities;
 using UserService.Domain.Models;
@@ -13,16 +12,17 @@ public class MapsterConfig : IRegister
 	public void Register(TypeAdapterConfig config)
 	{
 		config.NewConfig<UserEntity, UserModel>()
-			.MapWith(src => new UserModel(
-				src.Id,
-				src.Email,
-				src.Password,
-				src.Role,
-				src.FirstName,
-				src.LastName,
-				src.DateOfBirth,
-				src.Balance
-			));
+			.MapWith(
+				src => new UserModel(
+					src.Id,
+					src.Email,
+					src.Password,
+					src.Role,
+					src.FirstName,
+					src.LastName,
+					src.DateOfBirth,
+					src.Balance
+				));
 
 		config.NewConfig<UpdateUserCommand, UserModel>()
 			.Map(dest => dest.FirstName, src => src.FirstName)

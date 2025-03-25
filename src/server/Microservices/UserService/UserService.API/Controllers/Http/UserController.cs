@@ -21,27 +21,19 @@ namespace UserService.API.Controllers.Http;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController : ControllerBase
+public class UserController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-	private readonly IMapper _mapper;
-
-	private readonly IMediator _mediator;
-
-	public UserController(IMediator mediator, IMapper mapper)
-	{
-		_mediator = mediator;
-		_mapper = mapper;
-	}
-
 	[HttpPost("/users/login")]
 	[SwaggerRequestExample(typeof(CreateLoginRequest), typeof(CreateLoginRequestExample))]
-	public async Task<IActionResult> Login([FromBody] CreateLoginRequest request, CancellationToken cancellationToken)
+	public async Task<IActionResult> Login(
+		[FromBody] CreateLoginRequest request,
+		CancellationToken cancellationToken)
 	{
-		var existUser = await _mediator.Send(
+		var existUser = await mediator.Send(
 			new LoginQuery(request.Email, request.Password),
 			cancellationToken);
 
-		var authResultDto = await _mediator.Send(
+		var authResultDto = await mediator.Send(
 			new GenerateTokensCommand(existUser.Id, existUser.Role),
 			cancellationToken);
 
@@ -58,7 +50,7 @@ public class UserController : ControllerBase
 		[FromBody] UserRegistrationCommand request,
 		CancellationToken cancellationToken)
 	{
-		var authResultDto = await _mediator.Send(request, cancellationToken);
+		var authResultDto = await mediator.Send(request, cancellationToken);
 
 		return Ok(new { authResultDto.AccessToken });
 	}
@@ -66,7 +58,9 @@ public class UserController : ControllerBase
 	[HttpPatch("/users")]
 	[SwaggerRequestExample(typeof(UpdateUserRequest), typeof(UpdateUserRequestExample))]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Update([FromBody] UpdateUserCommand request, CancellationToken cancellationToken)
+	public async Task<IActionResult> Update(
+		[FromBody] UpdateUserCommand request,
+		CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 						?? throw new UnauthorizedAccessException("User ID not found in claims.");
@@ -76,14 +70,16 @@ public class UserController : ControllerBase
 
 		var command = request with { Id = userId };
 
-		var user = await _mediator.Send(command, cancellationToken);
+		var user = await mediator.Send(command, cancellationToken);
 
-		return Ok(_mapper.Map<UserDto>(user));
+		return Ok(mapper.Map<UserDto>(user));
 	}
 
 	[HttpPatch("/users/balance/increase/{amount:decimal}")]
 	[Authorize(Policy = "UserOrAdmin")]
-	public async Task<IActionResult> Balance([FromRoute] decimal amount, CancellationToken cancellationToken)
+	public async Task<IActionResult> Balance(
+		[FromRoute] decimal amount,
+		CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 						?? throw new UnauthorizedAccessException("User ID not found in claims.");
@@ -91,7 +87,7 @@ public class UserController : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		await _mediator.Send(
+		await mediator.Send(
 			new ChangeBalanceCommand(userId, amount, true),
 			cancellationToken);
 
@@ -100,7 +96,9 @@ public class UserController : ControllerBase
 
 	[HttpDelete("/users/{id:Guid?}")]
 	[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+	public async Task<IActionResult> Delete(
+		[FromRoute] Guid id,
+		CancellationToken cancellationToken)
 	{
 		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
 						?? throw new UnauthorizedAccessException("User ID not found in claims.");
@@ -111,7 +109,7 @@ public class UserController : ControllerBase
 		if (userId == id)
 			throw new UnprocessableContentException("Admin cannot delete himself.");
 
-		await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
+		await mediator.Send(new DeleteUserCommand(id), cancellationToken);
 
 		return Ok();
 	}
@@ -126,7 +124,7 @@ public class UserController : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		await _mediator.Send(new DeleteUserCommand(userId), cancellationToken);
+		await mediator.Send(new DeleteUserCommand(userId), cancellationToken);
 
 		return Ok();
 	}
@@ -135,10 +133,10 @@ public class UserController : ControllerBase
 	[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> Users(CancellationToken cancellationToken)
 	{
-		var users = await _mediator.Send(
+		var users = await mediator.Send(
 			new GetAllUsersQuery(),
 			cancellationToken);
 
-		return Ok(_mapper.Map<IList<UserDto>>(users));
+		return Ok(mapper.Map<IList<UserDto>>(users));
 	}
 }

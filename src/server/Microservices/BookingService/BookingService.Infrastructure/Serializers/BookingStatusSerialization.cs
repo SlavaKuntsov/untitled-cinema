@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-
 using BookingService.Domain.Enums;
-using BookingService.Domain.Extensions;
-
+using Extensions.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 
@@ -20,10 +18,9 @@ public class BookingStatusSerialization : IBsonSerializer<BookingStatus>
 		foreach (var field in typeof(BookingStatus).GetFields(BindingFlags.Public | BindingFlags.Static))
 		{
 			var attribute = field.GetCustomAttribute<DescriptionAttribute>();
+
 			if (attribute != null && attribute.Description == description)
-			{
 				return (BookingStatus)field.GetValue(null);
-			}
 		}
 
 		throw new BsonSerializationException($"Cannot convert '{description}' to {nameof(BookingStatus)}.");
@@ -43,12 +40,9 @@ public class BookingStatusSerialization : IBsonSerializer<BookingStatus>
 	void IBsonSerializer.Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
 	{
 		if (value is BookingStatus bookingStatus)
-		{
 			Serialize(context, args, bookingStatus);
-		}
 		else
-		{
-			throw new BsonSerializationException($"Expected value of type {nameof(BookingStatus)}, but got {value.GetType()}.");
-		}
+			throw new BsonSerializationException(
+				$"Expected value of type {nameof(BookingStatus)}, but got {value.GetType()}.");
 	}
 }

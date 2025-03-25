@@ -1,11 +1,9 @@
-﻿using MapsterMapper;
-
+﻿using Domain.Constants;
+using Domain.Exceptions;
+using Extensions.Strings;
+using MapsterMapper;
 using MediatR;
-
-using MovieService.Application.Extensions;
-using MovieService.Domain.Constants;
 using MovieService.Domain.Entities;
-using MovieService.Domain.Exceptions;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 
@@ -15,15 +13,12 @@ public class CreateDayCommandHandler(
 	IUnitOfWork unitOfWork,
 	IMapper mapper) : IRequestHandler<CreateDayCommand, Guid>
 {
-	private readonly IUnitOfWork _unitOfWork = unitOfWork;
-	private readonly IMapper _mapper = mapper;
-
 	public async Task<Guid> Handle(CreateDayCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.StartTime.DateTimeFormatTryParse(out DateTime parsedStartTime))
+		if (!request.StartTime.DateTimeFormatTryParse(out var parsedStartTime))
 			throw new BadRequestException("Invalid date format.");
 
-		if (!request.EndTime.DateTimeFormatTryParse(out DateTime parsedEndTime))
+		if (!request.EndTime.DateTimeFormatTryParse(out var parsedEndTime))
 			throw new BadRequestException("Invalid date format.");
 
 		if (parsedStartTime.Date != parsedEndTime.Date)
@@ -34,7 +29,7 @@ public class CreateDayCommandHandler(
 
 		var date = parsedStartTime.Date;
 
-		var existDay = await _unitOfWork.DaysRepository.GetAsync(date, cancellationToken);
+		var existDay = await unitOfWork.DaysRepository.GetAsync(date, cancellationToken);
 
 		if (existDay is not null)
 			throw new AlreadyExistsException
@@ -45,9 +40,9 @@ public class CreateDayCommandHandler(
 			parsedStartTime,
 			parsedEndTime);
 
-		await _unitOfWork.Repository<DayEntity>().CreateAsync(_mapper.Map<DayEntity>(day), cancellationToken);
+		await unitOfWork.Repository<DayEntity>().CreateAsync(mapper.Map<DayEntity>(day), cancellationToken);
 
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return day.Id;
 	}
