@@ -3,25 +3,41 @@ using MediatR;
 
 namespace MovieService.API.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
-	: IPipelineBehavior<TRequest, TResponse>
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
 	where TRequest : notnull
 {
+	private readonly IEnumerable<IValidator<TRequest>> _validators;
+
+	public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+	{
+		_validators = validators;
+	}
+
 	public async Task<TResponse> Handle(
 		TRequest request,
 		RequestHandlerDelegate<TResponse> next,
 		CancellationToken cancellationToken)
 	{
-		var context = new ValidationContext<TRequest>(request);
+		if (_validators.Any())
+		{
+			var context = new ValidationContext<TRequest>(request);
 
-		var failures = validators
-			.Select(v => v.Validate(context))
-			.SelectMany(result => result.Errors)
-			.Where(f => f != null)
-			.ToList();
+			var validationResults = await Task.WhenAll(
+				_validators.Select(v => v.ValidateAsync(context, cancellationToken))
+			);
 
-		if (failures.Count != 0)
-			throw new ValidationException(failures);
+			var failures = validationResults
+				.SelectMany(result => result.Errors)
+				.Where(f => f != null)
+				.ToList();
+
+			if (failures.Any())
+			{
+				var errorMessages = failures.Select(f => f.ErrorMessage).ToList();
+
+				throw new ValidationException($"Validation failed: {string.Join("; ", errorMessages)}");
+			}
+		}
 
 		return await next();
 	}

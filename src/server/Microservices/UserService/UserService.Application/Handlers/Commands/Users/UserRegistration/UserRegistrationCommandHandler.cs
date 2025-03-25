@@ -21,9 +21,6 @@ public class UserRegistrationCommandHandler(
 {
 	public async Task<AuthDto> Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.DateOfBirth.DateFormatTryParse(out var parsedDateTime))
-			throw new BadRequestException("Invalid date format.");
-
 		var id = await usersRepository.GetIdAsync(request.Email, cancellationToken);
 
 		if (id!.Value != Guid.Empty)
@@ -34,9 +31,10 @@ public class UserRegistrationCommandHandler(
 			request.Email,
 			passwordHash.Generate(request.Password),
 			Role.User,
+			request.DateOfBirth,
 			request.FirstName,
-			request.LastName,
-			parsedDateTime);
+			request.LastName
+			);
 
 		const Role role = Role.User;
 

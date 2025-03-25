@@ -1,14 +1,11 @@
-﻿using BCrypt.Net;
-
-using Domain.Enums;
+﻿using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using UserService.Domain.Entities;
 
 namespace UserService.Persistence.Configurations;
 
-public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
+public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
 	public void Configure(EntityTypeBuilder<UserEntity> builder)
 	{
@@ -40,13 +37,13 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 		builder.Property(d => d.DateOfBirth)
 			.IsRequired();
 
-		builder.Property(p => p.DateOfBirth)
-			.IsRequired()
-			.HasColumnType("date")
-			.HasConversion(
-				v => v.Date,
-				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-			);
+		// builder.Property(p => p.DateOfBirth)
+		// 	.IsRequired()
+		// 	.HasColumnType("date")
+		// 	.HasConversion(
+		// 		v => v.Date,
+		// 		v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+		// 	);
 
 		builder.HasOne(u => u.RefreshToken)
 			.WithOne(r => r.User)
@@ -63,6 +60,7 @@ public partial class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 				Id = Guid.NewGuid(),
 				Email = "admin@email.com",
 				Password = BCrypt.Net.BCrypt.EnhancedHashPassword("qweQWE123"),
+				DateOfBirth = DateOnly.MinValue.ToString(),
 				Role = Role.Admin,
 				FirstName = "admin",
 				LastName = "admin"

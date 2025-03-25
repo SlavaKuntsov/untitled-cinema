@@ -10,19 +10,19 @@ namespace UserService.Application.Handlers.Queries.Users.GetUserById;
 public class GetUserByIdQueryHandler(
 	IUsersRepository usersRepository,
 	IRedisCacheService redisCacheService,
-	IMapper mapper) : IRequestHandler<GetUserByIdQuery, UserWithStringDateOfBirthDto?>
+	IMapper mapper) : IRequestHandler<GetUserByIdQuery, UserDto?>
 {
-	public async Task<UserWithStringDateOfBirthDto?> Handle(
+	public async Task<UserDto?> Handle(
 		GetUserByIdQuery request,
 		CancellationToken cancellationToken)
 	{
 		var cacheKey = $"users_{request.Id}";
 
 		var cachedProfile = await redisCacheService
-			.GetValueAsync<UserWithStringDateOfBirthDto>(cacheKey);
+			.GetValueAsync<UserDto>(cacheKey);
 
 		if (cachedProfile != null)
-			return new UserWithStringDateOfBirthDto(
+			return new UserDto(
 				cachedProfile.Id,
 				cachedProfile.Email,
 				cachedProfile.Role,
@@ -31,12 +31,12 @@ public class GetUserByIdQueryHandler(
 				cachedProfile.DateOfBirth,
 				cachedProfile.Balance);
 
-		var entity = await usersRepository.GetWithStringDateOfBirthAsync(
+		var entity = await usersRepository.GetAsync(
 						request.Id,
 						cancellationToken)
 					?? throw new NotFoundException("User not found");
 
-		var dto = mapper.Map<UserWithStringDateOfBirthDto>(entity);
+		var dto = mapper.Map<UserDto>(entity);
 
 		await redisCacheService.SetValueAsync(cacheKey, dto, TimeSpan.FromMinutes(10));
 

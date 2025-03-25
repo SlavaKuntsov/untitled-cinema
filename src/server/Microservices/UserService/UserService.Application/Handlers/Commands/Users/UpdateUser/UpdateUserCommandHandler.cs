@@ -20,9 +20,6 @@ public class UpdateUserCommandHandler(
 {
 	public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
 	{
-		if (!request.DateOfBirth.DateFormatTryParse(out var parsedDateTime))
-			throw new BadRequestException("Invalid date format.");
-
 		var userId = request.Id 
 			?? throw new ArgumentNullException(nameof(request.Id), "User ID is required.");
 

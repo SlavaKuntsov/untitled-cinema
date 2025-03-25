@@ -20,9 +20,9 @@ public static class ApplicationExtensions
 			{
 				cfg.RegisterServicesFromAssemblyContaining<CreateMovieCommandHandler>();
 			});
-
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
+		//
+		// services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<CreateMovieCommandValidator>>();
+		// services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UpdateMovieCommandValidator>>();
 
 		return services;
 	}
