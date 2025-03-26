@@ -5,6 +5,7 @@
 
 bat/
 .idea/
+.vscode/
 
 # User-specific files
 *.rsuser
