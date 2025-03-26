@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.0"/>
+        <PackageReference Include="StackExchange.Redis" Version="2.7.27"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj"/>
+        <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj"/>
+        <ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj"/>
+    </ItemGroup>
+
+</Project>
