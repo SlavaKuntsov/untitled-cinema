@@ -1,28 +1,29 @@
 ﻿using System.Collections.Concurrent;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace UserService.Infrastructure.Notification;
 
-[Authorize]
+[Authorize(Policy = "UserOrAdmin")]
 public class NotificationHub(ILogger<NotificationHub> logger) : Hub
 {
 	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _userConnections = new();
 
 	public override Task OnConnectedAsync()
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out Guid userId))
+		if (Guid.TryParse(Context.UserIdentifier, out var userId))
 		{
-			logger.LogError("NEW CONNECT - " + userId.ToString());
+			logger.LogError("NEW CONNECT - " + userId);
 			logger.LogError("connect list = " + _userConnections.Count());
 
-			_userConnections.AddOrUpdate(userId,
+			_userConnections.AddOrUpdate(
+				userId,
 				_ => [Context.ConnectionId],
 				(_, connections) =>
 				{
 					connections.Add(Context.ConnectionId);
+
 					return connections;
 				});
 		}
@@ -32,10 +33,10 @@ public class NotificationHub(ILogger<NotificationHub> logger) : Hub
 
 	public override Task OnDisconnectedAsync(Exception? exception)
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out Guid userId) &&
+		if (Guid.TryParse(Context.UserIdentifier, out var userId) &&
 			_userConnections.TryGetValue(userId, out var connections))
 		{
-			logger.LogError("NEW DISCONNECT - " + userId.ToString());
+			logger.LogError("NEW DISCONNECT - " + userId);
 
 			connections.Remove(Context.ConnectionId);
 
@@ -49,8 +50,8 @@ public class NotificationHub(ILogger<NotificationHub> logger) : Hub
 	public static IEnumerable<string> GetConnections(Guid userId)
 	{
 		return _userConnections
-			.TryGetValue(userId, out var connections) ? 
-			connections : 
-			Enumerable.Empty<string>();
+			.TryGetValue(userId, out var connections)
+			? connections
+			: Enumerable.Empty<string>();
 	}
 }

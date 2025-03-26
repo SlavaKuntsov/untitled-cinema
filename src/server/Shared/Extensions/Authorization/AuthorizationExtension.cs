@@ -58,6 +58,8 @@ public static class AuthorizationExtension
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
+				policy.WithOrigins("https://localhost");
+				policy.WithOrigins("https://localhost:7001");
 			});
 		});
 

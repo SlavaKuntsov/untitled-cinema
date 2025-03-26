@@ -94,6 +94,7 @@ services:
   user-postgres:
     container_name: user-postgres
     image: postgres:alpine
+    mem_limit: 512m
     restart: unless-stopped
     ports:
       - "5433:5432"
@@ -107,6 +108,7 @@ services:
   movie-postgres:
     container_name: movie-postgres
     image: postgres:alpine
+    mem_limit: 512m
     restart: unless-stopped
     ports:
       - "5434:5432"
@@ -120,6 +122,7 @@ services:
   booking-mongodb:
     container_name: booking-mongodb
     image: mongo:latest
+    mem_limit: 512m
     restart: unless-stopped
     ports:
       - "27018:27017"
@@ -134,6 +137,7 @@ services:
   redis:
     container_name: redis
     image: redis:alpine
+    mem_limit: 256m
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -143,6 +147,7 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management-alpine
+    mem_limit: 512m
     restart: unless-stopped
     ports:
       - "5673:5672"

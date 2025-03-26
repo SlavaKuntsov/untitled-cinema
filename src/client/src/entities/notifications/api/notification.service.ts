@@ -25,7 +25,7 @@ export class NotificationService {
     this.isConnected = true;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7001/notify`, {
+      .withUrl(`${environment.userBaseUrl}/notify`, {
         accessTokenFactory: () => this.accessToken() ?? "",
       })
       .withAutomaticReconnect()
