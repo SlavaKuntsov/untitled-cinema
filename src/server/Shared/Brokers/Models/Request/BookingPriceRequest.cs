@@ -1,5 +1,7 @@
-﻿namespace Brokers.Models.Request;
+﻿using BookingService.Domain.Models;
 
-public record BookingPriceRequest<T>(
+namespace Brokers.Models.Request;
+
+public record BookingPriceRequest(
 	Guid SessionId,
-	IList<T> Seats);
+	IList<SeatModel> Seats);

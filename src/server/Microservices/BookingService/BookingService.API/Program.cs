@@ -46,11 +46,6 @@ app.AddAPI();
 
 app.UseHangfireDashboard();
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
 app.UseExceptionHandler();
 app.UseMiddleware<RequestLogContextMiddleware>();
 
@@ -77,6 +72,11 @@ app.UseForwardedHeaders(
 		ForwardedHeaders = ForwardedHeaders.All
 	});
 app.UseCors();
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI();

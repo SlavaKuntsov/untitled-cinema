@@ -1,7 +1,8 @@
 ﻿using BookingService.API.Behaviors;
-using BookingService.Infrastructure.DateTime;
+using BookingService.API.Controllers.Grpc;
 using BookingService.Infrastructure.Seats;
 using Domain.Constants;
+using Extensions.Exceptions.Middlewares;
 using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
@@ -10,12 +11,15 @@ using MediatR;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Protobufs.Auth;
+using Utilities.DateTime;
 
 namespace BookingService.API.Extensions;
 
 public static class ApiExtensions
 {
-	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddAPI(
+		this IServiceCollection services,
+		IConfiguration configuration)
 	{
 		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
 
@@ -28,7 +32,8 @@ public static class ApiExtensions
 				options.Address = new Uri($"https://localhost:{usersPort}");
 			});
 
-		var hangfireConnectionString = Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
+		var hangfireConnectionString =
+			Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
 
 		if (string.IsNullOrEmpty(hangfireConnectionString))
 			hangfireConnectionString = configuration.GetConnectionString("HangfireDb");
@@ -51,7 +56,8 @@ public static class ApiExtensions
 							MigrationStrategy = new MigrateMongoMigrationStrategy(),
 							BackupStrategy = new NoneMongoBackupStrategy()
 						},
-						CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection,
+						CheckQueuedJobsStrategy =
+							CheckQueuedJobsStrategy.TailNotificationsCollection,
 						Prefix = "hangfire.mongo",
 						CheckConnection = true
 					}));
@@ -69,36 +75,44 @@ public static class ApiExtensions
 					options.JsonSerializerOptions.Converters.Add(
 						new DateTimeConverter(DateTimeConstants.DATE_TIME_FORMAT));
 				});
-		
-		
-		services.AddSwaggerGen(options =>
-		{
-			options.AddSecurityDefinition("Bearer",
-				new OpenApiSecurityScheme
-				{
-					Name = "Authorization",
-					In = ParameterLocation.Header,
-					Type = SecuritySchemeType.Http,
-					Scheme = "Bearer",
-					BearerFormat = "JWT",
-					Description = "Введите токен JWT в формате 'Bearer {токен}'"
-				});
 
-			options.AddSecurityRequirement(new OpenApiSecurityRequirement
+		services.AddSwaggerGen(
+			options =>
 			{
-				{
+				options.AddSecurityDefinition(
+					"Bearer",
 					new OpenApiSecurityScheme
 					{
-						Reference = new OpenApiReference
+						Name = "Authorization",
+						In = ParameterLocation.Header,
+						Type = SecuritySchemeType.Http,
+						Scheme = "Bearer",
+						BearerFormat = "JWT",
+						Description = "Введите токен JWT в формате 'Bearer {токен}'"
+					});
+
+				options.AddSecurityRequirement(
+					new OpenApiSecurityRequirement
+					{
 						{
-							Type = ReferenceType.SecurityScheme,
-							Id = "Bearer"
+							new OpenApiSecurityScheme
+							{
+								Reference = new OpenApiReference
+								{
+									Type = ReferenceType.SecurityScheme,
+									Id = "Bearer"
+								}
+							},
+							Array.Empty<string>()
 						}
-					},
-					Array.Empty<string>()
-				}
+					});
 			});
-		});
+
+		services.AddGrpc(
+			options =>
+			{
+				options.Interceptors.Add<GlobalGrpcExceptionInterceptor>();
+			});
 
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -109,7 +123,9 @@ public static class ApiExtensions
 
 	public static WebApplication AddAPI(this WebApplication app)
 	{
-		app.MapHub<SeatsHub>("/seats");
+		app.MapGrpcService<BookingController>();
+
+		app.MapHub<SeatsHub>("/seatsHub");
 
 		return app;
 	}

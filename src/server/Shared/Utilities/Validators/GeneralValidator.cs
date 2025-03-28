@@ -10,7 +10,7 @@ public static class GeneralValidator
 		if (string.IsNullOrWhiteSpace(dateOfBirth))
 			return false;
 
-		return DateTime.TryParseExact(
+		return System.DateTime.TryParseExact(
 			dateOfBirth,
 			DateTimeConstants.DATE_TIME_FORMAT,
 			CultureInfo.InvariantCulture,

@@ -15,6 +15,7 @@
         <ProjectReference Include="..\..\..\Shared\Brokers\Brokers.csproj"/>
         <ProjectReference Include="..\..\..\Shared\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\..\..\Shared\Protobufs\Protobufs.csproj"/>
+        <ProjectReference Include="..\BookingService.Application\BookingService.Application.csproj" />
         <ProjectReference Include="..\BookingService.Domain\BookingService.Domain.csproj"/>
     </ItemGroup>
 

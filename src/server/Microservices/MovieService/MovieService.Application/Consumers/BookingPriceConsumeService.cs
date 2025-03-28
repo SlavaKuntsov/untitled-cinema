@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MovieService.Application.Handlers.Queries.Movies.GetMovieById;
-using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
+using MovieService.Application.Handlers.Queries.Seats.GetSeatsBySessionId;
 using MovieService.Application.Handlers.Queries.Seats.GetSeatTypeById;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 using MovieService.Domain.Models;
@@ -23,15 +23,14 @@ public class BookingPriceConsumeService(
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await rabbitMQConsumer
-			.RequestReplyAsync<BookingPriceRequest<SeatModel>>(
+			.RequestReplyAsync<BookingPriceRequest>(
 				async request =>
 				{
 					using var scope = serviceScopeFactory.CreateScope();
 					var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
 					logger.LogInformation("Starting to consume booking price");
-
-
+					
 					var session = await mediator.Send(new GetSessionByIdQuery(request.SessionId), stoppingToken);
 
 					if (session is null)

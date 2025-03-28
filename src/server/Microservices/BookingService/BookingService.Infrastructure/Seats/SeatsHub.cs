@@ -1,59 +1,68 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-
 using Microsoft.Extensions.Logging;
 
 namespace BookingService.Infrastructure.Seats;
 
+[Authorize(Policy = "UserOrAdmin")]
 public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 {
-	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _userConnections = new();
+	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _sessionGroups = new();
 
-	public override Task OnConnectedAsync()
+	public async Task JoinSession(Guid sessionId)
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out Guid userId))
-		{
-			logger.LogError("NEW CONNECT - " + userId.ToString());
-			logger.LogError("connect list = " + _userConnections.Count());
+		var groupName = GetGroupName(sessionId);
+		await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-			_userConnections.AddOrUpdate(userId,
-				_ => [Context.ConnectionId],
-				(_, connections) =>
-				{
-					connections.Add(Context.ConnectionId);
-					return connections;
-				});
-		}
+		_sessionGroups.AddOrUpdate(
+			sessionId,
+			_ =>
+			[
+				Context.ConnectionId
+			],
+			(_, connections) =>
+			{
+				connections.Add(Context.ConnectionId);
 
-		return base.OnConnectedAsync();
+				return connections;
+			});
+
+		logger.LogInformation($"User {Context.UserIdentifier} joined session {sessionId}");
 	}
 
-	public override Task OnDisconnectedAsync(Exception? exception)
+	public async Task LeaveSession(Guid sessionId)
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out Guid userId) &&
-			_userConnections.TryGetValue(userId, out var connections))
-		{
-			logger.LogError("NEW DISCONNECT - " + userId.ToString());
+		var groupName = GetGroupName(sessionId);
+		await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
+		if (_sessionGroups.TryGetValue(sessionId, out var connections))
+		{
 			connections.Remove(Context.ConnectionId);
 
 			if (connections.Count == 0)
-				_userConnections.TryRemove(userId, out _);
+				_sessionGroups.TryRemove(sessionId, out _);
 		}
 
-		return base.OnDisconnectedAsync(exception);
+		logger.LogInformation($"User {Context.UserIdentifier} left session {sessionId}");
 	}
 
-	public static IEnumerable<string> GetConnections(Guid userId)
+	/*public async Task NotifySeatChanged(UpdatedSeatDTO seat, CancellationToken cancellationToken)
 	{
-		return _userConnections
-			.TryGetValue(userId, out var connections) ?
-			connections :
-			Enumerable.Empty<string>();
+		var groupName = GetGroupName(seat.SessionId);
+
+		await Clients.Group(groupName)
+			.SendAsync(
+				"SeatChanged",
+				seat.SeatId,
+				seat.isBooked,
+				cancellationToken);
+
+		logger.LogInformation($"Seat {seat.SeatId} changed in session {seat.SessionId}");
+	}*/
+
+	private static string GetGroupName(Guid sessionId)
+	{
+		return $"session-{sessionId}";
 	}
 }

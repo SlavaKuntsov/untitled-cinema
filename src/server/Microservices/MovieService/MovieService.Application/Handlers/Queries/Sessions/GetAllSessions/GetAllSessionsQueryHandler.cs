@@ -3,6 +3,7 @@ using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
 using MovieService.Application.DTOs;
+using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
 namespace MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
@@ -57,6 +58,16 @@ public class GetAllSessionsQueryHandler(
 
 		var sessions = await unitOfWork.SessionsRepository.ToListAsync(query, cancellationToken);
 
-		return mapper.Map<IList<SessionWithHallDto>>(sessions);
+		var sessionsWithHallDto = sessions.Select(s => new SessionWithHallDto(
+			Id: s.Id,
+			MovieId: s.MovieId,
+			Hall: new HallDto(s.Hall.Id, s.Hall.Name),
+			DayId: s.DayId,
+			PriceModifier: s.PriceModifier,
+			StartTime: s.StartTime,
+			EndTime: s.EndTime
+		)).ToList();
+		
+		return sessionsWithHallDto;
 	}
 }

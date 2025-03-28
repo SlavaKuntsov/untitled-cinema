@@ -1,5 +1,7 @@
-﻿namespace Brokers.Models.Response;
+﻿using BookingService.Domain.Models;
 
-public record SessionSeatsResponse<T>(
+namespace Brokers.Models.Response;
+
+public record SessionSeatsResponse(
 	string Error,
-	IList<T>? Seats = null);
+	IList<SeatModel>? Seats = null);

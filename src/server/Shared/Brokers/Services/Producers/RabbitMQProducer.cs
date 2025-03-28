@@ -38,7 +38,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 		var tcs = new TaskCompletionSource<TResponse>(
 			TaskCreationOptions.RunContinuationsAsynchronously);
 
-		string correlationId = guid.ToString();
+		var correlationId = guid.ToString();
 		var properties = new BasicProperties
 		{
 			CorrelationId = correlationId,
@@ -62,7 +62,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 				tcs.TrySetResult((body!));
 
-				await _channel.QueueDeleteAsync(requestQueueName);
+				await _channel.QueueDeleteAsync(requestQueueName, cancellationToken: cancellationToken);
 			}
 			else
 			{
@@ -71,7 +71,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 				tcs.SetException(new InvalidOperationException("CorrelationId mismatch"));
 			}
 
-			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false);
+			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false, cancellationToken: cancellationToken);
 		};
 
 		await ConsumeBaseAsync(consumer, requestQueueName, cancellationToken);
@@ -82,7 +82,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 		_logger.LogInformation("Send request: " + properties.CorrelationId);
 
-		using CancellationTokenRegistration ctr = cancellationToken.Register(tcs.SetCanceled);
+		await using CancellationTokenRegistration ctr = cancellationToken.Register(tcs.SetCanceled);
 
 		return await tcs.Task;
 	}

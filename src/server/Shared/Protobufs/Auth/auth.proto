@@ -2,7 +2,6 @@ syntax = "proto3";
 
 option csharp_namespace = "Protobufs.Auth";
 
-
 message AccessTokenRequest {
   string refreshToken = 1;
 }
@@ -16,7 +15,6 @@ message CheckExistRequest {
 message CheckExistResponse {
   bool isExist = 1;
 }
-
 
 service AuthService {
   rpc GetAccessToken (AccessTokenRequest) returns (AccessTokenResponse);

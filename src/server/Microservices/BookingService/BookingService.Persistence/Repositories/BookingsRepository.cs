@@ -1,22 +1,14 @@
 ﻿using System.Linq.Expressions;
-
 using BookingService.Domain.Entities;
 using BookingService.Domain.Interfaces.Repositories;
-
-using Microsoft.EntityFrameworkCore;
-
 using MongoDB.Driver;
 
 namespace BookingService.Persistence.Repositories;
 
-public class BookingsRepository : IBookingsRepository
+public class BookingsRepository(BookingServiceDBContext context) : IBookingsRepository
 {
-	private readonly IMongoCollection<BookingEntity> _collection;
-
-	public BookingsRepository(BookingServiceDBContext context)
-	{
-		_collection = context.GetCollection<BookingEntity>("Bookings");
-	}
+	private readonly IMongoCollection<BookingEntity> _collection =
+		context.GetCollection<BookingEntity>("Bookings");
 
 	public async Task<IList<BookingEntity>> GetAsync(CancellationToken cancellationToken)
 	{

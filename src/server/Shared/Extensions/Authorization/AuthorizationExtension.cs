@@ -55,11 +55,17 @@ public static class AuthorizationExtension
 		{
 			options.AddDefaultPolicy(policy =>
 			{
+				policy.WithOrigins(
+					"https://localhost",
+					"http://localhost:3000",
+					"https://localhost:3000",
+					"https://localhost:7001",
+					"https://localhost:7002",
+					"https://localhost:7003"
+				);
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
-				policy.WithOrigins("https://localhost");
-				policy.WithOrigins("https://localhost:7001");
 			});
 		});
 

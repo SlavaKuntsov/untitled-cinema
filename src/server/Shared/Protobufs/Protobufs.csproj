@@ -18,9 +18,7 @@
 
     <ItemGroup>
         <Protobuf Include="Auth\auth.proto" GrpcServices="Both"/>
+        <Protobuf Include="Seats\seats.proto" GrpcServices="Both"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Seats\"/>
-    </ItemGroup>
+    
 </Project>
