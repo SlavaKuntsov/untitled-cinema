@@ -68,6 +68,15 @@ public class MapsterConfig : IRegister
 		config.NewConfig<HallEntity, HallDto>()
 			.Map(dest => dest.HallId, src => src.Id)
 			.Map(dest => dest.HallName, src => src.Name);
+
+		config.NewConfig<SessionEntity, SessionWithHallDto>()
+			.Map(dest => dest.Id, src => src.Id)
+			.Map(dest => dest.MovieId, src => src.MovieId)
+			.Map(dest => dest.Hall, src => new HallDto(src.Hall.Id, src.Hall.Name))
+			.Map(dest => dest.DayId, src => src.DayId)
+			.Map(dest => dest.PriceModifier, src => src.PriceModifier)
+			.Map(dest => dest.StartTime, src => src.StartTime)
+			.Map(dest => dest.EndTime, src => src.EndTime);
 	}
 
 	private static DateTime ParseDateTimeOrDefault(string date)

@@ -1,10 +1,12 @@
 ﻿using BookingService.Domain.Interfaces.Grpc;
 using BookingService.Infrastructure.Grpc;
+using BookingService.Infrastructure.Seats;
 using BookingService.Infrastructure.Serializers;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson.Serialization;
+using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Infrastructure.Extensions;
 
@@ -14,7 +16,8 @@ public static class InfrastructureExtensions
 	{
 		services.AddSignalR();
 
-		services.AddScoped<IAuthGrpcService, AuthGrpcService>();
+		services.AddScoped<IAuthGrpcService, AuthGrpcService>()
+			.AddScoped<ISeatsService, SeatsService>();
 
 		BsonSerializer.RegisterSerializer(new BookingStatusSerialization());
 		BsonSerializer.RegisterSerializationProvider(new GuidSerialization());

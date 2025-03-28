@@ -7,14 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MovieService.Application.Consumers;
-using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
+using MovieService.Application.Handlers.Queries.Seats.GetSeatsBySessionId;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 using MovieService.Domain.Models;
 
 namespace MovieService.API.Consumers;
 
 public class SessionSeatsConsumerServices(
-	IRabbitMQConsumer<SessionSeatsResponse<SeatModel>> rabbitMqConsumer,
+	IRabbitMQConsumer<SessionSeatsResponse> rabbitMqConsumer,
 	IServiceScopeFactory serviceScopeFactory,
 	ILogger<BookingPriceConsumeService> logger,
 	IMapper mapper) : BackgroundService
@@ -35,19 +35,20 @@ public class SessionSeatsConsumerServices(
 						stoppingToken);
 
 					if (session is null)
-						return new SessionSeatsResponse<SeatModel>($"Session with id '{request.SessionId}' not found.");
+						return new SessionSeatsResponse(
+							$"Session with id '{request.SessionId}' not found.");
 
 					var seatModels = await mediator.Send(
 						new GetSeatsBySessionIdQuery(request.SessionId),
 						stoppingToken);
 
 					if (!seatModels.Any())
-						return new SessionSeatsResponse<SeatModel>(
+						return new SessionSeatsResponse(
 							$"Hall with id '{request.SessionId}' doesn't have any seats.");
 
-					var seats = mapper.Map<IList<SeatModel>>(seatModels);
+					var seats = mapper.Map<IList<BookingService.Domain.Models.SeatModel>>(seatModels);
 
-					return new SessionSeatsResponse<SeatModel>("", seats);
+					return new SessionSeatsResponse("", seats);
 				},
 				stoppingToken);
 	}

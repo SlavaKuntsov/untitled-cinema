@@ -25,8 +25,6 @@ public class UpdateSeatsCommandHandler(
 
 		var sessionSeatsModel = mapper.Map<SessionSeatsModel>(seatEntity);
 
-		var dateNow = DateTime.UtcNow;
-
 		if (sessionSeatsModel is null)
 		{
 			isExist = false;
@@ -34,7 +32,7 @@ public class UpdateSeatsCommandHandler(
 			var data = new SessionSeatsRequest(request.SessionId);
 
 			var response =
-				await rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse<SeatModel>>(
+				await rabbitMQProducer.RequestReplyAsync<SessionSeatsRequest, SessionSeatsResponse>(
 					data,
 					Guid.NewGuid(),
 					cancellationToken);
@@ -46,8 +44,7 @@ public class UpdateSeatsCommandHandler(
 				Guid.NewGuid(),
 				request.SessionId,
 				response.Seats,
-				[],
-				dateNow);
+				[]);
 
 			sessionSeatsModel = newSessionSeatModel;
 		}

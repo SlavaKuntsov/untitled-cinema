@@ -5,7 +5,7 @@ using MovieService.API.Contracts.Requests;
 using MovieService.Application.Handlers.Commands.Sessions.DeleteSession;
 using MovieService.Application.Handlers.Commands.Sessions.FillSession;
 using MovieService.Application.Handlers.Commands.Sessions.UpdateSession;
-using MovieService.Application.Handlers.Queries.Seats.GetAllSeatById;
+using MovieService.Application.Handlers.Queries.Seats.GetSeatsBySessionId;
 using MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
 using MovieService.Application.Handlers.Queries.Sessions.GetSessionById;
 using Swashbuckle.AspNetCore.Filters;

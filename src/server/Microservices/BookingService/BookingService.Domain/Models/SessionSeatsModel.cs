@@ -12,13 +12,12 @@ public class SessionSeatsModel
 		Guid id,
 		Guid sessionId,
 		IList<SeatModel> availableSeats,
-		IList<SeatModel> reservedSeats,
-		DateTime updatedAt)
+		IList<SeatModel> reservedSeats)
 	{
 		Id = id;
 		SessionId = sessionId;
 		AvailableSeats = availableSeats;
 		ReservedSeats = reservedSeats;
-		UpdatedAt = updatedAt;
+		UpdatedAt = DateTime.UtcNow;
 	}
 }

@@ -1,16 +1,20 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";  
+
 option csharp_namespace = "Protobufs.Seats";
 
+message Seat {
+  string id = 1;
+  int32 row = 2;
+  int32 column = 3;
+}
 
 message CreateSeatsRequest {
-  string refreshToken = 1;
+  string sessionId = 1;
+  repeated Seat seats = 2;
 }
-message CreateSeatsResponse {
-  string accessToken = 1;
-}
-
 
 service SeatsService {
-  rpc CreateSeats (CreateSeatsRequest) returns (CreateSeatsResponse);
+  rpc CreateSeats (CreateSeatsRequest) returns (google.protobuf.Empty);
 }

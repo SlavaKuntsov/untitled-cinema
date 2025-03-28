@@ -24,6 +24,7 @@ var host = builder.Host;
 
 builder.UseHttps();
 
+// shared extensions
 services
 	.AddCommon()
 	.AddExceptions()
@@ -33,6 +34,7 @@ services
 	.AddRabbitMQ(configuration)
 	.AddHealthChecks();
 
+// service extensions
 services
 	.AddAPI()
 	.AddApplication()
@@ -44,11 +46,6 @@ host.AddLogging();
 var app = builder.Build();
 
 app.AddAPI();
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
 
 app.UseExceptionHandler();
 app.UseMiddleware<RequestLogContextMiddleware>();
@@ -76,6 +73,11 @@ app.UseForwardedHeaders(
 		ForwardedHeaders = ForwardedHeaders.All
 	});
 app.UseCors();
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -6,43 +6,39 @@ using Microsoft.Extensions.Logging;
 namespace UserService.Infrastructure.Notification;
 
 [Authorize(Policy = "UserOrAdmin")]
-public class NotificationHub(ILogger<NotificationHub> logger) : Hub
+public class 
+	NotificationHub(ILogger<NotificationHub> logger) : Hub
 {
 	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _userConnections = new();
 
 	public override Task OnConnectedAsync()
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out var userId))
-		{
-			logger.LogError("NEW CONNECT - " + userId);
-			logger.LogError("connect list = " + _userConnections.Count());
+		if (!Guid.TryParse(Context.UserIdentifier, out var userId))
+			return base.OnConnectedAsync();
 
-			_userConnections.AddOrUpdate(
-				userId,
-				_ => [Context.ConnectionId],
-				(_, connections) =>
-				{
-					connections.Add(Context.ConnectionId);
+		_userConnections.AddOrUpdate(
+			userId,
+			_ => [Context.ConnectionId],
+			(_, connections) =>
+			{
+				connections.Add(Context.ConnectionId);
 
-					return connections;
-				});
-		}
+				return connections;
+			});
 
 		return base.OnConnectedAsync();
 	}
 
 	public override Task OnDisconnectedAsync(Exception? exception)
 	{
-		if (Guid.TryParse(Context.UserIdentifier, out var userId) &&
-			_userConnections.TryGetValue(userId, out var connections))
-		{
-			logger.LogError("NEW DISCONNECT - " + userId);
+		if (!Guid.TryParse(Context.UserIdentifier, out var userId) ||
+			!_userConnections.TryGetValue(userId, out var connections))
+			return base.OnDisconnectedAsync(exception);
 
-			connections.Remove(Context.ConnectionId);
+		connections.Remove(Context.ConnectionId);
 
-			if (connections.Count == 0)
-				_userConnections.TryRemove(userId, out _);
-		}
+		if (connections.Count == 0)
+			_userConnections.TryRemove(userId, out _);
 
 		return base.OnDisconnectedAsync(exception);
 	}

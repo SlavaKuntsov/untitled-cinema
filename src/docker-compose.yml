@@ -53,6 +53,7 @@ services:
     environment:
       - APP_PORT=7002
       - USERS_APP_PORT=7001
+      - BOOKINGS_APP_PORT=7003
       - ASPNETCORE_ENVIRONMENT=Production
       - CONNECTION_STRING=Host=movie-postgres;Port=5432;Database=cinema_movies;Username=postgres;Password=1;Timezone=Europe/Minsk;
       - REDIS_CONFIGURATION=redis:6379

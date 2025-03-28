@@ -10,6 +10,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
 		<PackageReference Include="Grpc.Core.Api" Version="2.57.0" />
         <PackageReference Include="Mapster" Version="7.4.0" />
         <PackageReference Include="MediatR" Version="12.4.1" />

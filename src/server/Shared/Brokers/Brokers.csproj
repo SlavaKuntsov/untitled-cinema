@@ -24,4 +24,8 @@
       <Folder Include="Extensions\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Microservices\BookingService\BookingService.Domain\BookingService.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

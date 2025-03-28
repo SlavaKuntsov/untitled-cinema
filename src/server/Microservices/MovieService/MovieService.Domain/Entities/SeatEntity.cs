@@ -1,6 +1,4 @@
-﻿using MovieService.Domain.Models;
-
-namespace MovieService.Domain.Entities;
+﻿namespace MovieService.Domain.Entities;
 
 public class SeatEntity
 {

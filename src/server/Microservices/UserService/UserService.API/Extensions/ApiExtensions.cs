@@ -31,7 +31,7 @@ public static class ApiExtensions
 	{
 		app.MapGrpcService<AuthController>();
 
-		app.MapHub<NotificationHub>("/notify");
+		app.MapHub<NotificationHub>("/notificationsHub");
 
 		return app;
 	}
