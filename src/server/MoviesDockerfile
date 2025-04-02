@@ -2,11 +2,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /app
 
-COPY ["server/Microservices/MovieService/MovieService.API/MovieService.API.csproj", "server/Microservices/MovieService/MovieService.API/"]
-COPY ["server/Microservices/MovieService/MovieService.Domain/MovieService.Domain.csproj", "server/Microservices/MovieService/MovieService.Domain/"]
-COPY ["server/Microservices/MovieService/MovieService.Infrastructure/MovieService.Infrastructure.csproj", "server/Microservices/MovieService/MovieService.Infrastructure/"]
-COPY ["server/Microservices/MovieService/MovieService.Application/MovieService.Application.csproj", "server/Microservices/MovieService/MovieService.Application/"]
-COPY ["server/Microservices/MovieService/MovieService.Persistence/MovieService.Persistence.csproj", "server/Microservices/MovieService/MovieService.Persistence/"]
+COPY ["server/MovieService/MovieService.API/MovieService.API.csproj", "server/MovieService/MovieService.API/"]
+COPY ["server/MovieService/MovieService.Domain/MovieService.Domain.csproj", "server/MovieService/MovieService.Domain/"]
+COPY ["server/MovieService/MovieService.Infrastructure/MovieService.Infrastructure.csproj", "server/MovieService/MovieService.Infrastructure/"]
+COPY ["server/MovieService/MovieService.Application/MovieService.Application.csproj", "server/MovieService/MovieService.Application/"]
+COPY ["server/MovieService/MovieService.Persistence/MovieService.Persistence.csproj", "server/MovieService/MovieService.Persistence/"]
 COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
 COPY ["server/Shared/Brokers/Brokers.csproj", "server/Shared/Brokers/"]
 COPY ["server/Shared/Databases/Databases.csproj", "server/Shared/Databases/"]
@@ -15,11 +15,11 @@ COPY ["server/Shared/Extensions/Extensions.csproj", "server/Shared/Extensions/"]
 COPY ["server/Shared/Redis/Redis.csproj", "server/Shared/Redis/"]
 COPY ["server/Shared/Utilities/Utilities.csproj", "server/Shared/Utilities/"]
 
-RUN dotnet restore "server/Microservices/MovieService/MovieService.API/MovieService.API.csproj"
+RUN dotnet restore "server/MovieService/MovieService.API/MovieService.API.csproj"
 
 COPY . . 
 
-RUN dotnet publish "server/Microservices/MovieService/MovieService.API/MovieService.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "server/MovieService/MovieService.API/MovieService.API.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app

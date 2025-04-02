@@ -2,11 +2,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /app
 
-COPY ["server/Microservices/BookingService/BookingService.API/BookingService.API.csproj", "server/Microservices/BookingService/BookingService.API/"]
-COPY ["server/Microservices/BookingService/BookingService.Domain/BookingService.Domain.csproj", "server/Microservices/BookingService/BookingService.Domain/"]
-COPY ["server/Microservices/BookingService/BookingService.Infrastructure/BookingService.Infrastructure.csproj", "server/Microservices/BookingService/BookingService.Infrastructure/"]
-COPY ["server/Microservices/BookingService/BookingService.Application/BookingService.Application.csproj", "server/Microservices/BookingService/BookingService.Application/"]
-COPY ["server/Microservices/BookingService/BookingService.Persistence/BookingService.Persistence.csproj", "server/Microservices/BookingService/BookingService.Persistence/"]
+COPY ["server/BookingService/BookingService.API/BookingService.API.csproj", "server/BookingService/BookingService.API/"]
+COPY ["server/BookingService/BookingService.Domain/BookingService.Domain.csproj", "server/BookingService/BookingService.Domain/"]
+COPY ["server/BookingService/BookingService.Infrastructure/BookingService.Infrastructure.csproj", "server/BookingService/BookingService.Infrastructure/"]
+COPY ["server/BookingService/BookingService.Application/BookingService.Application.csproj", "server/BookingService/BookingService.Application/"]
+COPY ["server/BookingService/BookingService.Persistence/BookingService.Persistence.csproj", "server/BookingService/BookingService.Persistence/"]
 COPY ["server/Shared/Protobufs/Protobufs.csproj", "server/Shared/Protobufs/"]
 COPY ["server/Shared/Brokers/Brokers.csproj", "server/Shared/Brokers/"]
 COPY ["server/Shared/Databases/Databases.csproj", "server/Shared/Databases/"]
@@ -15,11 +15,11 @@ COPY ["server/Shared/Extensions/Extensions.csproj", "server/Shared/Extensions/"]
 COPY ["server/Shared/Redis/Redis.csproj", "server/Shared/Redis/"]
 COPY ["server/Shared/Utilities/Utilities.csproj", "server/Shared/Utilities/"]
 
-RUN dotnet restore "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj"
+RUN dotnet restore "server/BookingService/BookingService.API/BookingService.API.csproj"
 
 COPY . .
 
-RUN dotnet publish "server/Microservices/BookingService/BookingService.API/BookingService.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "server/BookingService/BookingService.API/BookingService.API.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app

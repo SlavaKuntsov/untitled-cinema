@@ -3,44 +3,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.API", "server\Microservices\UserService\UserService.API\UserService.API.csproj", "{10A8D412-F12B-4144-91C7-76B3AC4B95C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.API", "server\UserService\UserService.API\UserService.API.csproj", "{10A8D412-F12B-4144-91C7-76B3AC4B95C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users", "Users", "{17734E18-39C5-44D1-B3A1-607FA20A1AC7}"
 	ProjectSection(SolutionItems) = preProject
-		server\Microservices\UserService\README.md = server\Microservices\UserService\README.md
+		server\UserService\README.md = server\UserService\README.md
 		server\UsersDockerfile = server\UsersDockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Application", "server\Microservices\UserService\UserService.Application\UserService.Application.csproj", "{129B683A-D1EC-4F5A-93AD-E283E508CD80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Application", "server\UserService\UserService.Application\UserService.Application.csproj", "{129B683A-D1EC-4F5A-93AD-E283E508CD80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Domain", "server\Microservices\UserService\UserService.Domain\UserService.Domain.csproj", "{8F12EE2A-D6FC-4227-9034-630720072A2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Domain", "server\UserService\UserService.Domain\UserService.Domain.csproj", "{8F12EE2A-D6FC-4227-9034-630720072A2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Infrastructure", "server\Microservices\UserService\UserService.Infrastructure\UserService.Infrastructure.csproj", "{72809081-F10C-4807-8A8D-5120085AAF21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Infrastructure", "server\UserService\UserService.Infrastructure\UserService.Infrastructure.csproj", "{72809081-F10C-4807-8A8D-5120085AAF21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Persistence", "server\Microservices\UserService\UserService.Persistence\UserService.Persistence.csproj", "{4FB29F80-ADF9-4E1F-BCE6-1C6BF02A88D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Persistence", "server\UserService\UserService.Persistence\UserService.Persistence.csproj", "{4FB29F80-ADF9-4E1F-BCE6-1C6BF02A88D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Movies", "Movies", "{E1DD8653-CECF-446E-AB19-0B8637A63C84}"
 	ProjectSection(SolutionItems) = preProject
 		server\MoviesDockerfile = server\MoviesDockerfile
-		server\Microservices\MovieService\README.md = server\Microservices\MovieService\README.md
+		server\MovieService\README.md = server\MovieService\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.API", "server\Microservices\MovieService\MovieService.API\MovieService.API.csproj", "{75A37FC1-1CBE-4951-A140-3F2DD64633F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.API", "server\MovieService\MovieService.API\MovieService.API.csproj", "{75A37FC1-1CBE-4951-A140-3F2DD64633F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Application", "server\Microservices\MovieService\MovieService.Application\MovieService.Application.csproj", "{4883C322-011D-4CE2-84B3-C44FECDCB4A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Application", "server\MovieService\MovieService.Application\MovieService.Application.csproj", "{4883C322-011D-4CE2-84B3-C44FECDCB4A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Domain", "server\Microservices\MovieService\MovieService.Domain\MovieService.Domain.csproj", "{CCEA9C68-519F-4406-B423-A7B89D61A971}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Domain", "server\MovieService\MovieService.Domain\MovieService.Domain.csproj", "{CCEA9C68-519F-4406-B423-A7B89D61A971}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Infrastructure", "server\Microservices\MovieService\MovieService.Infrastructure\MovieService.Infrastructure.csproj", "{C367AE8F-6980-4DBE-B9AB-906D0D4DCC15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Infrastructure", "server\MovieService\MovieService.Infrastructure\MovieService.Infrastructure.csproj", "{C367AE8F-6980-4DBE-B9AB-906D0D4DCC15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Persistence", "server\Microservices\MovieService\MovieService.Persistence\MovieService.Persistence.csproj", "{A860B11A-43AF-4964-8157-CF3B5F1B0973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService.Persistence", "server\MovieService\MovieService.Persistence\MovieService.Persistence.csproj", "{A860B11A-43AF-4964-8157-CF3B5F1B0973}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1274FE91-8690-4357-ACEE-1D2B71BC2A57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bookings", "Bookings", "{3A999BB8-EE9E-4007-A787-3D4C0F0D0EFE}"
 	ProjectSection(SolutionItems) = preProject
 		server\BookingsDockerfile = server\BookingsDockerfile
-		server\Microservices\BookingService\README.md = server\Microservices\BookingService\README.md
+		server\BookingService\README.md = server\BookingService\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0F63F38A-8A9A-471F-90B8-BCF1A4B3E089}"
@@ -48,15 +48,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0F63F38A-8A9
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.API", "server\Microservices\BookingService\BookingService.API\BookingService.API.csproj", "{EAD3CFCF-BA8F-4A53-ADD3-EEC3ABD93763}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.API", "server\BookingService\BookingService.API\BookingService.API.csproj", "{EAD3CFCF-BA8F-4A53-ADD3-EEC3ABD93763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Application", "server\Microservices\BookingService\BookingService.Application\BookingService.Application.csproj", "{80790239-8B55-4610-8C63-878887A58BA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Application", "server\BookingService\BookingService.Application\BookingService.Application.csproj", "{80790239-8B55-4610-8C63-878887A58BA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Domain", "server\Microservices\BookingService\BookingService.Domain\BookingService.Domain.csproj", "{26C29642-AF76-4AD5-AC19-60D4D039BB14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Domain", "server\BookingService\BookingService.Domain\BookingService.Domain.csproj", "{26C29642-AF76-4AD5-AC19-60D4D039BB14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Infrastructure", "server\Microservices\BookingService\BookingService.Infrastructure\BookingService.Infrastructure.csproj", "{BA3EF239-2160-4193-887E-9A55D631104F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Infrastructure", "server\BookingService\BookingService.Infrastructure\BookingService.Infrastructure.csproj", "{BA3EF239-2160-4193-887E-9A55D631104F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Persistence", "server\Microservices\BookingService\BookingService.Persistence\BookingService.Persistence.csproj", "{EC7DF9E7-F5D5-44A0-A4DC-F11C361D0B3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Persistence", "server\BookingService\BookingService.Persistence\BookingService.Persistence.csproj", "{EC7DF9E7-F5D5-44A0-A4DC-F11C361D0B3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "server\Shared\Domain\Domain.csproj", "{59D86FA3-353D-41B0-950A-6C092420405B}"
 EndProject
