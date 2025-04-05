@@ -1,5 +1,7 @@
+using BookingService.Domain.Models;
+
 namespace BookingService.Application.DTOs;
 
 public record UpdatedSeatDTO(
 	Guid SessionId,
-	Guid SeatId);
+	SeatModel Seat);

@@ -26,6 +26,16 @@ public class CancelBookingCommandHandler(
 			cancellationToken);
 
 		existBooking.Status = BookingStatus.Cancelled.GetDescription();
+		
+		// TODO
+		// foreach (var seat in seats)
+		// {
+		// 	var updatedSeatsDto = new UpdatedSeatDTO(
+		// 		sessionId,
+		// 		seat.Id);
+		//
+		// 	await seatsService.NotifySeatChangedAsync(updatedSeatsDto, cancellationToken);
+		// }
 
 		return mapper.Map<BookingModel>(existBooking);
 	}

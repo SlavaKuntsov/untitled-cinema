@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using BookingService.API.Behaviors;
 using BookingService.API.Controllers.Grpc;
-using BookingService.Infrastructure.Seats;
+using BookingService.Infrastructure.Hubs.Seats;
 using Domain.Constants;
 using Extensions.Exceptions.Middlewares;
 using Hangfire;

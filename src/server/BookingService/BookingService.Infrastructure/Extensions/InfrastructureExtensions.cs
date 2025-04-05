@@ -1,6 +1,6 @@
 ﻿using BookingService.Domain.Interfaces.Grpc;
 using BookingService.Infrastructure.Grpc;
-using BookingService.Infrastructure.Seats;
+using BookingService.Infrastructure.Hubs.Seats;
 using BookingService.Infrastructure.Serializers;
 
 using Microsoft.Extensions.DependencyInjection;

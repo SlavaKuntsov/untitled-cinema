@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using UserService.Application.Interfaces.Notification;
 
-namespace BookingService.Infrastructure.Seats;
+namespace BookingService.Infrastructure.Hubs.Seats;
 
-public class SeatsService(IHubContext<SeatsHub> hubContext) : ISeatsService
+public class SeatsService(
+	IHubContext<SeatsHub> hubContext,
+	ILogger<SeatsService> logger) : ISeatsService
 {
 	public async Task NotifySeatChangedAsync(UpdatedSeatDTO seat, CancellationToken cancellationToken)
 	{
@@ -14,5 +16,7 @@ public class SeatsService(IHubContext<SeatsHub> hubContext) : ISeatsService
 				"SeatChanged",
 				seat,
 				cancellationToken);
+		
+		logger.LogError("NotifySeatChangedAsync called for {SessionId}", seat.SessionId);
 	}
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace UserService.Infrastructure.Notification;
+namespace UserService.Infrastructure.Hubs.Notification;
 
 [Authorize(Policy = "UserOrAdmin")]
 public class 

@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace BookingService.Infrastructure.Seats;
+namespace BookingService.Infrastructure.Hubs.Seats;
 
-[Authorize(Policy = "UserOrAdmin")]
+// [Authorize(Policy = "UserOrAdmin")]
+[AllowAnonymous]
 public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 {
 	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _sessionGroups = new();
@@ -28,7 +29,7 @@ public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 				return connections;
 			});
 
-		logger.LogInformation($"User {Context.UserIdentifier} joined session {sessionId}");
+		logger.LogError($"User {Context.UserIdentifier} joined session {sessionId}");
 	}
 
 	public async Task LeaveSession(Guid sessionId)
@@ -44,7 +45,7 @@ public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 				_sessionGroups.TryRemove(sessionId, out _);
 		}
 
-		logger.LogInformation($"User {Context.UserIdentifier} left session {sessionId}");
+		logger.LogError($"User {Context.UserIdentifier} left session {sessionId}");
 	}
 
 	/*public async Task NotifySeatChanged(UpdatedSeatDTO seat, CancellationToken cancellationToken)

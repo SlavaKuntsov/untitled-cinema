@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 using UserService.Application.Interfaces.Notification;
 using UserService.Domain.Models;
+using UserService.Infrastructure.Hubs.Notification;
 
 namespace UserService.Infrastructure.Notification;
 

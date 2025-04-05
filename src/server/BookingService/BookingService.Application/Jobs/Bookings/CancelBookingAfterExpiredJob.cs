@@ -1,5 +1,5 @@
-﻿using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
-using BookingService.Domain.Constants;
+﻿using BookingService.Application.DTOs;
+using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 using BookingService.Domain.Enums;
 using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
@@ -9,11 +9,13 @@ using Extensions.Enums;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Application.Jobs.Bookings;
 
 public class CancelBookingAfterExpiredJob(
 	IRabbitMQProducer rabbitMQProducer,
+	ISeatsService seatsService,
 	IBookingsRepository bookingsRepository,
 	IServiceScopeFactory serviceScopeFactory,
 	ILogger<CancelBookingAfterExpiredJob> logger)
@@ -34,6 +36,16 @@ public class CancelBookingAfterExpiredJob(
 			cancellationToken);
 		//
 
+
+		foreach (var seat in seats)
+		{
+			var updatedSeatsDto = new UpdatedSeatDTO(
+				sessionId,
+				seat);
+
+			await seatsService.NotifySeatChangedAsync(updatedSeatsDto, cancellationToken);
+		}
+
 		using var scope = serviceScopeFactory.CreateScope();
 		var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
@@ -43,7 +55,7 @@ public class CancelBookingAfterExpiredJob(
 				seats,
 				false),
 			cancellationToken);
-		
+
 		var notification = new NotificationDto(
 			userId,
 			"You did not pay for the reservation, it was canceled.");
