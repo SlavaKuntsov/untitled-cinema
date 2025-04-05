@@ -14,7 +14,7 @@ public static class AuthorizationExtension
 		this IServiceCollection services,
 		IConfiguration configuration)
 	{
-		var jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
+		var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
 
 		services
 			.AddAuthentication(options =>
@@ -46,7 +46,7 @@ public static class AuthorizationExtension
 					};
 				});
 
-		services.Configure<JwtModel>(configuration.GetSection(nameof(JwtModel)));
+		services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
 		services.Configure<AuthorizationOptions>(
 			configuration.GetSection(nameof(AuthorizationOptions)));

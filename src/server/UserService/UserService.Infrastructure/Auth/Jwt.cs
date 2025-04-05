@@ -18,10 +18,10 @@ namespace UserService.Infrastructure.Auth;
 
 public class Jwt : IJwt
 {
-	private readonly JwtModel _jwtOptions;
+	private readonly JwtOptions _jwtOptions;
 	private readonly ITokensRepository _tokensRepository;
 
-	public Jwt(IOptions<JwtModel> jwtOptions, ITokensRepository tokensRepository)
+	public Jwt(IOptions<JwtOptions> jwtOptions, ITokensRepository tokensRepository)
 	{
 		_jwtOptions = jwtOptions.Value;
 		_tokensRepository = tokensRepository;

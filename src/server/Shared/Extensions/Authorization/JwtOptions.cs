@@ -1,6 +1,6 @@
 ﻿namespace Extensions.Authorization;
 
-public class JwtModel
+public class JwtOptions
 {
 	public string SecretKey { get; set; }
 	public int AccessTokenExpirationMinutes { get; set; }
