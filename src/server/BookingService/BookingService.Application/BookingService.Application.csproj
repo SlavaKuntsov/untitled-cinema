@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj" />
-        <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj" />
+        <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj"/>
+        <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\BookingService.Domain\BookingService.Domain.csproj"/>
     </ItemGroup>
 

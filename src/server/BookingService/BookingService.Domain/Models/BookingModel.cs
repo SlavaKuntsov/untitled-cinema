@@ -1,7 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 
-using BookingService.Domain.Enums;
-
 namespace BookingService.Domain.Models;
 
 public class BookingModel

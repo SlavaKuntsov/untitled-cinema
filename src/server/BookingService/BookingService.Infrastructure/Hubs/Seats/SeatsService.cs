@@ -5,16 +5,14 @@ using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Infrastructure.Seats;
 
-public class SeatsService(
-	IHubContext<SeatsHub> hubContext,
-	ILogger<SeatsService> logger) : ISeatsService
+public class SeatsService(IHubContext<SeatsHub> hubContext) : ISeatsService
 {
 	public async Task NotifySeatChangedAsync(UpdatedSeatDTO seat, CancellationToken cancellationToken)
 	{
 		await hubContext.Clients.Group($"session-{seat.SessionId}")
 			.SendAsync(
-				"SeatChanged", 
-				seat, 
+				"SeatChanged",
+				seat,
 				cancellationToken);
 	}
 }
