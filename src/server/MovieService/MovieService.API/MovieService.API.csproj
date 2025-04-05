@@ -13,7 +13,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1"/>
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3"/>
         <PackageReference Include="FluentValidation" Version="11.11.0"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0"/>
         <PackageReference Include="Google.Protobuf" Version="3.29.2"/>
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
         <PackageReference Include="Mapster" Version="7.4.0"/>
@@ -37,7 +37,7 @@
         <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj"/>
         <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\..\Shared\Protobufs\Protobufs.csproj"/>
-        <ProjectReference Include="..\..\Shared\Utilities\Utilities.csproj" />
+        <ProjectReference Include="..\..\Shared\Utilities\Utilities.csproj"/>
         <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj"/>
         <ProjectReference Include="..\MovieService.Infrastructure\MovieService.Infrastructure.csproj"/>
         <ProjectReference Include="..\MovieService.Persistence\MovieService.Persistence.csproj"/>

@@ -1,5 +1,4 @@
 ﻿using MovieService.Application.Handlers.Commands.Halls.CreateSimpleHall;
-
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Contracts.RequestExamples.Halls;
@@ -9,9 +8,9 @@ public class CreateSimpleHallRequestExample : IExamplesProvider<CreateSimpleHall
 	public CreateSimpleHallCommand GetExamples()
 	{
 		return new CreateSimpleHallCommand(
-			name: "Большой зал",
-			totalSeats: 50,
-			rows: 5,
-			columns: 10);
+			"Большой зал",
+			50,
+			5,
+			10);
 	}
 }

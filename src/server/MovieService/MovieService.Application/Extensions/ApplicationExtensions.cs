@@ -1,10 +1,6 @@
-﻿using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using MovieService.API.Consumers;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MovieService.Application.Consumers;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
-using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
-using Utilities.Validators;
 
 namespace MovieService.Application.Extensions;
 

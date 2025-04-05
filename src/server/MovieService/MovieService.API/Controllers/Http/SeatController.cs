@@ -29,16 +29,16 @@ public class SeatController(IMediator mediator) : ControllerBase
 		return Ok(seat);
 	}
 
-	[HttpGet("/seats/{hallId:Guid}/{row:int}/{column:int}")]
+	[HttpGet("/seats/{sessionId:Guid}/{row:int}/{column:int}")]
 	public async Task<IActionResult> Get(
-		[FromRoute] Guid hallId,
+		[FromRoute] Guid sessionId,
 		[FromRoute] int row,
 		[FromRoute] int column,
 		CancellationToken cancellationToken)
 	{
 		var seat = await mediator.Send(
 			new GetSeatByIndexQuery(
-				hallId,
+				sessionId,
 				row,
 				column),
 			cancellationToken);

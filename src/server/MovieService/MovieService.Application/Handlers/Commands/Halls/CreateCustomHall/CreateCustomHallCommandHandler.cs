@@ -18,7 +18,8 @@ public class CreateCustomHallCommandHandler(
 	{
 		foreach (var row in request.Seats)
 			if (row.Any(seat => !Enum.IsDefined(typeof(SeatType), seat)))
-				throw new InvalidOperationException("Seats can only contain valid values from the SeatType values.");
+				throw new InvalidOperationException(
+					"Seats can only contain valid values from the SeatType values.");
 
 		var seatCount = request.Seats.Sum(
 			row =>
