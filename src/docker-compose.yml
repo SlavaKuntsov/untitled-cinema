@@ -36,7 +36,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     volumes:
-      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx  
+      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx
     depends_on:
       - user-postgres
       - redis
@@ -60,7 +60,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     volumes:
-      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx  
+      - ./nginx/certificates/localhost.pfx:/app/localhost.pfx
     depends_on:
       - movie-postgres
       - redis
@@ -128,10 +128,10 @@ services:
     ports:
       - "27018:27017"
     environment:
-    - MONGO_INITDB_ROOT_USERNAME=root
-    - MONGO_INITDB_ROOT_PASSWORD=password
-    - MONGO_INITDB_DATABASE=admin
-    command: ["mongod", "--auth"]
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=admin
+    command: [ "mongod", "--auth" ]
     volumes:
       - mongo-data:/data/db
 
@@ -153,7 +153,7 @@ services:
     ports:
       - "5673:5672"
       - "15673:15672"
-      
+
 volumes:
   user-postgres-data:
   movie-postgres-data:
