@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.Handlers.Commands.Notifications.DeleteNotification;
-using UserService.Application.Handlers.Commands.Notifications.SendNotidication;
+using UserService.Application.Handlers.Commands.Notifications.SendNotification;
 using UserService.Application.Handlers.Queries.Notifications.GetUserNotifications;
 
 namespace UserService.API.Controllers.Http;

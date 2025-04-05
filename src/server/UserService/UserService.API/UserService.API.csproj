@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj" />
+        <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj"/>
         <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj"/>
         <ProjectReference Include="..\..\Shared\Protobufs\Protobufs.csproj"/>
         <ProjectReference Include="..\..\Shared\Utilities\Utilities.csproj"/>

@@ -1,7 +1,6 @@
 ﻿using MapsterMapper;
 using MediatR;
 using UserService.Application.Data;
-using UserService.Application.Handlers.Commands.Notifications.SendNotidication;
 using UserService.Application.Interfaces.Notification;
 using UserService.Domain.Entities;
 using UserService.Domain.Models;
