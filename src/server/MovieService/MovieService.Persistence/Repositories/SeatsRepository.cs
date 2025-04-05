@@ -14,6 +14,7 @@ public class SeatsRepository(MovieServiceDBContext context) : ISeatsRepository
 			.Where(m => m.Row == row && m.Column == column)
 			.FirstOrDefaultAsync(cancellationToken);
 	}
+	
 	public async Task<Guid?> GetIdAsync(Guid hallId, int row, int column, CancellationToken cancellationToken)
 	{
 		return await context.Seats

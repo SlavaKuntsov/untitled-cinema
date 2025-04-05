@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Shared\Databases\Databases.csproj" />
+        <ProjectReference Include="..\..\Shared\Databases\Databases.csproj"/>
         <ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj"/>
     </ItemGroup>
 

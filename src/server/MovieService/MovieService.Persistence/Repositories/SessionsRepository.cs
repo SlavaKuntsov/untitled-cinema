@@ -11,6 +11,14 @@ public class SessionsRepository(MovieServiceDBContext context) : ISessionsReposi
 	{
 		return context.Sessions.AsQueryable();
 	}
+	
+	public async Task<SessionEntity?> GetHallIdAsync(Guid sessionId, CancellationToken cancellationToken)
+	{
+		return await context.Sessions
+			.AsNoTracking()
+			.Where(s => s.Id == sessionId)
+			.FirstOrDefaultAsync(cancellationToken);
+	}
 
 	public async Task<List<SessionEntity>> ToListAsync(IQueryable<SessionEntity> query, CancellationToken cancellationToken)
 	{

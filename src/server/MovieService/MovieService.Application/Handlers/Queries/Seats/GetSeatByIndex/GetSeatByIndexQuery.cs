@@ -8,7 +8,7 @@ using MovieService.Domain.Models;
 namespace MovieService.Application.Handlers.Queries.Seats.GetSeatByIndex;
 
 public record GetSeatByIndexQuery(
-	Guid HallId,
+	Guid SessionId,
 	int Row,
 	int Column) : IRequest<SelectedSeatDto>;
 
@@ -20,8 +20,11 @@ public class GetSeatByIndexQueryHandler(
 		GetSeatByIndexQuery request,
 		CancellationToken cancellationToken)
 	{
+		var session = await unitOfWork.SessionsRepository.GetHallIdAsync(request.SessionId, cancellationToken)
+			?? throw new NotFoundException($"Hall with sessionId {request.SessionId} not found.");
+		
 		var seat = await unitOfWork.SeatsRepository.GetAsync(
-						request.HallId,
+						session.HallId,
 						request.Row,
 						request.Column,
 						cancellationToken)
@@ -35,9 +38,19 @@ public class GetSeatByIndexQueryHandler(
 						?? throw new NotFoundException(
 							$"Seat Type with id '{seat.SeatTypeId}' not found.");
 
+
+		var movie = await unitOfWork.MoviesRepository.GetAsync(session.MovieId, cancellationToken)
+			?? throw new NotFoundException($"Movie with id '{session.MovieId}' not found.");
+
+		var price = seatType.PriceModifier * session.PriceModifier * movie.Price;
+		
 		var selectedSeat = mapper.Map<SelectedSeatDto>(seat);
 
-		selectedSeat = selectedSeat with { SeatType = mapper.Map<SeatTypeModel>(seatType) };
+		selectedSeat = selectedSeat with
+		{
+			SeatType = mapper.Map<SeatTypeDto>(seatType),
+			Price = price
+		};
 
 		return selectedSeat;
 	}

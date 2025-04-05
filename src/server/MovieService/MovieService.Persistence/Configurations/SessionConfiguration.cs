@@ -17,13 +17,13 @@ public class SessionConfiguration : IEntityTypeConfiguration<SessionEntity>
 			.HasColumnType("decimal(5, 2)")
 			.IsRequired();
 
-		builder.Property(s => s.StartTime)
-			.IsRequired()
-			.HasColumnType("timestamptz")
-			.HasConversion(
-				v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
-				v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-			);
+			builder.Property(s => s.StartTime)
+				.IsRequired()
+				.HasColumnType("timestamptz")
+				.HasConversion(
+					v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+					v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+				);
 
 		builder.Property(s => s.EndTime)
 			.IsRequired()

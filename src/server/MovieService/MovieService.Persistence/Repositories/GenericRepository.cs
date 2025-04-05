@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 using MovieService.Domain.Interfaces.Repositories;
 
 namespace MovieService.Persistence.Repositories;
@@ -7,6 +6,7 @@ namespace MovieService.Persistence.Repositories;
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
 	private readonly MovieServiceDBContext _context;
+
 	private readonly DbSet<T> _dbSet;
 
 	public GenericRepository(MovieServiceDBContext context)

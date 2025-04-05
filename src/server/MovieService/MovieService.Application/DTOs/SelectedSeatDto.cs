@@ -6,4 +6,5 @@ public record struct SelectedSeatDto(
 	Guid Id,
 	int Row,
 	int Column,
-	SeatTypeModel SeatType);
+	decimal Price,
+	SeatTypeDto SeatType);

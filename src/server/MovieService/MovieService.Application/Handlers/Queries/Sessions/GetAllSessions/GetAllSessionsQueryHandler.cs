@@ -3,7 +3,6 @@ using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
 using MovieService.Application.DTOs;
-using MovieService.Domain.Entities;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 
 namespace MovieService.Application.Handlers.Queries.Sessions.GetAllSessions;
@@ -34,7 +33,9 @@ public class GetAllSessionsQueryHandler(
 		if (request.Movie != null)
 			if (request.Movie.Value != Guid.Empty)
 			{
-				var movie = await unitOfWork.MoviesRepository.GetAsync(request.Movie.Value, cancellationToken);
+				var movie = await unitOfWork.MoviesRepository.GetAsync(
+					request.Movie.Value,
+					cancellationToken);
 
 				if (movie is not null)
 					query = query.Where(s => s.MovieId == movie.Id);
@@ -58,16 +59,18 @@ public class GetAllSessionsQueryHandler(
 
 		var sessions = await unitOfWork.SessionsRepository.ToListAsync(query, cancellationToken);
 
-		var sessionsWithHallDto = sessions.Select(s => new SessionWithHallDto(
-			Id: s.Id,
-			MovieId: s.MovieId,
-			Hall: new HallDto(s.Hall.Id, s.Hall.Name),
-			DayId: s.DayId,
-			PriceModifier: s.PriceModifier,
-			StartTime: s.StartTime,
-			EndTime: s.EndTime
-		)).ToList();
-		
+		var sessionsWithHallDto = sessions.Select(
+				s => new SessionWithHallDto(
+					s.Id,
+					s.MovieId,
+					new HallDto(s.Hall.Id, s.Hall.Name),
+					s.DayId,
+					s.PriceModifier,
+					s.StartTime,
+					s.EndTime
+				))
+			.ToList();
+
 		return sessionsWithHallDto;
 	}
 }
