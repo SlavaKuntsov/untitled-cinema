@@ -11,17 +11,21 @@ public class SeatController(
 	ILogger<SeatController> logger) : ControllerBase
 {
 	[HttpGet("/bookingsSeats/available/session/{sessionId:Guid}")]
-	public async Task<IActionResult> GetAvailable([FromRoute] Guid sessionId)
+	public async Task<IActionResult> GetAvailable(
+		[FromRoute] Guid sessionId,
+		CancellationToken cancellationToken)
 	{
-		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, true));
+		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, true), cancellationToken);
 
 		return Ok(seats);
 	}
 
 	[HttpGet("/bookingsSeats/reserved/session/{sessionId:Guid}")]
-	public async Task<IActionResult> GetReserved([FromRoute] Guid sessionId)
+	public async Task<IActionResult> GetReserved(
+		[FromRoute] Guid sessionId,
+		CancellationToken cancellationToken)
 	{
-		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, false));
+		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, false), cancellationToken);
 
 		return Ok(seats);
 	}
