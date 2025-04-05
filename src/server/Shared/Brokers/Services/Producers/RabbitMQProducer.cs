@@ -7,18 +7,11 @@ using RabbitMQ.Client.Events;
 
 namespace Brokers.Services.Producers;
 
-public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
+public class RabbitMQProducer(
+	IConnectionFactory connectionFactory,
+	ILogger<RabbitMQProducer> logger)
+	: RabbitMQBase(connectionFactory), IRabbitMQProducer
 {
-	private readonly ILogger<RabbitMQProducer> _logger;
-
-	public RabbitMQProducer(
-		IConnectionFactory connectionFactory,
-		ILogger<RabbitMQProducer> logger)
-		: base(connectionFactory)
-	{
-		_logger = logger;
-	}
-
 	public async Task PublishAsync<T>(T message, CancellationToken cancellationToken)
 	{
 		var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
@@ -48,14 +41,14 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 		consumer.ReceivedAsync += async (model, args) =>
 		{
-			_logger.LogInformation("CorrelationId: " + args.BasicProperties.CorrelationId + " - " + correlationId);
+			logger.LogInformation("CorrelationId: " + args.BasicProperties.CorrelationId + " - " + correlationId);
 
 			if (args.BasicProperties.CorrelationId == correlationId)
 			{
 				var body = JsonSerializer.Deserialize<TResponse>(
 					Encoding.UTF8.GetString(args.Body.ToArray()));
 
-				_logger.LogInformation("Get Recieved: " + Encoding.UTF8.GetString(args.Body.ToArray()));
+				logger.LogInformation("Get Recieved: " + Encoding.UTF8.GetString(args.Body.ToArray()));
 
 				tcs.TrySetResult((body!));
 
@@ -63,7 +56,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 			}
 			else
 			{
-				_logger.LogWarning("CorrelationId mismatch: " + args.BasicProperties.CorrelationId + " != " + correlationId);
+				logger.LogWarning("CorrelationId mismatch: " + args.BasicProperties.CorrelationId + " != " + correlationId);
 
 				tcs.SetException(new InvalidOperationException("CorrelationId mismatch"));
 			}
@@ -77,7 +70,7 @@ public class RabbitMQProducer : RabbitMQBase, IRabbitMQProducer
 
 		await PublishBaseAsync(body, responseQueueName, properties, cancellationToken);
 
-		_logger.LogInformation("Send request: " + properties.CorrelationId);
+		logger.LogInformation("Send request: " + properties.CorrelationId);
 
 		using CancellationTokenRegistration ctr = cancellationToken.Register(tcs.SetCanceled);
 

@@ -1,6 +1,7 @@
 ﻿using BookingService.Domain.Entities;
 using BookingService.Domain.Interfaces.Repositories;
 using MediatR;
+using Serilog;
 
 namespace BookingService.Application.Handlers.Query.Bookings.GetAllBookings;
 

@@ -15,6 +15,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 {
 	private readonly AsyncEventingBasicConsumer _consumer;
 	private readonly ILogger<RabbitMQProducer> _logger;
+	
 	public RabbitMQConsumer(
 		IConnectionFactory connectionFactory,
 		ILogger<RabbitMQProducer> logger)

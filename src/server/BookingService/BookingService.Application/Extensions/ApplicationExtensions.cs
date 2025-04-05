@@ -17,8 +17,6 @@ public static class ApplicationExtensions
 				cfg.RegisterServicesFromAssemblyContaining<CreateBookingCommandHandler>();
 			});
 
-		services.AddTransient<CancelBookingAfterExpired>();
-
 		return services;
 	}
 }

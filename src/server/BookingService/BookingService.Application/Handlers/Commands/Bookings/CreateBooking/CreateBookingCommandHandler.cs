@@ -15,6 +15,11 @@ using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
 
+public record struct CreateBookingCommand(
+	Guid? UserId,
+	Guid SessionId,
+	IList<SeatModel> Seats) : IRequest<Guid>;
+
 public class CreateBookingCommandHandler(
 	IRabbitMQProducer rabbitMQProducer,
 	ISeatsService seatsService,

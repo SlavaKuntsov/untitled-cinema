@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using BookingService.Application.Consumers;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Application.Consumers;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
@@ -11,11 +12,17 @@ public static class ApplicationExtensions
 	public static IServiceCollection AddApplication(this IServiceCollection services)
 	{
 		services.AddHostedService<BookingPayConsumeService>();
+		services.AddHostedService<NotificationsConsumeService>();
 
-		services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommandHandler>(); });
+		services.AddMediatR(
+			cfg =>
+			{
+				cfg.RegisterServicesFromAssemblyContaining<UserRegistrationCommandHandler>();
+			});
 
 		// services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommand>>();
-		services.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommandValidator>>();
+		services
+			.AddValidatorsFromAssemblyContaining<BaseCommandValidator<UserRegistrationCommandValidator>>();
 
 		return services;
 	}

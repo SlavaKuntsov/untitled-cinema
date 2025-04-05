@@ -6,6 +6,7 @@ using BookingService.Application.Jobs.Bookings;
 using BookingService.Domain.Constants;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
+using Brokers.Models.DTOs;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace BookingService.Application.Consumers;
 
 public class CreateBookingsConsumeService(
 	IRabbitMQConsumer<BookingModel> rabbitMQConsumer,
+	IRabbitMQProducer rabbitMQProducer,
 	IServiceScopeFactory serviceScopeFactory,
 	IBackgroundJobClient backgroundJobClient,
 	ILogger<CreateBookingsConsumeService> logger) : BackgroundService
@@ -25,6 +27,8 @@ public class CreateBookingsConsumeService(
 		rabbitMQConsumer.ConsumeAsync(
 			async (_, args) =>
 			{
+				logger.LogInformation("Starting consume booking create.");
+				
 				var booking = JsonSerializer.Deserialize<BookingModel>(
 					Encoding.UTF8.GetString(args.Body.ToArray()));
 
@@ -42,9 +46,23 @@ public class CreateBookingsConsumeService(
 					new SaveBookingCommand(booking),
 					cancellationToken);
 
-				backgroundJobClient.Schedule<CancelBookingAfterExpired>(
-					b => b.ExecuteAsync(booking.Id, cancellationToken),
+				var notification = new NotificationDto(
+					booking.UserId,
+					$"You have {JobsConstants.AFTER_BOOKING_EXPIRED_TEST} to pay tickets, " +
+					$"otherwise the booking can be canceled.");
+
+				await rabbitMQProducer.PublishAsync(notification, cancellationToken);
+
+				backgroundJobClient.Schedule<CancelBookingAfterExpiredJob>(
+					b => b.ExecuteAsync(
+						booking.Id,
+						booking!.SessionId,
+						booking!.Seats,
+						booking!.UserId,
+						cancellationToken),
 					JobsConstants.AFTER_BOOKING_EXPIRED_TEST);
+				
+				logger.LogInformation("Processed consume booking create.");
 			});
 
 		return Task.CompletedTask;
