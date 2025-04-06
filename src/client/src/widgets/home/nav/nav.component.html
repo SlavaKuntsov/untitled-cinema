@@ -84,7 +84,7 @@
 
             <app-divider dividerClasses="bg-zinc-600 my-3"></app-divider>
 
-            <div class="flex flex-col gap-4 text-lg">
+            <div class="flex flex-col-reverse gap-4 text-lg">
               @if (notifications() && notifications().length != 0) {
                 @for (item of notifications(); track item.id) {
                   <p-message

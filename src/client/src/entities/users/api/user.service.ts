@@ -1,6 +1,5 @@
 import { HttpClient } from "@angular/common/http";
 import { effect, inject, Injectable, signal } from "@angular/core";
-import { Router } from "@angular/router";
 import { Observable, tap } from "rxjs";
 import { UpdateUser, User } from "..";
 import { environment } from "../../../environments/environment";
@@ -10,13 +9,11 @@ import { environment } from "../../../environments/environment";
 })
 export class UserService {
   private http = inject(HttpClient);
-  private router = inject(Router);
 
   user = signal<User | null>(null);
 
   constructor() {
-    effect(() => {
-    });
+    effect(() => {});
   }
 
   update(payload: UpdateUser): Observable<User> {

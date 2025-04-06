@@ -68,7 +68,7 @@
                       <div
                         class="flex flex-col items-center justify-center gap-4 rounded-xl border-[1px] border-zinc-600 bg-zinc-800/30 px-10 py-6 backdrop-blur-sm"
                       >
-                        <p class="text-xl text-zinc-500">Date</p>
+                        <p class="text-xl text-zinc-500">Time</p>
 
                         <span class="h-[1px] w-full bg-zinc-700"></span>
 
@@ -106,7 +106,7 @@
         </div>
 
         <div
-          class="container mt-32 flex w-full flex-col-reverse items-start justify-center gap-14 xl:flex-row xl:justify-between"
+          class="container mt-32 flex w-full flex-col items-start justify-center gap-14 xl:flex-row xl:justify-between"
         >
           <div class="flex w-full flex-col items-center xl:items-start">
             <div
@@ -120,7 +120,7 @@
 
               <div class="rows-container space-y-4">
                 @for (
-                  row of hall.seatsArray;
+                  row of seatsArray();
                   track $index;
                   let rowNumber = $index
                 ) {
@@ -148,7 +148,11 @@
                               rowNumber,
                               seatNumber
                             ),
+                            '!bg-gray-500 cursor-not-allowed': isSelected(rowNumber, seatNumber),
                           }"
+                          (click)="
+                            addToggleSeatSelection(rowNumber, seatNumber)
+                          "
                         >
                           @if (seat !== -1) {
                             <span class="text-xl text-zinc-200">{{
@@ -183,43 +187,88 @@
               </div>
             </div>
           </div>
-          <div class="flex w-full flex-col gap-24">
-            <!-- <div class="flex w-full items-center justify-center">
+          <div class="flex w-full flex-col gap-14">
+            @if (selectedSeats().length > 0) {
               <div
-                class="flex w-full min-w-96 max-w-96 flex-col items-center justify-center gap-10 xl:w-fit xl:items-start"
+                class="flex w-full flex-col items-center justify-center gap-6"
               >
-                <h3 class="text-4xl font-bold">Tickets:</h3>
-								<div class="p-4 border-[1px] border-zinc-600 rounded-xl flex flex-row gap-10">
-									
-								</div>
+                <div
+                  class="mt-10 flex w-fit min-w-96 flex-col items-center justify-center gap-10 xl:w-fit xl:items-start"
+                >
+                  <h3 class="text-4xl font-bold">Tickets:</h3>
+                  <div class="flex flex-col gap-6">
+                    @for (selectedSeat of selectedSeats(); track $index) {
+                      <div
+                        class="flex flex-row items-center gap-10 rounded-xl border-[1px] border-zinc-600 p-4"
+                      >
+                        <p class="text-2xl">
+                          {{ selectedSeat.seatType.name }}
+                        </p>
+                        <p class="text-xl">
+                          {{ selectedSeat.row }}
+                        </p>
+                        <p class="text-xl">
+                          {{ selectedSeat.column }}
+                        </p>
+                        <p class="text-xl">
+                          {{ selectedSeat.price | currency }}
+                        </p>
+                        <button
+                          (click)="removeToggleSeatSelection(selectedSeat.id)"
+                        >
+                          <i class="pi pi-times !text-2xl"></i>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="flex flex-row items-center justify-between gap-10">
+                  <div class="flex flex-row items-center gap-3">
+                    <h5 class="text-2xl font-semibold">Total:</h5>
+                    <span class="text-2xl">
+                      {{ totalPrice() | currency }}
+                    </span>
+                  </div>
+                  <app-button
+                    [label]="'Booking'"
+                    [buttonClasses]="
+                      'bg-indigo-600 hover:bg-white hover:text-indigo-600 border-[2px] border-indigo-600 px-10'
+                    "
+                    type="submit"
+                    (clickEvent)="booking()"
+                  >
+                  </app-button>
+                </div>
               </div>
-            </div> -->
-            <div class="flex w-full items-center justify-center">
+            }
+            <div class="mt-10 flex w-full items-center justify-center">
               <div
                 class="flex w-full min-w-96 max-w-96 flex-col items-center justify-center gap-10 xl:w-fit xl:items-start"
               >
                 <h3 class="text-4xl font-bold">Seat types:</h3>
-                @for (seatType of seatTypes; track $index) {
-                  <span
-                    class="flex w-full flex-row justify-between gap-6 rounded-xl bg-zinc-700/70 px-8 py-4"
-                  >
-                    <div class="flex flex-row gap-4">
-                      <p class="text-2xl text-zinc-400">
-                        {{ $index + 1 }}
+                <div class="flex flex-col gap-6">
+                  @for (seatType of seatTypes; track $index) {
+                    <span
+                      class="flex w-full flex-row justify-between gap-6 rounded-xl bg-zinc-700/70 px-8 py-4"
+                    >
+                      <div class="flex flex-row gap-4">
+                        <p class="text-2xl text-zinc-400">
+                          {{ $index + 1 }}
+                        </p>
+                        <p class="text-2xl">
+                          {{ seatType.name }}
+                        </p>
+                      </div>
+                      <p class="text-2xl text-white">
+                        {{
+                          seatType.priceModifier *
+                            session.priceModifier *
+                            movie.price | currency
+                        }}
                       </p>
-                      <p class="text-2xl">
-                        {{ seatType.name }}
-                      </p>
-                    </div>
-                    <p class="text-2xl text-white">
-                      {{
-                        seatType.priceModifier *
-                          session.priceModifier *
-                          movie.price | currency
-                      }}
-                    </p>
-                  </span>
-                }
+                    </span>
+                  }
+                </div>
               </div>
             </div>
           </div>
@@ -237,3 +286,40 @@
     <h3 class="text-3xl font-bold">{{ errorText }}</h3>
   </div>
 }
+
+<p-confirmdialog #cd key="booking">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
+    <div
+      class="bg-surface-0 dark:bg-surface-900 flex flex-col items-center rounded p-14"
+    >
+      <!-- <div
+        class="text-primary-contrast -mt-32 inline-flex h-32 w-32 items-center justify-center rounded-full bg-green-600"
+      >
+        <i class="pi pi-question !text-7xl"></i>
+      </div> -->
+      <span class="mb-6 mt-0 block text-3xl font-bold">{{
+        message.header
+      }}</span>
+      <p class="mb-0 !text-xl">{{ message.message }}</p>
+      <div class="mt-10 flex items-center gap-6">
+        <p-button
+          [routerLink]="['/auth/login']"
+          label="Login"
+          (onClick)="onAccept()"
+          styleClass="!bg-green-600 !text-white !transition-colors !duration-500 !easy-in-out hover:!text-green-500 !border-[2px] hover:!border-white !border-green-600 hover:!bg-white w-32 !text-2xl !px-8 !py-3"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          [outlined]="true"
+          (onClick)="onReject()"
+          styleClass="w-32 !text-white !border-white !text-2xl !px-8 !py-3"
+        ></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmdialog>

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { format, isValid, parse } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 @Pipe({
   name: "extractDate",
@@ -9,13 +9,11 @@ export class ExtractDatePipe implements PipeTransform {
     if (!value) return "";
 
     try {
-      const date = parse(value, "dd-MM-yyyy HH:mm", new Date());
-
-      if (!isValid(date)) return "Invalid Date";
-
+      const date = parseISO(value); // Используем parseISO для ISO формата
       return format(date, "dd.MM");
     } catch (e) {
-      return "Invalid Format";
+      console.error("Date parsing error:", e);
+      return "Invalid Date";
     }
   }
 }

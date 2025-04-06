@@ -93,3 +93,27 @@
 .p-scrollpanel .custombar .p-scrollpanel-bar {
   background-color: black;
 }
+
+.p-toast .p-toast-message-content{
+	@apply gap-4
+}
+
+.p-toast .p-toast-summary {
+	@apply !text-2xl
+}
+
+.p-toast .p-toast-detail {
+	@apply !text-lg
+}
+
+.p-toast .p-toast-message-icon svg{
+	@apply !w-6 !h-6
+}
+
+.p-toast .p-toast-close-icon svg{
+	@apply !min-w-7 !min-h-7 !p-1 !text-2xl
+}
+
+.p-toast .p-toast-close-button{
+	@apply !min-w-7 !min-h-7 !p-2 !text-2xl
+}
