@@ -18,7 +18,6 @@ import { DatePickerModule } from "primeng/datepicker";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { Tooltip } from "primeng/tooltip";
 import {
-  Booking,
   BookingDto,
   BookingService,
   SessionSeats,
@@ -232,7 +231,7 @@ export class HallComponent implements OnDestroy {
       userId: this.userService.user()?.id!,
     };
 
-    this.bookingService.booking(payload).subscribe({
+    this.bookingService.createBooking(payload).subscribe({
       next: () => {
         this.selectedSeats.update(() => []);
       },

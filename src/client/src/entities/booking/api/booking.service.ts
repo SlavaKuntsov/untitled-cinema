@@ -24,7 +24,7 @@ export class BookingService {
     );
   }
 
-  booking(payload: BookingDto) {
+  createBooking(payload: BookingDto) {
     return this.http.post(`${environment.bookingBaseUrl}/bookings`, payload, {
       withCredentials: true,
       responseType: "json",
