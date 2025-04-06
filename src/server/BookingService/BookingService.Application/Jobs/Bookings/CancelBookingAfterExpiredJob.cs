@@ -62,7 +62,7 @@ public class CancelBookingAfterExpiredJob(
 			"You did not pay for the reservation, it was canceled.",
 			NotificationType.Error.GetDescription());
 		
-		logger.LogError("Notification type {Type} in cancel booking", NotificationType.Error.GetDescription());
+		logger.LogInformation("Notification type {Type} in cancel booking", NotificationType.Error.GetDescription());
 
 		await rabbitMQProducer.PublishAsync(notification, cancellationToken);
 

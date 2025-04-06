@@ -54,7 +54,7 @@ public class CreateBookingsConsumeService(
 					$"otherwise the booking can be canceled.",
 					NotificationType.Success.GetDescription());
 				
-				logger.LogError("Notification type {Type} in create booking", NotificationType.Success.GetDescription());
+				logger.LogInformation("Notification type {Type} in create booking", NotificationType.Success.GetDescription());
 
 				await rabbitMQProducer.PublishAsync(notification, cancellationToken);
 

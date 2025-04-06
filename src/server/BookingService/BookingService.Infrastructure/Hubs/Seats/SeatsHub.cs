@@ -29,7 +29,7 @@ public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 				return connections;
 			});
 
-		logger.LogError($"User {Context.UserIdentifier} joined session {sessionId}");
+		logger.LogInformation($"User {Context.UserIdentifier} joined session {sessionId}");
 	}
 
 	public async Task LeaveSession(Guid sessionId)
@@ -45,22 +45,8 @@ public class SeatsHub(ILogger<SeatsHub> logger) : Hub
 				_sessionGroups.TryRemove(sessionId, out _);
 		}
 
-		logger.LogError($"User {Context.UserIdentifier} left session {sessionId}");
+		logger.LogInformation($"User {Context.UserIdentifier} left session {sessionId}");
 	}
-
-	/*public async Task NotifySeatChanged(UpdatedSeatDTO seat, CancellationToken cancellationToken)
-	{
-		var groupName = GetGroupName(seat.SessionId);
-
-		await Clients.Group(groupName)
-			.SendAsync(
-				"SeatChanged",
-				seat.SeatId,
-				seat.isBooked,
-				cancellationToken);
-
-		logger.LogInformation($"Seat {seat.SeatId} changed in session {seat.SessionId}");
-	}*/
 
 	private static string GetGroupName(Guid sessionId)
 	{

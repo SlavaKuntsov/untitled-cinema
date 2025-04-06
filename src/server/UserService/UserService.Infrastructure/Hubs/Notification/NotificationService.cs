@@ -15,7 +15,7 @@ public class NotificationService(
 
 		foreach (var connectionId in connections)
 		{
-			logger.LogError("Connect count: {Count}", connections.Count());
+			logger.LogInformation("Connect count: {Count}", connections.Count());
 
 			await hubContext.Clients.Client(connectionId)
 				.SendAsync(

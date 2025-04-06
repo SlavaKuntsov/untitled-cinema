@@ -17,6 +17,6 @@ public class SeatsService(
 				seat,
 				cancellationToken);
 		
-		logger.LogError("NotifySeatChangedAsync called for {SessionId}", seat.SessionId);
+		logger.LogInformation("NotifySeatChangedAsync called for {SessionId}", seat.SessionId);
 	}
 }
