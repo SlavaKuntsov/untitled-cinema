@@ -31,9 +31,9 @@ export class BookingService {
     });
   }
 
-  getHistory(userId: string): Observable<Booking[]> {
+  getHistory(userId: string, onlyProcessed: boolean = false): Observable<Booking[]> {
     return this.http.get<Booking[]>(
-      `${environment.bookingBaseUrl}/bookings/history/${userId}`,
+      `${environment.bookingBaseUrl}/bookings/history/${userId}?OnlyProcessed=${onlyProcessed}`,
     );
   }
 }

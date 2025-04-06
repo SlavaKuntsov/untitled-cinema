@@ -3,7 +3,7 @@ using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
 using BookingService.Application.Handlers.Commands.Bookings.PayBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 using BookingService.Application.Handlers.Query.Bookings.GetAllBookings;
-using BookingService.Application.Handlers.Query.Bookings.GetBookingsByUserId;
+using BookingService.Application.Handlers.Query.Bookings.GetUserBookings;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,9 +28,14 @@ public class BookingController(
 	}
 
 	[HttpGet("/bookings/history/{userId:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid userId, CancellationToken cancellationToken)
+	public async Task<IActionResult> Get(
+		[FromRoute] Guid userId,
+		CancellationToken cancellationToken,
+		[FromQuery(Name = "OnlyProcessed")] bool processed = false)
 	{
-		var bookings = await mediator.Send(new GetUserBookingsByIdQuery(userId), cancellationToken);
+		var bookings = await mediator.Send(
+			new GetUserBookingsByIdQuery(userId, processed),
+			cancellationToken);
 
 		return Ok(bookings);
 	}

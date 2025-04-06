@@ -10,6 +10,7 @@ import {
   POSTER,
   PROFILE,
   REGISTRATION,
+	YOUR_BOOKINGS,
 } from "../shared/router/routes";
 import { LoginComponent } from "../widgets/auth/login/login.component";
 import { RegistrationComponent } from "../widgets/auth/registration/registration.component";
@@ -21,6 +22,7 @@ import { PosterComponent } from "../widgets/home/poster/poster.component";
 import { ProfileComponent } from "../widgets/home/profile/profile.component";
 import { canActivateAuth } from "./core/guards/auth/access.guard";
 import { canActivateHome } from "./core/guards/home/home.guad";
+import { YourBookingsComponent } from "../widgets/home/your-bookings/your-bookings.component";
 
 export const routes: Routes = [
   {
@@ -66,6 +68,11 @@ export const routes: Routes = [
             path: PROFILE,
             component: ProfileComponent,
             data: { name: "Profile", isVisible: true },
+          },
+          {
+            path: YOUR_BOOKINGS,
+            component: YourBookingsComponent,
+            data: { name: "Your Bookings", isVisible: true },
           },
         ],
       },
