@@ -24,18 +24,29 @@ public static class HostExtension
 			const string certPath = "/app/localhost.pfx";
 			const string certPassword = "1";
 
-			builder.WebHost.ConfigureKestrel(options =>
-			{
-				options.ListenAnyIP(port,
-					listenOptions => { listenOptions.UseHttps(certPath, certPassword); });
-			});
+			builder.WebHost.ConfigureKestrel(
+				options =>
+				{
+					options.ListenAnyIP(
+						port,
+						listenOptions =>
+						{
+							listenOptions.UseHttps(certPath, certPassword);
+						});
+				});
 		}
 		else
 		{
-			builder.WebHost.ConfigureKestrel(options =>
-			{
-				options.ListenAnyIP(port, listenOptions => { listenOptions.UseHttps(); });
-			});
+			builder.WebHost.ConfigureKestrel(
+				options =>
+				{
+					options.ListenAnyIP(
+						port,
+						listenOptions =>
+						{
+							listenOptions.UseHttps();
+						});
+				});
 		}
 
 		return builder;

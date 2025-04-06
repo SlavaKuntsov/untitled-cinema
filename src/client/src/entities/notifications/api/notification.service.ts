@@ -6,6 +6,7 @@ import { environment } from "../../../environments/environment";
 import { ToastService, ToastStatus } from "../../toast";
 import { AuthService } from "../../users/api/auth.service";
 import { CustomNotification } from "../model/customNotification";
+import { UserService } from './../../users/api/user.service';
 
 @Injectable({
   providedIn: "root",
@@ -16,16 +17,19 @@ export class NotificationService {
   private isConnected = false;
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private userService = inject(UserService);
 
   notifications = signal<CustomNotification[]>([]);
   private accessToken: Signal<string | null> = this.authService.accessToken;
 
   startConnection() {
     if (this.isConnected) return;
+		if(!this.userService.user()) return
+
     this.isConnected = true;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${environment.userBaseUrl}/notify`, {
+      .withUrl(`${environment.userBaseUrl}/notificationsHub`, {
         accessTokenFactory: () => this.accessToken() ?? "",
       })
       .withAutomaticReconnect()
@@ -33,21 +37,35 @@ export class NotificationService {
 
     this.hubConnection
       .start()
-      .then(() => console.log("SignalR Connected"))
+      .then(() => console.log("SignalR Notification Connected"))
       .catch((err) => {
         console.error("Error connecting to SignalR:", err);
         this.isConnected = false;
       });
 
+    // this.hubConnection.on(
+    //   "ReceiveNotification",
+    //   (message: CustomNotification) => {
+    //     this.notifications.update((notifications) => [
+    //       ...notifications,
+    //       message,
+    //     ]);
+
+    //     this.toastService.showToast(ToastStatus.Success, message.message);
+    //   },
+    // );
+
     this.hubConnection.on(
       "ReceiveNotification",
       (message: CustomNotification) => {
+        console.log(message);
         this.notifications.update((notifications) => [
           ...notifications,
           message,
         ]);
 
-        this.toastService.showToast(ToastStatus.Success, message.message);
+        const toastStatus = this.mapNotificationTypeToToastStatus(message.type);
+        this.toastService.showToast(toastStatus, message.message);
       },
     );
   }
@@ -92,5 +110,19 @@ export class NotificationService {
         withCredentials: true,
       },
     );
+  }
+
+  private mapNotificationTypeToToastStatus(type: string): ToastStatus {
+    switch (type.toLowerCase()) {
+      case "success":
+        return ToastStatus.Success;
+      case "error":
+        return ToastStatus.Error;
+      case "warn":
+        return ToastStatus.Warn;
+      case "info":
+      default:
+        return ToastStatus.Info;
+    }
   }
 }

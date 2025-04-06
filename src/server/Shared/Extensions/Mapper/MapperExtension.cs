@@ -9,11 +9,6 @@ public static class MapperExtension
 {
 	public static IServiceCollection AddMapper(this IServiceCollection services)
 	{
-		var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
-		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
-
-		MapsterMapper.Mapper mapperConfig = new(typeAdapterConfig);
-		services.AddSingleton<IMapper>(mapperConfig);
 
 		return services;
 	}

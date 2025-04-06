@@ -5,15 +5,16 @@ import { Pipe, PipeTransform } from "@angular/core";
 })
 export class ExtractTimePipe implements PipeTransform {
   transform(value: string): string {
-    if (!value) {
-      return "";
-    }
+    if (!value) return "";
 
-    const parts = value.split(" ");
-    if (parts.length > 1) {
-      return parts[1];
+    try {
+      const date = new Date(value);
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return value; // возвращаем как есть, если не удалось распарсить
     }
-
-    return value;
   }
 }

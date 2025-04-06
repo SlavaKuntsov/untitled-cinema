@@ -15,6 +15,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 {
 	private readonly AsyncEventingBasicConsumer _consumer;
 	private readonly ILogger<RabbitMQProducer> _logger;
+	
 	public RabbitMQConsumer(
 		IConnectionFactory connectionFactory,
 		ILogger<RabbitMQProducer> logger)
@@ -37,7 +38,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 		var responseQueueName = $"{typeof(TResponse).Name}";
 
 		await CreateQueueAsync(responseQueueName, cancellationToken);
-		await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false);
+		await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: cancellationToken);
 
 		var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -52,7 +53,7 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 			};
 
 			var body = JsonSerializer.Deserialize<TRequest>(
-					Encoding.UTF8.GetString(args.Body.ToArray()));
+				Encoding.UTF8.GetString(args.Body.ToArray()));
 
 			_logger.LogInformation("Get Recieved: " + body);
 
@@ -64,9 +65,10 @@ public class RabbitMQConsumer<TResponse> : RabbitMQBase, IRabbitMQConsumer<TResp
 
 			_logger.LogInformation("Send request: " + responseBody);
 
-			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false);
+			await _channel.BasicAckAsync(args.DeliveryTag, multiple: false, cancellationToken: cancellationToken);
 		};
 
 		await ConsumeBaseAsync(consumer, responseQueueName, cancellationToken);
 	}
+
 }

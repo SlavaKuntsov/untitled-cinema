@@ -14,7 +14,7 @@ public static class AuthorizationExtension
 		this IServiceCollection services,
 		IConfiguration configuration)
 	{
-		var jwtOptions = configuration.GetSection(nameof(JwtModel)).Get<JwtModel>();
+		var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
 
 		services
 			.AddAuthentication(options =>
@@ -46,7 +46,7 @@ public static class AuthorizationExtension
 					};
 				});
 
-		services.Configure<JwtModel>(configuration.GetSection(nameof(JwtModel)));
+		services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
 		services.Configure<AuthorizationOptions>(
 			configuration.GetSection(nameof(AuthorizationOptions)));
@@ -55,11 +55,17 @@ public static class AuthorizationExtension
 		{
 			options.AddDefaultPolicy(policy =>
 			{
+				policy.WithOrigins(
+					"https://localhost",
+					"http://localhost:3000",
+					"https://localhost:3000",
+					"https://localhost:7001",
+					"https://localhost:7002",
+					"https://localhost:7003"
+				);
 				policy.AllowAnyHeader();
 				policy.AllowAnyMethod();
 				policy.AllowCredentials();
-				policy.WithOrigins("https://localhost");
-				policy.WithOrigins("https://localhost:7001");
 			});
 		});
 

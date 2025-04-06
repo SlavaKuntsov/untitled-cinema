@@ -77,8 +77,11 @@ export class ProfileComponent {
       const user = this.user();
       if (user) {
         this.form.patchValue({
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
           dateOfBirth: user.dateOfBirth
-            ? parse(user.dateOfBirth, "yyyy-MM-dd", new Date())
+            ? parse(user.dateOfBirth, "dd-MM-yyyy", new Date()) // Изменено на dd-MM-yyyy
             : null,
         });
       }
