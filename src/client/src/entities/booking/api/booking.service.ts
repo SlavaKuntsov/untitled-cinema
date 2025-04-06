@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../environments/environment";
-import { Booking, SessionSeats } from "../model/booking";
+import { Booking, BookingDto, SessionSeats } from "../model/booking";
 
 @Injectable({
   providedIn: "root",
@@ -24,10 +24,16 @@ export class BookingService {
     );
   }
 
-  booking(payload: Booking) {
+  booking(payload: BookingDto) {
     return this.http.post(`${environment.bookingBaseUrl}/bookings`, payload, {
       withCredentials: true,
       responseType: "json",
     });
+  }
+
+  getHistory(userId: string): Observable<Booking[]> {
+    return this.http.get<Booking[]>(
+      `${environment.bookingBaseUrl}/bookings/history/${userId}`,
+    );
   }
 }

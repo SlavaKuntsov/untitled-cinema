@@ -9,7 +9,18 @@ export interface SessionSeats {
 }
 
 export interface Booking {
-	userId: string;
-	sessionId: string;
-	seats: Seat[]
+  id: string;
+  userId: string;
+  sessionId: string;
+  seats: Seat[];
+  totalPrice: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BookingDto {
+  userId: string;
+  sessionId: string;
+  seats: Seat[];
 }

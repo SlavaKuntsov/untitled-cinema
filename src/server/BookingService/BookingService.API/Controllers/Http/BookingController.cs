@@ -27,10 +27,10 @@ public class BookingController(
 		return Ok(bookings);
 	}
 
-	[HttpGet("/bookings/{id:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+	[HttpGet("/bookings/history/{userId:Guid}")]
+	public async Task<IActionResult> Get([FromRoute] Guid userId, CancellationToken cancellationToken)
 	{
-		var bookings = await mediator.Send(new GetUserBookingsByIdQuery(id), cancellationToken);
+		var bookings = await mediator.Send(new GetUserBookingsByIdQuery(userId), cancellationToken);
 
 		return Ok(bookings);
 	}

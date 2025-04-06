@@ -19,6 +19,7 @@ import { ProgressSpinner } from "primeng/progressspinner";
 import { Tooltip } from "primeng/tooltip";
 import {
   Booking,
+  BookingDto,
   BookingService,
   SessionSeats,
 } from "../../../entities/booking";
@@ -225,7 +226,7 @@ export class HallComponent implements OnDestroy {
       return;
     }
 
-    var payload: Booking = {
+    var payload: BookingDto = {
       sessionId: this.selectedSessionId()!,
       seats: this.selectedSeats(),
       userId: this.userService.user()?.id!,
