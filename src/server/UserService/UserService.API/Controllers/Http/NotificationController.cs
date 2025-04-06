@@ -1,4 +1,7 @@
 ﻿using System.Security.Claims;
+using Brokers.Models.DTOs;
+using Domain.Enums;
+using Extensions.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +44,14 @@ public class NotificationController(IMediator mediator) : ControllerBase
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
 
-		//await _notificationService.SendAsync(userId, message, cancellationToken);
 
-		await mediator.Send(new SendNotificationCommand(userId, message), cancellationToken);
+		await mediator.Send(
+			new SendNotificationCommand(
+				new NotificationDto(
+					userId,
+					message,
+					NotificationType.Info.GetDescription())),
+			cancellationToken);
 
 		return Ok();
 	}

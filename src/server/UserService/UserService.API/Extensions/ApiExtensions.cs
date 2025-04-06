@@ -8,7 +8,6 @@ using UserService.API.Behaviors;
 using UserService.API.Contracts.Examples;
 using UserService.API.Controllers.Grpc;
 using UserService.Infrastructure.Hubs.Notification;
-using UserService.Infrastructure.Notification;
 
 namespace UserService.API.Extensions;
 

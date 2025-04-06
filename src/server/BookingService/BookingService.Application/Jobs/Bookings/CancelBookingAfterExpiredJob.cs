@@ -5,6 +5,7 @@ using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
 using Brokers.Models.DTOs;
+using Domain.Enums;
 using Extensions.Enums;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +59,10 @@ public class CancelBookingAfterExpiredJob(
 
 		var notification = new NotificationDto(
 			userId,
-			"You did not pay for the reservation, it was canceled.");
+			"You did not pay for the reservation, it was canceled.",
+			NotificationType.Error.GetDescription());
+		
+		logger.LogError("Notification type {Type} in cancel booking", NotificationType.Error.GetDescription());
 
 		await rabbitMQProducer.PublishAsync(notification, cancellationToken);
 

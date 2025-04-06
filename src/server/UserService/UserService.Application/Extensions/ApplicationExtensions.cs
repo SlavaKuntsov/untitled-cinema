@@ -1,5 +1,4 @@
-﻿using BookingService.Application.Consumers;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Application.Consumers;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;

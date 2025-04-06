@@ -1,4 +1,7 @@
-﻿using MapsterMapper;
+﻿using Brokers.Models.DTOs;
+using Domain.Enums;
+using Extensions.Enums;
+using MapsterMapper;
 using MediatR;
 using UserService.Application.Data;
 using UserService.Application.Interfaces.Notification;
@@ -7,6 +10,9 @@ using UserService.Domain.Models;
 using UserService.Persistence.Repositories;
 
 namespace UserService.Application.Handlers.Commands.Notifications.SendNotification;
+
+public record SendNotificationCommand(
+	NotificationDto notification) : IRequest;
 
 public class SendNotificationCommandHandler(
 	INotificationsRepository notificationRepository,
@@ -18,8 +24,8 @@ public class SendNotificationCommandHandler(
 	{
 		var notification = new NotificationModel(
 			Guid.NewGuid(),
-			request.UserId,
-			request.Message,
+			request.notification.UserId,
+			request.notification.Message,
 			DateTime.UtcNow);
 
 		await notificationRepository.CreateAsync(
@@ -27,7 +33,7 @@ public class SendNotificationCommandHandler(
 			cancellationToken);
 
 		await notificationService.SendAsync(
-			notification,
+			request.notification,
 			cancellationToken);
 
 		await dbContext.SaveChangesAsync(cancellationToken);

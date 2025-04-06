@@ -1,8 +1,8 @@
-﻿using UserService.Domain.Models;
+﻿using Brokers.Models.DTOs;
 
 namespace UserService.Application.Interfaces.Notification;
 
 public interface INotificationService
 {
-	Task SendAsync(NotificationModel notification, CancellationToken cancellationToken);
+	Task SendAsync(NotificationDto notification, CancellationToken cancellationToken);
 }

@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace UserService.Infrastructure.Hubs.Notification;
 
 [Authorize(Policy = "UserOrAdmin")]
-public class 
-	NotificationHub(ILogger<NotificationHub> logger) : Hub
+// [AllowAnonymous]
+public class NotificationHub(ILogger<NotificationHub> logger) : Hub
 {
 	private static readonly ConcurrentDictionary<Guid, HashSet<string>> _userConnections = new();
 

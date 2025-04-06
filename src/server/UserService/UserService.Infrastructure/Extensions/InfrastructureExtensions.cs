@@ -7,8 +7,7 @@ using Redis.Service;
 using UserService.Application.Interfaces.Auth;
 using UserService.Application.Interfaces.Notification;
 using UserService.Infrastructure.Auth;
-using UserService.Infrastructure.Notification;
-
+using UserService.Infrastructure.Hubs.Notification;
 using Utilities.Service;
 
 namespace UserService.Infrastructure.Extensions;

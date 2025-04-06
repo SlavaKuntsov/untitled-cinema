@@ -121,8 +121,7 @@ public class CreateBookingCommandHandler(
 			bookingDateNow);
 
 		await rabbitMQProducer.PublishAsync(booking, cancellationToken);
-
-
+		
 		foreach (var seat in request.Seats)
 		{
 			var updatedSeatsDto = new UpdatedSeatDTO(

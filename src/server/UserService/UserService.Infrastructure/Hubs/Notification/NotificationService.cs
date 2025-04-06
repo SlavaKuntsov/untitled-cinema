@@ -1,28 +1,27 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Brokers.Models.DTOs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-
 using UserService.Application.Interfaces.Notification;
-using UserService.Domain.Models;
-using UserService.Infrastructure.Hubs.Notification;
 
-namespace UserService.Infrastructure.Notification;
+namespace UserService.Infrastructure.Hubs.Notification;
 
 public class NotificationService(
 	IHubContext<NotificationHub> hubContext,
 	ILogger<NotificationService> logger) : INotificationService
 {
-	public async Task SendAsync(NotificationModel notification, CancellationToken cancellationToken)
+	public async Task SendAsync(NotificationDto notification, CancellationToken cancellationToken)
 	{
 		var connections = NotificationHub.GetConnections(notification.UserId);
 
 		foreach (var connectionId in connections)
 		{
-			logger.LogError("connect count: " + connections.Count());
+			logger.LogError("Connect count: {Count}", connections.Count());
 
-			await hubContext.Clients.Client(connectionId).SendAsync(
-				"ReceiveNotification",
-				notification,
-				cancellationToken);
+			await hubContext.Clients.Client(connectionId)
+				.SendAsync(
+					"ReceiveNotification",
+					notification,
+					cancellationToken);
 		}
 	}
 }

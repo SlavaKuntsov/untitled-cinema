@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using UserService.Application.Handlers.Commands.Notifications.SendNotification;
 
-namespace BookingService.Application.Consumers;
+namespace UserService.Application.Consumers;
 
 public class NotificationsConsumeService(
 	IRabbitMQConsumer<NotificationDto> rabbitMQConsumer,
@@ -27,7 +27,7 @@ public class NotificationsConsumeService(
 				var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
 				await mediator.Send(
-					new SendNotificationCommand(notification.UserId, notification.Message),
+					new SendNotificationCommand(notification),
 					cancellationToken);
 			});
 

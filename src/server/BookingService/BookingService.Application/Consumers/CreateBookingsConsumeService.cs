@@ -7,6 +7,8 @@ using BookingService.Domain.Constants;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
 using Brokers.Models.DTOs;
+using Domain.Enums;
+using Extensions.Enums;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +30,7 @@ public class CreateBookingsConsumeService(
 			async (_, args) =>
 			{
 				logger.LogInformation("Starting consume booking create.");
-				
+
 				var booking = JsonSerializer.Deserialize<BookingModel>(
 					Encoding.UTF8.GetString(args.Body.ToArray()));
 
@@ -49,7 +51,10 @@ public class CreateBookingsConsumeService(
 				var notification = new NotificationDto(
 					booking.UserId,
 					$"You have {JobsConstants.AFTER_BOOKING_EXPIRED_TEST} to pay tickets, " +
-					$"otherwise the booking can be canceled.");
+					$"otherwise the booking can be canceled.",
+					NotificationType.Success.GetDescription());
+				
+				logger.LogError("Notification type {Type} in create booking", NotificationType.Success.GetDescription());
 
 				await rabbitMQProducer.PublishAsync(notification, cancellationToken);
 
@@ -61,7 +66,7 @@ public class CreateBookingsConsumeService(
 						booking!.UserId,
 						cancellationToken),
 					JobsConstants.AFTER_BOOKING_EXPIRED_TEST);
-				
+
 				logger.LogInformation("Processed consume booking create.");
 			});
 
