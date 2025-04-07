@@ -22,21 +22,19 @@ export class YourBookingsComponent {
   bookingHistory = signal<Booking[]>([]);
 
   payload = signal<BookingHistoryPaginationPayload>({
-    userId: this.userService.user()?.id!,
-    limit: 3,
-    offset: 1,
-    filters: [],
-    filterValues: [],
-    sortBy: "title",
-    sortDirection: "asc",
-    date: "",
-  });
+		userId: this.userService.user()?.id!,
+		limit: 3,
+		offset: 1,
+		filters: ['status'],      
+		filterValues: ['notcancelled'], 
+		sortBy: "title",
+		sortDirection: "asc",
+		date: "",
+	});
 
   constructor() {
     effect(() => {
       if (this.userService.user()) {
-
-				this.payload.update()
 
         this.bookingService.getHistory(this.payload()).subscribe({
           next: (res: PaginationWrapper<Booking>) => {

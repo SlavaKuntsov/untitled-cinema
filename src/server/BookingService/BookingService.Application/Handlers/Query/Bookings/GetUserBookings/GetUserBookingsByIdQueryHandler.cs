@@ -47,9 +47,6 @@ public class GetUserBookingsByIdQueryHandler(
 		else
 			query = bookingsRepository.Get();
 
-
-		var qwe = await bookingsRepository.ToListAsync(query, cancellationToken);
-
 		if (!string.IsNullOrWhiteSpace(request.Date))
 		{
 			if (!request.Date.DateFormatTryParse(out var parsedDate))
@@ -57,14 +54,9 @@ public class GetUserBookingsByIdQueryHandler(
 
 			var startDate = parsedDate.Date.ToUniversalTime();
 			var endDate = startDate.AddDays(1);
-    
-			logger.LogInformation($"Filtering between: {startDate} and {endDate}");
 
 			query = query.Where(b => 
 				b.CreatedAt >= startDate && b.CreatedAt < endDate);
-
-			var filtered = await bookingsRepository.ToListAsync(query, cancellationToken);
-			logger.LogInformation($"Found {filtered.Count} matching records");
 		}
 
 		foreach (var filter in filters)
