@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MovieService.API.Contracts.Requests;
+namespace BookingService.API.Contracts.Requests;
 
-public class GetMovieRequest
+public class GetBookingHistoryRequest
 {
+	[FromQuery(Name = "UserId")]
+	public Guid UserId { get; set; }
+	
 	[FromQuery]
 	[DefaultValue(10)]
 	public byte Limit { get; set; }
@@ -20,7 +23,7 @@ public class GetMovieRequest
 	public string[] FilterValues { get; set; } = [];
 
 	[FromQuery]
-	[DefaultValue("title")]
+	[DefaultValue("date")]
 	public string SortBy { get; set; }
 
 	[FromQuery]

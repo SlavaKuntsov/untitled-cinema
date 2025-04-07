@@ -24,3 +24,14 @@ export interface BookingDto {
   sessionId: string;
   seats: Seat[];
 }
+
+export interface BookingHistoryPaginationPayload {
+	userId: string
+  limit: number;
+  offset: number;
+  filters: string[];
+  filterValues: string[];
+  sortBy: string;
+  sortDirection: "asc" | "desc";
+  date: string;
+}

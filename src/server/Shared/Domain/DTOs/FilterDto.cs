@@ -1,4 +1,4 @@
-﻿namespace MovieService.Application.DTOs;
+﻿namespace Domain.DTOs;
 
 public struct FilterDto
 {

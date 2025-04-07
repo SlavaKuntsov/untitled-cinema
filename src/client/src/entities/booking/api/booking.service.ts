@@ -1,8 +1,14 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../environments/environment";
-import { Booking, BookingDto, SessionSeats } from "../model/booking";
+import { PaginationWrapper } from "../../movies";
+import {
+  Booking,
+  BookingDto,
+  BookingHistoryPaginationPayload,
+  SessionSeats,
+} from "../model/booking";
 
 @Injectable({
   providedIn: "root",
@@ -31,9 +37,30 @@ export class BookingService {
     });
   }
 
-  getHistory(userId: string, onlyProcessed: boolean = false): Observable<Booking[]> {
-    return this.http.get<Booking[]>(
-      `${environment.bookingBaseUrl}/bookings/history/${userId}?OnlyProcessed=${onlyProcessed}`,
+  getHistory(
+    payload: BookingHistoryPaginationPayload,
+  ): Observable<PaginationWrapper<Booking>> {
+    let params = new HttpParams()
+      .set("UserId", payload.userId.toString())
+      .set("Limit", payload.limit.toString())
+      .set("Offset", payload.offset.toString())
+      .set("SortBy", payload.sortBy)
+      .set("SortDirection", payload.sortDirection)
+      .set("Date", payload.date);
+
+    if (payload.filters && payload.filterValues) {
+      payload.filters.forEach((filter, index) => {
+        params = params
+          .append("Filter", filter)
+          .append("FilterValue", payload.filterValues[index]);
+      });
+    }
+
+    return this.http.get<PaginationWrapper<Booking>>(
+      `${environment.bookingBaseUrl}/bookings/history`,
+      {
+        params,
+      },
     );
   }
 }

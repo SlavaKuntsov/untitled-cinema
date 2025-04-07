@@ -5,7 +5,6 @@ using Extensions.Exceptions;
 using Extensions.Exceptions.Middlewares;
 using Extensions.Host;
 using Extensions.Logging;
-using Extensions.Mapper;
 using Extensions.Swagger;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;

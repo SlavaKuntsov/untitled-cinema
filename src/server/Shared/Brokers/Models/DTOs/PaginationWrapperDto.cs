@@ -1,4 +1,4 @@
-﻿namespace MovieService.Application.DTOs;
+﻿namespace Brokers.Models.DTOs;
 
 public record PaginationWrapperDto<T>
 {

@@ -1,6 +1,4 @@
-﻿using BookingService.Domain.Enums;
-
-namespace BookingService.Domain.Entities;
+﻿namespace BookingService.Domain.Entities;
 
 public class BookingEntity
 {
@@ -9,7 +7,7 @@ public class BookingEntity
 	public Guid SessionId { get; set; }
 	public IList<SeatEntity> Seats { get; set; } = [];
 	public decimal TotalPrice { get; set; }
-	public string Status { get; set; } 
+	public string Status { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }
 }

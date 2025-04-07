@@ -1,4 +1,6 @@
-﻿using Domain.Exceptions;
+﻿using Brokers.Models.DTOs;
+using Domain.DTOs;
+using Domain.Exceptions;
 using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
@@ -121,14 +123,14 @@ public class GetAllMoviesQueryHandler(
 		query = query.Skip((request.Offset - 1) * request.Limit)
 			.Take(request.Limit);
 
-		var movies = await unitOfWork.MoviesRepository.ToListAsync(query, cancellationToken);
+		var moviesEntities = await unitOfWork.MoviesRepository.ToListAsync(query, cancellationToken);
 
-		var movieModels = mapper.Map<IList<MovieModel>>(movies);
+		var movies = mapper.Map<IList<MovieModel>>(moviesEntities);
 
-		await redisCacheService.SetValueAsync(cacheKey, movieModels, TimeSpan.FromMinutes(10));
+		await redisCacheService.SetValueAsync(cacheKey, movies, TimeSpan.FromMinutes(10));
 
 		return new PaginationWrapperDto<MovieModel>(
-			movieModels,
+			movies,
 			request.Limit,
 			request.Offset,
 			totalMovies);
