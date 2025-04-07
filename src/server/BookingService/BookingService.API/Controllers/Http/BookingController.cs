@@ -30,7 +30,7 @@ public class BookingController(
 
 	[HttpGet("/bookings/history")]
 	public async Task<IActionResult> Get(
-		[FromRoute] GetBookingHistoryRequest request,
+		[FromQuery] GetBookingHistoryRequest request,
 		CancellationToken cancellationToken)
 	{
 		logger.LogInformation("Fetch booking history.");
