@@ -1,11 +1,12 @@
+using System.Reactive.Linq;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minio.ApiEndpoints;
 using Minio.DataModel.Args;
 
 namespace Minios.Services;
 
-public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> options)
-	: IMinioService
+public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> options) : IMinioService
 {
 	private readonly MinioOptions _options = options.Value;
 
@@ -25,7 +26,7 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 		await minioClient.MakeBucketAsync(args);
 	}
 
-	public async Task UploadFileAsync(string bucketName, string objectName, Stream data, string contentType)
+	public async Task UploadFileAsync(string? bucketName, string objectName, Stream data, string contentType)
 	{
 		bucketName ??= _options.DefaultBucket;
 
@@ -42,7 +43,7 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 		await minioClient.PutObjectAsync(putObjectArgs);
 	}
 
-	public async Task<Stream> GetFileAsync(string bucketName, string objectName)
+	public async Task<Stream> GetFileAsync(string? bucketName, string objectName)
 	{
 		bucketName ??= _options.DefaultBucket;
 
@@ -59,7 +60,23 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 		return memoryStream;
 	}
 
-	public async Task RemoveFileAsync(string bucketName, string objectName)
+	public async Task<FileMetadata> GetFileMetadataAsync(string? bucketName, string objectName)
+	{
+		bucketName ??= _options.DefaultBucket;
+
+		var stat = await minioClient.StatObjectAsync(
+			new StatObjectArgs().WithBucket(bucketName).WithObject(objectName));
+
+		return new FileMetadata
+		{
+			Name = objectName,
+			Size = stat.Size,
+			LastModified = stat.LastModified
+		};
+	}
+
+
+	public async Task RemoveFileAsync(string? bucketName, string objectName)
 	{
 		bucketName ??= _options.DefaultBucket;
 
@@ -71,7 +88,7 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 	}
 
 	public async Task<string> GetPresignedUrlAsync(
-		string bucketName,
+		string? bucketName,
 		string objectName,
 		int expiryInSeconds = 604800)
 	{
@@ -83,5 +100,33 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 			.WithExpiry(expiryInSeconds);
 
 		return await minioClient.PresignedGetObjectAsync(args);
+	}
+
+	public async Task<IEnumerable<FileMetadata>> ListFilesAsync(string? bucketName)
+	{
+		bucketName ??= _options.DefaultBucket;
+
+		var listArgs = new ListObjectsArgs()
+			.WithBucket(bucketName)
+			.WithRecursive(true);
+
+		var result = new List<FileMetadata>();
+		var observable = minioClient.ListObjectsAsync(listArgs);
+
+		await observable.ForEachAsync(
+			item =>
+			{
+				result.Add(
+					new FileMetadata
+					{
+						Name = item.Key,
+						Size = (long)item.Size,
+						LastModified = DateTime.TryParse(item.LastModified, out var dt)
+							? dt
+							: DateTime.MinValue
+					});
+			});
+
+		return result;
 	}
 }

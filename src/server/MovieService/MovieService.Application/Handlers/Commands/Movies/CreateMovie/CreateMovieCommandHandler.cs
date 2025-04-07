@@ -2,6 +2,8 @@
 using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Minios.Services;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -10,9 +12,23 @@ using Redis.Services;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
+public record CreateMovieCommand(
+	string Title,
+	IList<string> Genres,
+	string Description,
+	byte[] Poster,
+	// IFormFile Poster,
+	decimal Price,
+	short DurationMinutes,
+	string Producer,
+	string InRoles,
+	byte AgeLimit,
+	string ReleaseDate) : IRequest<Guid>;
+
 public class CreateMovieCommandHandler(
 	IUnitOfWork unitOfWork,
 	IRedisCacheService redisCacheService,
+	IMinioService minioService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
@@ -21,6 +37,8 @@ public class CreateMovieCommandHandler(
 			throw new BadRequestException("Invalid date format.");
 
 		var dateNow = DateTime.UtcNow;
+		
+		// var posterUrl = minioService.
 
 		var movie = new MovieModel(
 			Guid.NewGuid(),

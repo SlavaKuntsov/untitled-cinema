@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minios.Services;
 
 namespace Minios;
 
@@ -12,21 +13,25 @@ public static class MinioExtension
 		IConfiguration configuration)
 	{
 		// Регистрируем конфигурацию (исправленная строка)
-		services.Configure<MinioOptions>(options => 
-			configuration.GetSection(nameof(MinioOptions)).Bind(options));
+		services.Configure<MinioOptions>(
+			options =>
+				configuration.GetSection(nameof(MinioOptions)).Bind(options));
 
 		// Регистрируем MinioClient как Singleton
-		services.AddSingleton<IMinioClient>(serviceProvider =>
-		{
-			var options = serviceProvider.GetRequiredService<IOptions<MinioOptions>>().Value
-						?? throw new ArgumentNullException("Minio configuration is missing");
+		services.AddSingleton<IMinioClient>(
+			serviceProvider =>
+			{
+				var options = serviceProvider.GetRequiredService<IOptions<MinioOptions>>().Value
+							?? throw new ArgumentNullException("Minios configuration is missing");
 
-			return new MinioClient()
-				.WithEndpoint(options.Endpoint)
-				.WithCredentials(options.AccessKey, options.SecretKey)
-				.WithSSL(options.UseSsl)
-				.Build();
-		});
+				return new MinioClient()
+					.WithEndpoint(options.Endpoint)
+					.WithCredentials(options.AccessKey, options.SecretKey)
+					.WithSSL(options.UseSsl)
+					.Build();
+			});
+
+		services.AddSingleton<IMinioService, MinioService>();
 
 		return services;
 	}
