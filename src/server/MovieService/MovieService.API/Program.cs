@@ -10,6 +10,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
+using Minios;
 using MovieService.API.Extensions;
 using MovieService.Application.Extensions;
 using MovieService.Infrastructure.Extensions;
@@ -30,6 +31,7 @@ services
 	// .AddMapper()
 	.AddSwagger()
 	.AddRabbitMQ(configuration)
+	.AddMinio(configuration)
 	.AddHealthChecks();
 
 services
