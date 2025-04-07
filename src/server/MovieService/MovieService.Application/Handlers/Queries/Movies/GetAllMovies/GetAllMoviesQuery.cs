@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Brokers.Models.DTOs;
+using MediatR;
 
 using MovieService.Application.DTOs;
 using MovieService.Domain.Models;

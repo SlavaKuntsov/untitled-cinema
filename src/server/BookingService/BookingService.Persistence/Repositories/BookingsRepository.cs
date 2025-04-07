@@ -2,6 +2,7 @@
 using BookingService.Domain.Entities;
 using BookingService.Domain.Interfaces.Repositories;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace BookingService.Persistence.Repositories;
 
@@ -10,11 +11,23 @@ public class BookingsRepository(BookingServiceDBContext context) : IBookingsRepo
 	private readonly IMongoCollection<BookingEntity> _collection =
 		context.GetCollection<BookingEntity>("Bookings");
 
+	public IQueryable<BookingEntity> Get()
+	{
+		return _collection.AsQueryable();
+	}
+
 	public async Task<IList<BookingEntity>> GetAsync(CancellationToken cancellationToken)
 	{
 		return await _collection
 			.Find(FilterDefinition<BookingEntity>.Empty)
 			.ToListAsync(cancellationToken);
+	}
+
+	public IQueryable<BookingEntity> Get(Expression<Func<BookingEntity, bool>> predicate)
+	{
+		return _collection
+			.AsQueryable()
+			.Where(predicate);
 	}
 
 	public async Task<BookingEntity> GetOneAsync(
@@ -69,5 +82,17 @@ public class BookingsRepository(BookingServiceDBContext context) : IBookingsRepo
 			predicate,
 			options,
 			cancellationToken);
+	}
+
+	public async Task<IList<BookingEntity>> ToListAsync(
+		IQueryable<BookingEntity> query,
+		CancellationToken cancellationToken)
+	{
+		return await query.ToListAsync(cancellationToken);
+	}
+	
+	public async Task<int> GetCount(IQueryable<BookingEntity> query)
+	{
+		return await query.CountAsync();
 	}
 }

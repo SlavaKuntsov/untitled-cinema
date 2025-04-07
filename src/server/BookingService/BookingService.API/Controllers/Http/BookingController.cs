@@ -1,9 +1,10 @@
-﻿using BookingService.Application.Handlers.Commands.Bookings.CancelBooking;
+﻿using BookingService.API.Contracts.Requests;
+using BookingService.Application.Handlers.Commands.Bookings.CancelBooking;
 using BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
 using BookingService.Application.Handlers.Commands.Bookings.PayBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 using BookingService.Application.Handlers.Query.Bookings.GetAllBookings;
-using BookingService.Application.Handlers.Query.Bookings.GetBookingsByUserId;
+using BookingService.Application.Handlers.Query.Bookings.GetUserBookings;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,12 +28,32 @@ public class BookingController(
 		return Ok(bookings);
 	}
 
-	[HttpGet("/bookings/{id:Guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+	[HttpGet("/bookings/history")]
+	public async Task<IActionResult> Get(
+		[FromQuery] GetBookingHistoryRequest request,
+		CancellationToken cancellationToken)
 	{
-		var bookings = await mediator.Send(new GetUserBookingsByIdQuery(id), cancellationToken);
+		logger.LogInformation("Fetch booking history.");
+		
+		var paginatedBookings = await mediator.Send(
+			new GetUserBookingsByIdQuery(
+				request.UserId,
+				request.Limit,
+				request.Offset,
+				request.Filters,
+				request.FilterValues,
+				request.SortBy,
+				request.SortDirection,
+				request.Date),
+			cancellationToken);
 
-		return Ok(bookings);
+		var (nextRef, prevRef) = GeneratePaginationLinks(request, paginatedBookings.Total);
+
+		var newPaginatedBookings = paginatedBookings with { NextRef = nextRef, PrevRef = prevRef };
+
+		logger.LogInformation("Successfully fetched {Count} bookings from history.", request.Limit);
+
+		return Ok(newPaginatedBookings);
 	}
 
 	[HttpPost("/bookings")]
@@ -88,5 +109,30 @@ public class BookingController(
 			cancellationToken);
 
 		return Ok(booking);
+	}
+
+	private (string NextRef, string PrevRef) GeneratePaginationLinks(
+		GetBookingHistoryRequest request,
+		int totalItems)
+	{
+		var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+
+		var nextOffset = request.Offset + 1;
+
+		var nextRef = request.Offset * request.Limit < totalItems
+			? $"{baseUrl}?Limit={request.Limit}&Offset={nextOffset}&SortBy={request.SortBy}&SortDirection={request.SortDirection}"
+			: string.Empty;
+
+		var prevRef = string.Empty;
+
+		if (request.Offset > 1)
+		{
+			var prevOffset = request.Offset - 1;
+
+			prevRef =
+				$"{baseUrl}?Limit={request.Limit}&Offset={prevOffset}&SortBy={request.SortBy}&SortDirection={request.SortDirection}";
+		}
+
+		return (nextRef, prevRef);
 	}
 }

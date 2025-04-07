@@ -1,1 +1,13 @@
 <p>booking-history works!</p>
+@if (bookingHistory()) {
+	<div class="flex flex-col gap-6 items-center justify-center">
+		@for (booking of bookingHistory(); track $index) {
+			<div>
+				{{ booking | json }}
+			</div>
+		}
+	</div>
+}
+@else {
+	<p>Not Found</p>
+}

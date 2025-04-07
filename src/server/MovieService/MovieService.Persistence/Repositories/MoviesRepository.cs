@@ -44,7 +44,6 @@ public class MoviesRepository(MovieServiceDBContext context) : IMoviesRepository
 		return movies;
 	}
 
-
 	public async Task<int> GetCount(IQueryable<MovieEntity> query)
 	{
 		return await query.AsNoTracking().CountAsync();
