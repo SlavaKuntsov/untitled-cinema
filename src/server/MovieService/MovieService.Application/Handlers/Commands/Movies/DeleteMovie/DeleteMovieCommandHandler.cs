@@ -2,7 +2,7 @@
 using MediatR;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
-using Redis.Service;
+using Redis.Services;
 
 namespace MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 

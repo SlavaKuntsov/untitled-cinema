@@ -5,7 +5,7 @@ using Extensions.Strings;
 using Mapster;
 using MapsterMapper;
 using MediatR;
-using Redis.Service;
+using Redis.Services;
 using UserService.Application.Data;
 using UserService.Application.DTOs;
 using UserService.Domain.Interfaces.Repositories;

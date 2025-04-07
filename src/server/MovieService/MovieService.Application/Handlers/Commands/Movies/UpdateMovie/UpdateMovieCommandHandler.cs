@@ -6,7 +6,7 @@ using MediatR;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
-using Redis.Service;
+using Redis.Services;
 
 namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
 

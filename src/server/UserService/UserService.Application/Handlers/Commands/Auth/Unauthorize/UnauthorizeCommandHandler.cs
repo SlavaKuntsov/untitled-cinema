@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Redis.Service;
+using Redis.Services;
 using UserService.Application.Data;
 using UserService.Domain.Interfaces.Repositories;
 

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MovieService.Domain.Interfaces.Grpc;
 using MovieService.Infrastructure.Grpc;
 using Redis;
-using Redis.Service;
+using Redis.Services;
 
 namespace MovieService.Infrastructure.Extensions;
 

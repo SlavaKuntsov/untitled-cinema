@@ -36,6 +36,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj"/>
         <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj"/>
+        <ProjectReference Include="..\..\Shared\Minios\Minios.csproj" />
         <ProjectReference Include="..\..\Shared\Protobufs\Protobufs.csproj"/>
         <ProjectReference Include="..\..\Shared\Utilities\Utilities.csproj"/>
         <ProjectReference Include="..\MovieService.Application\MovieService.Application.csproj"/>
