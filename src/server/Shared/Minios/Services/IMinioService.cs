@@ -1,3 +1,5 @@
+using Minios.Models;
+
 namespace Minios.Services;
 
 public interface IMinioService
@@ -9,5 +11,5 @@ public interface IMinioService
 	Task<FileMetadata> GetFileMetadataAsync(string bucketName, string objectName);
 	Task RemoveFileAsync(string bucketName, string objectName);
 	Task<string> GetPresignedUrlAsync(string bucketName, string objectName, int expiryInSeconds = 604800);
-	Task<IEnumerable<FileMetadata>> ListFilesAsync(string bucketName);
+	Task<IEnumerable<FileMetadata>> ListFilesAsync(string? bucketName = null);
 }

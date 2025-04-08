@@ -10,7 +10,6 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
-using Minio;
 using Minios;
 using MovieService.API.Extensions;
 using MovieService.Application.Extensions;
@@ -44,6 +43,8 @@ services
 host.AddLogging();
 
 var app = builder.Build();
+
+await app.Services.EnsureMinioBucketExistsAsync();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

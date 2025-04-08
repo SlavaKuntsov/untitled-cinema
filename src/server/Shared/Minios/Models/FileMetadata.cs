@@ -1,4 +1,4 @@
-namespace Minios.Services;
+namespace Minios.Models;
 
 public class FileMetadata
 {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.ApiEndpoints;
 using Minio.DataModel.Args;
+using Minios.Models;
 
 namespace Minios.Services;
 
@@ -102,7 +103,7 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 		return await minioClient.PresignedGetObjectAsync(args);
 	}
 
-	public async Task<IEnumerable<FileMetadata>> ListFilesAsync(string? bucketName)
+	public async Task<IEnumerable<FileMetadata>> ListFilesAsync(string? bucketName = null)
 	{
 		bucketName ??= _options.DefaultBucket;
 

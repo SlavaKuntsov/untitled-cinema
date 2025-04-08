@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minio.DataModel.Args;
 using Minios.Services;
 
 namespace Minios;
@@ -12,12 +14,10 @@ public static class MinioExtension
 		this IServiceCollection services,
 		IConfiguration configuration)
 	{
-		// Регистрируем конфигурацию (исправленная строка)
 		services.Configure<MinioOptions>(
 			options =>
 				configuration.GetSection(nameof(MinioOptions)).Bind(options));
 
-		// Регистрируем MinioClient как Singleton
 		services.AddSingleton<IMinioClient>(
 			serviceProvider =>
 			{
@@ -34,5 +34,33 @@ public static class MinioExtension
 		services.AddSingleton<IMinioService, MinioService>();
 
 		return services;
+	}
+
+	public static async Task EnsureMinioBucketExistsAsync(this IServiceProvider serviceProvider)
+	{
+		using var scope = serviceProvider.CreateScope();
+
+		var client = scope.ServiceProvider.GetRequiredService<IMinioClient>();
+		var options = scope.ServiceProvider.GetRequiredService<IOptions<MinioOptions>>().Value;
+
+		var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+		var logger = loggerFactory.CreateLogger("Minio");
+
+		var bucketName = options.DefaultBucket;
+
+		var exists = await client.BucketExistsAsync(
+			new BucketExistsArgs().WithBucket(bucketName));
+
+		if (!exists)
+		{
+			await client.MakeBucketAsync(
+				new MakeBucketArgs().WithBucket(bucketName));
+
+			logger.LogInformation("[MinIO] Bucket '{BucketName}' created.", bucketName);
+		}
+		else
+		{
+			logger.LogInformation("[MinIO] Bucket '{BucketName}' already exists.", bucketName);
+		}
 	}
 }

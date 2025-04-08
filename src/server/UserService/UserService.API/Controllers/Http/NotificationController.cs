@@ -43,8 +43,7 @@ public class NotificationController(IMediator mediator) : ControllerBase
 
 		if (!Guid.TryParse(userIdClaim.Value, out var userId))
 			throw new UnauthorizedAccessException("Invalid User ID format in claims.");
-
-
+		
 		await mediator.Send(
 			new SendNotificationCommand(
 				new NotificationDto(
