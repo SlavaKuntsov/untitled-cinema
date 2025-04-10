@@ -1,18 +1,18 @@
 using Domain.Exceptions;
-using MapsterMapper;
 using MediatR;
+using Minios.Services;
+using MovieService.Application.DTOs;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
-using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Movies;
 
-public sealed record GetMovieFramesByMovieIdQuery(Guid Id) : IRequest<IList<MovieFrameModel>>;
+public sealed record GetMovieFramesByMovieIdQuery(Guid Id) : IRequest<IList<MovieFrameDto>>;
 
 public sealed class GetMovieFramesByMovieIdQueryHandler(
-	IUnitOfWork unitOfWork,
-	IMapper mapper) : IRequestHandler<GetMovieFramesByMovieIdQuery, IList<MovieFrameModel>>
+	IMinioService minioService,
+	IUnitOfWork unitOfWork) : IRequestHandler<GetMovieFramesByMovieIdQuery, IList<MovieFrameDto>>
 {
-	public async Task<IList<MovieFrameModel>> Handle(
+	public async Task<IList<MovieFrameDto>> Handle(
 		GetMovieFramesByMovieIdQuery request,
 		CancellationToken cancellationToken)
 	{
@@ -20,8 +20,20 @@ public sealed class GetMovieFramesByMovieIdQueryHandler(
 						.GetFramesAsync(request.Id, cancellationToken)
 					?? throw new NotFoundException($"Movie Frame with id '{request}' not found.");
 
-		var orderedFrames = frames.OrderBy(f => f.Order);
+		var result = new List<MovieFrameDto>(frames.Count);
 
-		return mapper.Map<IList<MovieFrameModel>>(orderedFrames);
+		foreach (var frame in frames.OrderBy(f => f.Order))
+		{
+			var url = await minioService.GetPresignedUrlAsync(null, frame.FrameName);
+
+			result.Add(
+				new MovieFrameDto(
+					frame.Id,
+					frame.MovieId,
+					frame.FrameName,
+					url));
+		}
+
+		return result;
 	}
 }
