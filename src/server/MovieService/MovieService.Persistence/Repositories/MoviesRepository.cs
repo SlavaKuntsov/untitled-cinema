@@ -72,4 +72,12 @@ public class MoviesRepository(MovieServiceDBContext context) : IMoviesRepository
 			.Where(m => m.Name.ToLower() == name.ToLower())
 			.FirstOrDefaultAsync(cancellationToken);
 	}
+
+	public async Task<IList<MovieFrameEntity>> GetFramesAsync(Guid movieId, CancellationToken cancellationToken)
+	{
+		return await context.MovieFrames
+			.AsNoTracking()
+			.Where(f => f.MovieId == movieId)
+			.ToListAsync(cancellationToken);
+	}
 }

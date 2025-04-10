@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using MovieService.Domain.Entities.Movies;
 
 namespace MovieService.Persistence.Configurations;
@@ -45,16 +44,16 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 			);
 
 		builder.HasMany(m => m.Sessions)
-			   .WithOne(s => s.Movie)
-			   .HasForeignKey(s => s.MovieId)
-			   .OnDelete(DeleteBehavior.Cascade);
-
-		builder.HasMany(m => m.MovieFrames) 
-			   .WithOne(mf => mf.Movie)
-			   .HasForeignKey(mf => mf.MovieId)
-			   .OnDelete(DeleteBehavior.Cascade);
+			.WithOne(s => s.Movie)
+			.HasForeignKey(s => s.MovieId)
+			.OnDelete(DeleteBehavior.Cascade);
+		
+		builder.HasMany(m => m.MovieFrames)
+			.WithOne(f => f.Movie)
+			.HasForeignKey(f => f.MovieId)
+			.OnDelete(DeleteBehavior.Cascade);
 
 		builder.HasIndex(m => m.Title)
-			   .HasDatabaseName("IX_Movies_Title");
+			.HasDatabaseName("IX_Movies_Title");
 	}
 }

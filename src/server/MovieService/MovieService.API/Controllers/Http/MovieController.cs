@@ -8,9 +8,11 @@ using MovieService.Application.Handlers.Commands.Movies.DeleteGenre;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
 using MovieService.Application.Handlers.Commands.Movies.UpdateGenre;
 using MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+using MovieService.Application.Handlers.Queries.Movies;
 using MovieService.Application.Handlers.Queries.Movies.GetAllGenres;
 using MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
 using MovieService.Application.Handlers.Queries.Movies.GetMovieById;
+using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace MovieService.API.Controllers.Http;
@@ -57,7 +59,7 @@ public class MovieController(
 
 		return Ok(movies);
 	}
-
+	
 	[HttpPost("/movies")]
 	[SwaggerRequestExample(typeof(CreateMovieCommand), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
@@ -68,19 +70,6 @@ public class MovieController(
 		var movie = await mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
-	}	
-	
-	[HttpPost("/movies/{id:Guid}/poster")]
-	[Consumes("multipart/form-data")]
-	//[Authorize(Policy = "AdminOnly")]
-	public async Task<IActionResult> ChangeMoviePoster(
-		[FromRoute] Guid id,
-		IFormFile file,
-		CancellationToken cancellationToken)
-	{
-		var poster = await mediator.Send(new ChangeMoviePosterCommand(id, file), cancellationToken);
-	
-		return Ok(poster);
 	}
 
 	[HttpPatch("/movies")]
@@ -102,6 +91,75 @@ public class MovieController(
 		CancellationToken cancellationToken)
 	{
 		await mediator.Send(new DeleteMovieCommand(id), cancellationToken);
+
+		return NoContent();
+	}
+	
+	[HttpPost("/movies/{id:Guid}/poster")]
+	[Consumes("multipart/form-data")]
+	//[Authorize(Policy = "AdminOnly")]
+	public async Task<IActionResult> ChangeMoviePoster(
+		[FromRoute] Guid id,
+		IFormFile file,
+		CancellationToken cancellationToken)
+	{
+		var poster = await mediator.Send(new ChangeMoviePosterCommand(id, file), cancellationToken);
+	
+		return Ok(poster);
+	}
+	
+	[HttpGet("/movies/frames")]
+	public async Task<IActionResult> GetFrames(CancellationToken cancellationToken)
+	{
+		var frames = await mediator.Send(new GetAllMoviesFramesQuery(), cancellationToken);
+
+		return Ok(frames);
+	}
+	
+	[HttpGet("/movies/{id:Guid}/frames")]
+	public async Task<IActionResult> GetFrames(
+		[FromRoute] Guid id,
+		CancellationToken cancellationToken)
+	{
+		var frames = await mediator.Send(new GetMovieFramesByMovieIdQuery(id), cancellationToken);
+
+		return Ok(frames);
+	}
+	/// <summary>
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="frameOrder">Use frameOrder = -1 to append to the end, or specify position to insert (shifts existing frames).</param>
+	/// <param name="file"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
+	[HttpPost("/movies/{id:Guid}/frames/{frameOrder:int}")]
+	[Consumes("multipart/form-data")]
+	[SwaggerOperation(
+		Summary = "ad",
+		Description = "Adds a frame to the movie. " +
+					"Use frameOrder=-1 to append to the end, " +
+					"or specify position to insert (shifts existing frames).")]
+	//[Authorize(Policy = "AdminOnly")]
+	public async Task<IActionResult> AddMovieFrame(
+		[FromRoute] Guid id,
+		[FromRoute] int frameOrder,
+		IFormFile file,
+		CancellationToken cancellationToken)
+	{
+		var poster = await mediator.Send(new AddMovieFrameCommand(
+			id, frameOrder, file),
+			cancellationToken);
+	
+		return Ok(poster);
+	}
+	
+	[HttpDelete("/movies/frames/{id:Guid}")]
+	//[Authorize(Policy = "AdminOnly")]
+	public async Task<IActionResult> DeleteFrame(
+		[FromRoute] Guid id,
+		CancellationToken cancellationToken)
+	{
+		await mediator.Send(new DeleteMovieFrameCommand(id), cancellationToken);
 
 		return NoContent();
 	}

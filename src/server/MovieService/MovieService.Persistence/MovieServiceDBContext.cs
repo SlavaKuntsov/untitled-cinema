@@ -11,9 +11,8 @@ public class MovieServiceDBContext : DbContext
 {
 	public DbSet<MovieEntity> Movies { get; set; }
 	public DbSet<GenreEntity> Genres { get; set; }
-	//public DbSet<InRoleEntity> InRoles { get; set; }
 	public DbSet<MovieGenreEntity> MovieGenres { get; set; }
-	//public DbSet<MovieInRoleEntity> MovieInRoles { get; set; }
+	public DbSet<MovieFrameEntity> MovieFrames { get; set; }
 	public DbSet<SessionEntity> Sessions { get; set; }
 	public DbSet<HallEntity> Halls { get; set; }
 	public DbSet<SeatEntity> Seats { get; set; }
