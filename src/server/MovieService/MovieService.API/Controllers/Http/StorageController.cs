@@ -4,7 +4,7 @@ using Minios.Services;
 namespace MovieService.API.Controllers.Http;
 
 [ApiController]
-[Route("api/storage")]
+[Route("/storage")]
 public class StorageController(IMinioService minioService) : ControllerBase
 {
 	[HttpPost("upload")]
