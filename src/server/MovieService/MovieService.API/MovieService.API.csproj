@@ -9,6 +9,10 @@
         <!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1"/>
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3"/>
@@ -30,6 +34,7 @@
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1"/>
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2"/>
     </ItemGroup>
 
