@@ -1,11 +1,15 @@
 using System.Security.Claims;
 using Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.Handlers.Commands.Auth.Unauthorize;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
+using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Tokens.GetByRefreshToken;
+using UserService.Application.Handlers.Queries.Users;
 using UserService.Application.Handlers.Queries.Users.GetUserById;
 using Utilities.Service;
 
@@ -67,5 +71,71 @@ public class AuthController(IMediator mediator, ICookieService cookieService) : 
 		await mediator.Send(new UnauthorizeCommand(userId), cancellationToken);
 
 		return Ok();
+	}
+
+
+	[HttpGet("google-login")]
+	public IActionResult GoogleLogin()
+	{
+		var redirectUrl = Url.Action("GoogleResponse", "Auth");
+		var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+
+		return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+	}
+
+	[HttpGet("google-response")]
+	public async Task<IActionResult> GoogleResponse(CancellationToken cancellationToken)
+	{
+		var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+		if (!result.Succeeded)
+			return BadRequest("Google authentication failed.");
+
+		var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+		var firstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
+		var lastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value;
+
+		if (string.IsNullOrEmpty(email))
+			return BadRequest("Invalid Google credentials.");
+
+		var user = await mediator.Send(new GetUserByEmailQuery(email), cancellationToken);
+
+		var authResultDto = default(UserService.Application.DTOs.AuthDto);
+		var text = default(string);
+
+		if (user is not null)
+		{
+			authResultDto = await mediator.Send(
+				new GenerateTokensCommand(user.Id, user.Role),
+				cancellationToken);
+
+			text = "login";
+		}
+		else
+		{
+			authResultDto = await mediator.Send(
+				new UserRegistrationCommand(
+					email,
+					string.Empty,
+					firstName,
+					lastName,
+					string.Empty),
+				cancellationToken);
+
+			text = "registration";
+		}
+
+		HttpContext.Response.Cookies.Append(
+			JwtConstants.REFRESH_COOKIE_NAME,
+			authResultDto.RefreshToken
+		);
+
+		return Ok(
+			new
+			{
+				text,
+				user,
+				authResultDto
+			});
 	}
 }
