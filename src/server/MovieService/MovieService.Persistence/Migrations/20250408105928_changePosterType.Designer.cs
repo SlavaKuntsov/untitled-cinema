@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieService.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieService.Persistence.Migrations
 {
     [DbContext(typeof(MovieServiceDBContext))]
-    partial class MovieServiceDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250408105928_changePosterType")]
+    partial class changePosterType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,7 +103,7 @@ namespace MovieService.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Poster")
+                    b.Property<string>("PosterUrl")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
@@ -137,16 +140,12 @@ namespace MovieService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("FrameName")
+                    b.Property<byte[]>("Image")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("bytea");
 
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -218,7 +217,7 @@ namespace MovieService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("896a3142-1acf-4099-8ee5-2ab03e08610f"),
+                            Id = new Guid("53e58dc8-c87a-4b89-9ad0-9b1126fc699c"),
                             Name = "Стандарт",
                             PriceModifier = 1m
                         });

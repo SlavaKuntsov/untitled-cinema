@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieService.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieService.Persistence.Migrations
 {
     [DbContext(typeof(MovieServiceDBContext))]
-    partial class MovieServiceDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250410102419_changePosterName")]
+    partial class changePosterName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,16 +140,12 @@ namespace MovieService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("FrameName")
+                    b.Property<byte[]>("Image")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("bytea");
 
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -218,7 +217,7 @@ namespace MovieService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("896a3142-1acf-4099-8ee5-2ab03e08610f"),
+                            Id = new Guid("0d0581ed-7e0b-4272-b7f1-00d2b1625800"),
                             Name = "Стандарт",
                             PriceModifier = 1m
                         });

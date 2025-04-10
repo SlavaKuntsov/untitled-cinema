@@ -2,15 +2,29 @@
 using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Minios.Services;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
-using Redis.Service;
+using Redis.Services;
 
 namespace MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 
+public record CreateMovieCommand(
+	string Title,
+	IList<string> Genres,
+	string Description,
+	decimal Price,
+	short DurationMinutes,
+	string Producer,
+	string InRoles,
+	byte AgeLimit,
+	string ReleaseDate) : IRequest<Guid>;
+
 public class CreateMovieCommandHandler(
+	IMinioService minioService,
 	IUnitOfWork unitOfWork,
 	IRedisCacheService redisCacheService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
@@ -19,14 +33,13 @@ public class CreateMovieCommandHandler(
 	{
 		if (!request.ReleaseDate.DateTimeFormatTryParse(out var parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
-
+		
 		var dateNow = DateTime.UtcNow;
 
 		var movie = new MovieModel(
 			Guid.NewGuid(),
 			request.Title,
 			request.Description,
-			request.Poster,
 			request.Price,
 			request.DurationMinutes,
 			request.Producer,
@@ -40,7 +53,8 @@ public class CreateMovieCommandHandler(
 
 		foreach (var genreName in request.Genres)
 		{
-			var existingGenre = await unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
+			var existingGenre =
+				await unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
 
 			if (existingGenre == null)
 			{

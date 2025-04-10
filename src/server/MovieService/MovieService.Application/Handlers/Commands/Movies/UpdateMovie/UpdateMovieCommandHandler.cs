@@ -3,12 +3,24 @@ using Extensions.Strings;
 using Mapster;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Minios.Services;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
-using Redis.Service;
+using Redis.Services;
 
 namespace MovieService.Application.Handlers.Commands.Movies.UpdateMovie;
+
+public record UpdateMovieCommand(
+	Guid Id,
+	string Title,
+	IList<string> Genres,
+	string Description,
+	short DurationMinutes,
+	string Producer,
+	byte AgeLimit,
+	string ReleaseDate) : IRequest<MovieModel>;
 
 public class UpdateMovieCommandHandler(
 	IUnitOfWork unitOfWork,

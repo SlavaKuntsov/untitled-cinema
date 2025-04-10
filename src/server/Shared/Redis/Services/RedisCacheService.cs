@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 
-namespace Redis.Service;
+namespace Redis.Services;
 
 public class RedisCacheService(
 	IDistributedCache distributedCache,

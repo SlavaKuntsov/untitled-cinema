@@ -11,15 +11,13 @@ public class MovieFrameConfiguration : IEntityTypeConfiguration<MovieFrameEntity
 	{
 		builder.ToTable("MovieFrame");
 
-		builder.HasKey(mf => mf.Id);
-
-		builder.Property(mf => mf.Image)
+		builder.HasKey(f => f.Id); 
+        
+		builder.Property(f => f.FrameName)
 			.IsRequired()
-			.HasColumnType("bytea");
-
-		builder.HasOne(mf => mf.Movie)
-			.WithMany(m => m.MovieFrames)
-			.HasForeignKey(mf => mf.MovieId)
-			.OnDelete(DeleteBehavior.Cascade); 
+			.HasMaxLength(255);
+              
+		builder.Property(f => f.Order)
+			.IsRequired();
 	}
 }

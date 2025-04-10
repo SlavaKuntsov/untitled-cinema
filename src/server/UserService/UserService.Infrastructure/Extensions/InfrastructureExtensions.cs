@@ -2,8 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using Redis;
-using Redis.Service;
-
+using Redis.Services;
 using UserService.Application.Interfaces.Auth;
 using UserService.Application.Interfaces.Notification;
 using UserService.Infrastructure.Auth;

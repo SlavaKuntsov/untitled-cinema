@@ -1,4 +1,4 @@
-﻿namespace Redis.Service;
+﻿namespace Redis.Services;
 
 public interface IRedisCacheService
 {

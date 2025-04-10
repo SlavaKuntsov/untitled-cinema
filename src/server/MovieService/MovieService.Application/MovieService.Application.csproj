@@ -18,6 +18,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Shared\Brokers\Brokers.csproj"/>
         <ProjectReference Include="..\..\Shared\Extensions\Extensions.csproj"/>
+        <ProjectReference Include="..\..\Shared\Minios\Minios.csproj" />
         <ProjectReference Include="..\..\Shared\Redis\Redis.csproj"/>
         <ProjectReference Include="..\..\Shared\Utilities\Utilities.csproj"/>
         <ProjectReference Include="..\MovieService.Domain\MovieService.Domain.csproj"/>

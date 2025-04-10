@@ -1,7 +1,7 @@
 ﻿using Domain.Exceptions;
 using MapsterMapper;
 using MediatR;
-using Redis.Service;
+using Redis.Services;
 using UserService.Application.Data;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;

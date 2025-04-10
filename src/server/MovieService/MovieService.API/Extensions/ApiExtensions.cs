@@ -18,6 +18,14 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
 	{
+		services.AddSwaggerGen(
+			options =>
+			{
+				// using System.Reflection;
+				var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+			});
+		
 		var usersPort = Environment.GetEnvironmentVariable("USERS_APP_PORT");
 		var bookingPort = Environment.GetEnvironmentVariable("BOOKINGS_APP_PORT");
 

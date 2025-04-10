@@ -12,4 +12,5 @@ public interface IMoviesRepository
 	Task<GenreEntity?> GetGenreByNameAsync(string name, CancellationToken cancellationToken);
 	Task<int> GetCount(IQueryable<MovieEntity> query);
 	IQueryable<MovieEntity> FilterByGenre(IQueryable<MovieEntity> query, List<string> genreFilters);
+	Task<IList<MovieFrameEntity>> GetFramesAsync(Guid movieId, CancellationToken cancellationToken);
 }
