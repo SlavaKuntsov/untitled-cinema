@@ -4,13 +4,21 @@ using Domain.Exceptions;
 using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
-using MovieService.Application.DTOs;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 using Redis.Services;
 
 namespace MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
+
+public record GetAllMoviesQuery(
+	byte Limit,
+	byte Offset,
+	string[] Filters,
+	string[] FilterValues,
+	string SortBy,
+	string SortDirection,
+	string Date) : IRequest<PaginationWrapperDto<MovieModel>>;
 
 public class GetAllMoviesQueryHandler(
 	IUnitOfWork unitOfWork,

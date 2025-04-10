@@ -130,4 +130,9 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 
 		return result;
 	}
+
+	public string CreateObjectName(string fileName)
+	{
+		 return Guid.NewGuid() + Path.GetExtension(fileName);
+	}
 }

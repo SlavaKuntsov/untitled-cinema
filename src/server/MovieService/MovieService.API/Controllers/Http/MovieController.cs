@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieService.API.Contracts.RequestExamples.Movies;
 using MovieService.API.Contracts.Requests;
+using MovieService.Application.Handlers.Commands.Movies;
 using MovieService.Application.Handlers.Commands.Movies.CreateMovie;
 using MovieService.Application.Handlers.Commands.Movies.DeleteGenre;
 using MovieService.Application.Handlers.Commands.Movies.DeleteMovie;
@@ -67,6 +68,19 @@ public class MovieController(
 		var movie = await mediator.Send(request, cancellationToken);
 
 		return Ok(movie);
+	}	
+	
+	[HttpPost("/movies/{id:Guid}/poster")]
+	[Consumes("multipart/form-data")]
+	//[Authorize(Policy = "AdminOnly")]
+	public async Task<IActionResult> ChangeMoviePoster(
+		[FromRoute] Guid id,
+		IFormFile file,
+		CancellationToken cancellationToken)
+	{
+		var poster = await mediator.Send(new ChangeMoviePosterCommand(id, file), cancellationToken);
+	
+		return Ok(poster);
 	}
 
 	[HttpPatch("/movies")]

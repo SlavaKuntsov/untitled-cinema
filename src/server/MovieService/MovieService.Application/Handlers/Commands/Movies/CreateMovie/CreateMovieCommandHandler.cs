@@ -16,8 +16,6 @@ public record CreateMovieCommand(
 	string Title,
 	IList<string> Genres,
 	string Description,
-	byte[] Poster,
-	// IFormFile Poster,
 	decimal Price,
 	short DurationMinutes,
 	string Producer,
@@ -26,25 +24,22 @@ public record CreateMovieCommand(
 	string ReleaseDate) : IRequest<Guid>;
 
 public class CreateMovieCommandHandler(
+	IMinioService minioService,
 	IUnitOfWork unitOfWork,
 	IRedisCacheService redisCacheService,
-	IMinioService minioService,
 	IMapper mapper) : IRequestHandler<CreateMovieCommand, Guid>
 {
 	public async Task<Guid> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
 	{
 		if (!request.ReleaseDate.DateTimeFormatTryParse(out var parsedDateTime))
 			throw new BadRequestException("Invalid date format.");
-
-		var dateNow = DateTime.UtcNow;
 		
-		// var posterUrl = minioService.
+		var dateNow = DateTime.UtcNow;
 
 		var movie = new MovieModel(
 			Guid.NewGuid(),
 			request.Title,
 			request.Description,
-			request.Poster,
 			request.Price,
 			request.DurationMinutes,
 			request.Producer,
@@ -58,7 +53,8 @@ public class CreateMovieCommandHandler(
 
 		foreach (var genreName in request.Genres)
 		{
-			var existingGenre = await unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
+			var existingGenre =
+				await unitOfWork.MoviesRepository.GetGenreByNameAsync(genreName, cancellationToken);
 
 			if (existingGenre == null)
 			{

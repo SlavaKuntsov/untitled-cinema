@@ -44,7 +44,11 @@ host.AddLogging();
 
 var app = builder.Build();
 
-await app.Services.EnsureMinioBucketExistsAsync();
+if (app.Environment.IsProduction())
+{
+	using var scope = app.Services.CreateScope();
+	await scope.ServiceProvider.EnsureMinioBucketExistsAsync();
+}
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

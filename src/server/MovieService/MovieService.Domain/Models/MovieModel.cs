@@ -7,7 +7,8 @@ public class MovieModel
 	public Guid Id { get; private set; }
 	public string Title { get; private set; } = null!;
 	public string Description { get; private set; } = string.Empty;
-	public byte[] Poster { get; set; } = [];
+	// public byte[] Poster { get; set; } = [];
+	public string Poster { get; set; } = string.Empty;
 	public IList<string> Genres { get; private set; } = [];
 	public decimal Price { get; private set; } = 0.00m;
 	public short DurationMinutes { get; private set; }
@@ -26,7 +27,6 @@ public class MovieModel
 		Guid id,
 		string title,
 		string description,
-		byte[] poster,
 		decimal price,
 		short durationMinutes,
 		string producer,
@@ -39,7 +39,6 @@ public class MovieModel
 		Id = id;
 		Title = title;
 		Description = description;
-		Poster = poster;
 		Price = price;
 		DurationMinutes = durationMinutes;
 		Producer = producer;
@@ -55,7 +54,6 @@ public class MovieModel
 		Guid id,
 		string title,
 		string description,
-		byte[] poster,
 		IList<string> genres,
 		decimal price,
 		short durationMinutes,
@@ -69,7 +67,6 @@ public class MovieModel
 		Id = id;
 		Title = title;
 		Description = description;
-		Poster = poster;
 		Genres = genres;
 		Price = price;
 		DurationMinutes = durationMinutes;

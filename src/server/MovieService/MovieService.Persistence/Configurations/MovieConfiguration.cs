@@ -19,7 +19,7 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 
 		builder.Property(m => m.Poster)
 			.IsRequired()
-			.HasColumnType("bytea");
+			.HasMaxLength(255);
 
 		builder.Property(m => m.ReleaseDate)
 			.HasColumnType("timestamptz")
