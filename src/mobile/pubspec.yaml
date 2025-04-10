@@ -1,3 +1,4 @@
+# Конфигурация проекта
 name: mobile
 description: "A new Flutter project."
 publish_to: 'none'
@@ -10,6 +11,34 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # UI
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.7
+  cached_network_image: ^3.2.3
+
+  # State Management
+  provider: ^6.0.5
+
+  # Network
+  dio: ^5.3.2
+  connectivity_plus: ^4.0.2
+  http: ^1.1.0
+
+  # Authentication
+  google_sign_in: ^6.3.0
+
+  # Local Storage
+  shared_preferences: ^2.2.1
+
+  # Utils
+  equatable: ^2.0.5
+  dartz: ^0.10.1
+  get_it: ^7.6.0
+  logger: ^2.0.1
+  intl: ^0.18.1
+  package_info_plus: ^4.1.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -17,3 +46,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/

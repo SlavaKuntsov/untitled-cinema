@@ -1,0 +1,240 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/utils/input_validator.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/auth/auth_button.dart';
+import '../../widgets/auth/auth_input_field.dart';
+import '../../widgets/auth/google_auth_button.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  final _nameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _confirmPasswordFocusNode = FocusNode();
+
+  bool _isGoogleSignIn = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+
+    _nameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onRegisterPressed() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Здесь должен быть вызов метода регистрации из провайдера
+      // Для примера, просто перенаправим на экран входа
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Регистрация успешна! Пожалуйста, войдите.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  void _onGoogleSignInPressed() async {
+    setState(() {
+      _isGoogleSignIn = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.signInWithGoogle();
+
+    if (mounted) {
+      setState(() {
+        _isGoogleSignIn = false;
+      });
+
+      if (success) {
+        // Навигация на главный экран
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        // Показываем сообщение об ошибке
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage ?? 'Ошибка входа через Google',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    return InputValidator.validateConfirmPassword(
+      value,
+      _passwordController.text,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final errorMessage = authProvider.errorMessage;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Регистрация')),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Создайте аккаунт',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    AuthInputField(
+                      label: 'Имя',
+                      hintText: 'Введите ваше имя',
+                      controller: _nameController,
+                      focusNode: _nameFocusNode,
+                      validator: InputValidator.validateName,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete:
+                          () => FocusScope.of(
+                            context,
+                          ).requestFocus(_emailFocusNode),
+                      prefixIcon: const Icon(Icons.person_outline),
+                    ),
+                    AuthInputField(
+                      label: 'Email',
+                      hintText: 'Введите ваш email',
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      focusNode: _emailFocusNode,
+                      validator: InputValidator.validateEmail,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete:
+                          () => FocusScope.of(
+                            context,
+                          ).requestFocus(_passwordFocusNode),
+                      prefixIcon: const Icon(Icons.email_outlined),
+                    ),
+                    AuthInputField(
+                      label: 'Пароль',
+                      hintText: 'Введите пароль',
+                      controller: _passwordController,
+                      isPassword: true,
+                      focusNode: _passwordFocusNode,
+                      validator: InputValidator.validatePassword,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete:
+                          () => FocusScope.of(
+                            context,
+                          ).requestFocus(_confirmPasswordFocusNode),
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                    AuthInputField(
+                      label: 'Подтверждение пароля',
+                      hintText: 'Подтвердите пароль',
+                      controller: _confirmPasswordController,
+                      isPassword: true,
+                      focusNode: _confirmPasswordFocusNode,
+                      validator: _validateConfirmPassword,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: _onRegisterPressed,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                    const SizedBox(height: 24),
+                    if (errorMessage != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          errorMessage,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    AuthButton(
+                      text: 'Зарегистрироваться',
+                      onPressed: _onRegisterPressed,
+                      isLoading: authProvider.isLoading,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'или',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GoogleAuthButton(
+                      onPressed: _onGoogleSignInPressed,
+                      isLoading: authProvider.isLoading && _isGoogleSignIn,
+                      text: 'Регистрация через Google',
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Уже есть аккаунт?',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Возврат на экран входа
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Войти'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
