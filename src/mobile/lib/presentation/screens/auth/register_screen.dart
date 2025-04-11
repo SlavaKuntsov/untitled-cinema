@@ -16,12 +16,14 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final _nameFocusNode = FocusNode();
+  final _firstNameFocusNode = FocusNode();
+  final _lastNameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
@@ -30,12 +32,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
 
-    _nameFocusNode.dispose();
+    _firstNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
@@ -44,9 +46,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onRegisterPressed() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Здесь должен быть вызов метода регистрации из провайдера
-      // Для примера, просто перенаправим на экран входа
-      if (mounted) {
+      final email = _emailController.text.trim();
+      final firstName = _firstNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final password = _passwordController.text;
+
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.registration(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      if (mounted && success) {
+        authProvider.updateSavedEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Регистрация успешна! Пожалуйста, войдите.'),
@@ -54,6 +68,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
         Navigator.of(context).pop();
+      }
+    }
+  }
+
+  void _onLoginPressed() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.login(
+        email: email,
+        password: password,
+      );
+
+      if (success && mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     }
   }
@@ -124,14 +155,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     AuthInputField(
                       label: 'Имя',
                       hintText: 'Введите ваше имя',
-                      controller: _nameController,
-                      focusNode: _nameFocusNode,
+                      controller: _firstNameController,
+                      focusNode: _firstNameFocusNode,
                       validator: InputValidator.validateName,
                       textInputAction: TextInputAction.next,
                       onEditingComplete:
                           () => FocusScope.of(
                             context,
-                          ).requestFocus(_emailFocusNode),
+                          ).requestFocus(_firstNameFocusNode),
+                      prefixIcon: const Icon(Icons.person_outline),
+                    ),
+                    AuthInputField(
+                      label: 'Имя',
+                      hintText: 'Введите вашу фамилию',
+                      controller: _lastNameController,
+                      focusNode: _lastNameFocusNode,
+                      validator: InputValidator.validateName,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete:
+                          () => FocusScope.of(
+                            context,
+                          ).requestFocus(_lastNameFocusNode),
                       prefixIcon: const Icon(Icons.person_outline),
                     ),
                     AuthInputField(

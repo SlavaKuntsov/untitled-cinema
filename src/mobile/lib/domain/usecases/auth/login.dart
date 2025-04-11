@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../core/errors/failures.dart';
-import '../../entities/auth/token.dart';
+import '../../../data/models/auth/access_token_model.dart';
 import '../../repositories/auth_repository.dart';
 
 class LoginUseCase {
@@ -10,7 +10,7 @@ class LoginUseCase {
 
   LoginUseCase(this.repository);
 
-  Future<Either<Failure, Token>> call(LoginParams params) async {
+  Future<Either<Failure, AccessTokenModel>> call(LoginParams params) async {
     return await repository.login(
       email: params.email,
       password: params.password,

@@ -2,6 +2,10 @@
 class GoogleOAuthConstants {
   /// Client ID для мобильного приложения
   static const String CLIENT_ID =
+      "613641131431-g8vq4nq2te9p4vgjglt40n8g66oln64v.apps.googleusercontent.com";
+
+  /// Client ID для веб-приложения (требуется для serverClientId в Android/iOS)
+  static const String WEB_CLIENT_ID =
       "613641131431-k6tqdavhgcfqvkqi1aeo347il4g20boi.apps.googleusercontent.com";
 
   /// Project ID проекта в Google Cloud Console

@@ -94,14 +94,24 @@ class GoogleAuthService {
       // Проверим идентификатор клиента OAuth
       debugPrint('ClientID: ${GoogleOAuthConstants.CLIENT_ID}');
 
+      debugPrint('-----------idToken: ${googleAuth.idToken}');
+
       // Отправляем запрос на сервер для входа через Google
       // Меняем подход - вместо GET запроса используем POST с данными
-      final response = await http.get(
-        Uri.parse(ApiConstants.googleAuth),
+      // final response = await http.get(
+      //   Uri.parse(ApiConstants.googleAuth),
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //   },
+      // );
+      final response = await http.post(
+        Uri.parse(ApiConstants.googleMobileAuth),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
+        body: json.encode({'idToken': googleAuth.idToken}),
       );
 
       debugPrint('Ответ от сервера: ${response.statusCode}');

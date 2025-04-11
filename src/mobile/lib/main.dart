@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/google_services_config.dart';
 import 'package:provider/provider.dart';
 
 import 'config/theme.dart';
 import 'core/config/environment_config.dart';
-import 'core/utils/app_router.dart';
 import 'di/injection_container.dart' as di;
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/theme_provider.dart';
@@ -18,6 +18,8 @@ void main() async {
 
   // Инициализируем зависимости
   await di.init();
+
+  GoogleServicesConfig.createGoogleSignIn();
 
   runApp(
     MultiProvider(
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      // Используем только маршруты без home свойства
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

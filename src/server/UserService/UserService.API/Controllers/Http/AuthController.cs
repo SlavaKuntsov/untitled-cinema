@@ -1,10 +1,13 @@
 using System.Security.Claims;
 using Domain.Constants;
+using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserService.API.Contracts;
+using UserService.Application.DTOs;
 using UserService.Application.Handlers.Commands.Auth.Unauthorize;
 using UserService.Application.Handlers.Commands.Tokens.GenerateAndUpdateTokens;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
@@ -100,7 +103,69 @@ public class AuthController(IMediator mediator, ICookieService cookieService) : 
 
 		var user = await mediator.Send(new GetUserByEmailQuery(email), cancellationToken);
 
-		var authResultDto = default(UserService.Application.DTOs.AuthDto);
+		var authResultDto = default(AuthDto);
+		var text = default(string);
+
+		if (user is not null)
+		{
+			authResultDto = await mediator.Send(
+				new GenerateTokensCommand(user.Id, user.Role),
+				cancellationToken);
+
+			text = "login";
+		}
+		else
+		{
+			authResultDto = await mediator.Send(
+				new UserRegistrationCommand(
+					email,
+					string.Empty,
+					firstName,
+					lastName,
+					string.Empty),
+				cancellationToken);
+
+			text = "registration";
+		}
+
+		HttpContext.Response.Cookies.Append(
+			JwtConstants.REFRESH_COOKIE_NAME,
+			authResultDto.RefreshToken
+		);
+
+		return Ok(
+			new
+			{
+				text,
+				user,
+				authResultDto
+			});
+	}
+
+	[HttpPost("google-mobile-auth")]
+	public async Task<IActionResult> GoogleMobileAuth(
+		[FromBody] GoogleAuthRequest request,
+		CancellationToken cancellationToken)
+	{
+		var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+
+		var payload = await GoogleJsonWebSignature.ValidateAsync(
+			request.IdToken,
+			new GoogleJsonWebSignature.ValidationSettings
+			{
+				Audience = [clientId]
+			});
+
+		var email = payload.Email;
+		var firstName = payload.GivenName;
+		var lastName = payload.FamilyName;
+
+		if (string.IsNullOrEmpty(email))
+			return BadRequest("Invalid Google credentials.");
+
+		var user = await mediator.Send(new GetUserByEmailQuery(email), cancellationToken);
+
+		var authResultDto = default(AuthDto);
 		var text = default(string);
 
 		if (user is not null)

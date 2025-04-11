@@ -8,6 +8,7 @@ import '../../domain/entities/auth/token.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/auth/access_token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -21,17 +22,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }) : _googleSignClient = googleSignIn;
 
   @override
-  Future<Either<Failure, Token>> login({
+  Future<Either<Failure, AccessTokenModel>> login({
     required String email,
     required String password,
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final tokenModel = await remoteDataSource.login(
+        final accessToken = await remoteDataSource.login(
           email: email,
           password: password,
         );
-        return Right(tokenModel);
+        return Right(accessToken);
       } on AuthException catch (e) {
         return Left(AuthFailure(e.toString()));
       } on ServerException catch (e) {
@@ -45,15 +46,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Token>> register({
-    required String name,
+  Future<Either<Failure, AccessTokenModel>> register({
     required String email,
     required String password,
+    required String firstName,
+    required String lastName,
   }) async {
     if (await networkInfo.isConnected) {
       try {
         final tokenModel = await remoteDataSource.register(
-          name: name,
+          firstName: firstName,
+          lastName: lastName,
           email: email,
           password: password,
         );

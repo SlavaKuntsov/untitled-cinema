@@ -2,8 +2,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile/domain/usecases/auth/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/constants/oauth_constants.dart';
 import '../core/network/api_client.dart';
 import '../core/network/network_info.dart';
 import '../data/datasources/auth_remote_data_source.dart';
@@ -22,6 +24,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => AuthProvider(
       loginUseCase: sl(),
+      registrationUseCase: sl(),
       googleSignInUseCase: sl(),
       googleSignIn: sl(),
     ),
@@ -31,6 +34,7 @@ Future<void> init() async {
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegistrationUseCase(sl()));
   sl.registerLazySingleton(() => GoogleSignInUseCase(sl()));
 
   sl.registerLazySingleton(
@@ -65,5 +69,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => Connectivity());
 
-  sl.registerLazySingleton(() => GoogleSignIn(scopes: ['email', 'profile']));
+  sl.registerLazySingleton(
+    () => GoogleSignIn(
+      scopes: ['email', 'profile', 'openid'],
+      serverClientId: GoogleOAuthConstants.WEB_CLIENT_ID,
+    ),
+  );
 }

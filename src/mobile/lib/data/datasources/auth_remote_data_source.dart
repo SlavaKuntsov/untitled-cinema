@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile/data/models/auth/access_token_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -9,10 +10,14 @@ import '../models/auth/user_model.dart';
 import 'google_auth_service.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<TokenModel> login({required String email, required String password});
+  Future<AccessTokenModel> login({
+    required String email,
+    required String password,
+  });
 
-  Future<TokenModel> register({
-    required String name,
+  Future<AccessTokenModel> register({
+    required String firstName,
+    required String lastName,
     required String email,
     required String password,
   });
@@ -38,7 +43,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) : _googleSignClient = googleSignIn;
 
   @override
-  Future<TokenModel> login({
+  Future<AccessTokenModel> login({
     required String email,
     required String password,
   }) async {
@@ -48,35 +53,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {'email': email, 'password': password},
       );
 
-      final TokenModel tokenModel = TokenModel.fromJson(response);
+      final AccessTokenModel accessTokenModel = AccessTokenModel.fromJson(
+        response,
+      );
 
-      // Сохраняем токены
-      await _saveTokens(tokenModel);
+      await _saveAccessToken(accessTokenModel.accessToken);
 
-      return tokenModel;
+      return accessTokenModel;
     } catch (e) {
       throw AuthException(e.toString());
     }
   }
 
   @override
-  Future<TokenModel> register({
-    required String name,
+  Future<AccessTokenModel> register({
+    required String firstName,
+    required String lastName,
     required String email,
     required String password,
   }) async {
     try {
       final response = await client.post(
         ApiConstants.register,
-        data: {'name': name, 'email': email, 'password': password},
+        data: {
+          'email': email,
+          'password': password,
+          'firstName': firstName,
+          'lastName': lastName,
+          'dateOfBirth': '',
+        },
       );
 
-      final TokenModel tokenModel = TokenModel.fromJson(response);
+      final AccessTokenModel accessTokenModel = AccessTokenModel.fromJson(
+        response,
+      );
 
-      // Сохраняем токены
-      await _saveTokens(tokenModel);
+      await _saveAccessToken(accessTokenModel.accessToken);
 
-      return tokenModel;
+      return accessTokenModel;
     } catch (e) {
       throw AuthException(e.toString());
     }
@@ -158,6 +172,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     await prefs.setString('refresh_token', tokenModel.refreshToken);
     await prefs.setInt('token_expires_in', tokenModel.expiresIn);
     await prefs.setString('token_type', tokenModel.tokenType);
+  }
+
+  Future<void> _saveAccessToken(String accessToken) async {
+    await prefs.setString('access_token', accessToken);
   }
 
   Future<void> _clearTokens() async {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/utils/input_validator.dart';
-import '../../../utils/debug_tool.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth/auth_button.dart';
 import '../../widgets/auth/auth_input_field.dart';
@@ -33,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // TODO при загрузке логина вставлять savedEmail из AuthProviider если он есть
+
   void _onLoginPressed() async {
     if (_formKey.currentState?.validate() ?? false) {
       final email = _emailController.text.trim();
@@ -45,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (success && mounted) {
-        // Навигация на главный экран
         Navigator.of(context).pushReplacementNamed('/home');
       }
     }
@@ -196,12 +196,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Отладочная информация (только в debug режиме)
-                    if (const bool.fromEnvironment('dart.vm.product') == false)
-                      DebugTools.buildDebugInfoCard(),
                   ],
                 ),
               ),

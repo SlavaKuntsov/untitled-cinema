@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile/domain/usecases/auth/registration.dart';
 
 import '../../data/datasources/google_auth_service.dart';
 import '../../di/injection_container.dart';
@@ -11,24 +12,29 @@ enum AuthStatus { unknown, authenticated, unauthenticated }
 
 class AuthProvider extends ChangeNotifier {
   final LoginUseCase _loginUseCase;
+  final RegistrationUseCase _registrationUseCase;
   final GoogleSignInUseCase _googleSignInUseCase;
   final GoogleSignIn _googleSignIn;
 
   AuthStatus _authStatus = AuthStatus.unknown;
   User? _currentUser;
+  String? _savedEmail;
   String? _errorMessage;
   bool _isLoading = false;
 
   AuthProvider({
     required LoginUseCase loginUseCase,
+    required RegistrationUseCase registrationUseCase,
     required GoogleSignInUseCase googleSignInUseCase,
     required GoogleSignIn googleSignIn,
   }) : _loginUseCase = loginUseCase,
+       _registrationUseCase = registrationUseCase,
        _googleSignInUseCase = googleSignInUseCase,
        _googleSignIn = googleSignIn;
 
   AuthStatus get authStatus => _authStatus;
   User? get currentUser => _currentUser;
+  String? get savedEmail => _savedEmail;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
 
@@ -49,6 +55,43 @@ class AuthProvider extends ChangeNotifier {
 
     final result = await _loginUseCase(
       LoginParams(email: email, password: password),
+    );
+
+    _isLoading = false;
+
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _authStatus = AuthStatus.unauthenticated;
+        notifyListeners();
+        return false;
+      },
+      (token) {
+        _authStatus = AuthStatus.authenticated;
+        // Здесь можно добавить загрузку данных пользователя
+        notifyListeners();
+        return true;
+      },
+    );
+  }
+
+  Future<bool> registration({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final result = await _registrationUseCase(
+      RegistrationParams(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      ),
     );
 
     _isLoading = false;
@@ -124,6 +167,10 @@ class AuthProvider extends ChangeNotifier {
     _currentUser = null;
     _isLoading = false;
     notifyListeners();
+  }
+
+  void updateSavedEmail(String email) {
+    _savedEmail = email;
   }
 
   void clearError() {

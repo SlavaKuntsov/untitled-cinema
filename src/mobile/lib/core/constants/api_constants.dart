@@ -5,11 +5,13 @@ class ApiConstants {
   static String get userServiceBaseUrl => EnvironmentConfig.userServiceBaseUrl;
 
   // Auth endpoints в User Service
-  static String get login => '$userServiceBaseUrl/auth/login';
-  static String get register => '$userServiceBaseUrl/auth/registration';
+  static String get login => '$userServiceBaseUrl/users/login';
+  static String get register => '$userServiceBaseUrl/users/registration';
   static String get googleAuth => '$userServiceBaseUrl/auth/google-login';
   static String get googleResponse =>
       '$userServiceBaseUrl/auth/google-response';
+  static String get googleMobileAuth =>
+      '$userServiceBaseUrl/auth/google-mobile-auth';
   static String get logout => '$userServiceBaseUrl/auth/unauthorize';
   static String get refreshToken => '$userServiceBaseUrl/auth/refresh-token';
   static String get authorize => '$userServiceBaseUrl/auth/authorize';
