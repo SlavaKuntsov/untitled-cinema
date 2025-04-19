@@ -59,7 +59,7 @@ public class MovieController(
 
 		return Ok(movies);
 	}
-	
+
 	[HttpPost("/movies")]
 	[SwaggerRequestExample(typeof(CreateMovieCommand), typeof(CreateMovieRequestExample))]
 	//[Authorize(Policy = "AdminOnly")]
@@ -94,7 +94,7 @@ public class MovieController(
 
 		return NoContent();
 	}
-	
+
 	[HttpPost("/movies/{id:Guid}/poster")]
 	[Consumes("multipart/form-data")]
 	//[Authorize(Policy = "AdminOnly")]
@@ -104,10 +104,10 @@ public class MovieController(
 		CancellationToken cancellationToken)
 	{
 		var poster = await mediator.Send(new ChangeMoviePosterCommand(id, file), cancellationToken);
-	
+
 		return Ok(poster);
 	}
-	
+
 	[HttpGet("/movies/frames")]
 	public async Task<IActionResult> GetFrames(CancellationToken cancellationToken)
 	{
@@ -115,7 +115,7 @@ public class MovieController(
 
 		return Ok(frames);
 	}
-	
+
 	[HttpGet("/movies/{id:Guid}/frames")]
 	public async Task<IActionResult> GetFrames(
 		[FromRoute] Guid id,
@@ -125,11 +125,14 @@ public class MovieController(
 
 		return Ok(frames);
 	}
-	
+
 	/// <summary>
 	/// </summary>
 	/// <param name="id"></param>
-	/// <param name="frameOrder">Use frameOrder = -1 to append to the end, or specify position to insert (shifts existing frames).</param>
+	/// <param name="frameOrder">
+	///     Use frameOrder = -1 to append to the end, or specify position to insert (shifts existing
+	///     frames).
+	/// </param>
 	/// <param name="file"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
@@ -147,13 +150,16 @@ public class MovieController(
 		IFormFile file,
 		CancellationToken cancellationToken)
 	{
-		var poster = await mediator.Send(new AddMovieFrameCommand(
-			id, frameOrder, file),
+		var poster = await mediator.Send(
+			new AddMovieFrameCommand(
+				id,
+				frameOrder,
+				file),
 			cancellationToken);
-	
+
 		return Ok(poster);
 	}
-	
+
 	[HttpDelete("/movies/frames/{id:Guid}")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> DeleteFrame(

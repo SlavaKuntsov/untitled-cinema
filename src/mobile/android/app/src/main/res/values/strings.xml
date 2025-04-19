@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cinema App</string>
+    <!-- Google OAuth -->
+    <string name="server_client_id">613641131431-g8vq4nq2te9p4vgjglt40n8g66oln64v.apps.googleusercontent.com</string>
+</resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_id": "software-security-chat",
+    "project_number": "613641131431"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613641131431:android:qeqwe2342",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613641131431-k6tqdavhgcfqvkqi1aeo347il4g20boi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobile",
+            "certificate_hash": "F7:D3:8E:15:75:A7:15:E8:53:60:2E:8E:09:D2:F1:B6:D7:4C:61:BA"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsJBz2d3x-L2h7x-qdK-4b7NoZ1wkHGVg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 0
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

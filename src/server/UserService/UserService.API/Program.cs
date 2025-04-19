@@ -1,4 +1,5 @@
 using Brokers;
+using DotNetEnv;
 using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
@@ -21,7 +22,9 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
 
-builder.UseHttps();
+Env.Load("./../../../.env");
+
+// builder.UseHttps();
 
 // shared extensions
 services

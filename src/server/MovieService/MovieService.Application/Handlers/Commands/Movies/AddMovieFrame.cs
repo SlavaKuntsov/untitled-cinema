@@ -52,6 +52,14 @@ public sealed class AddMovieFrameCommandHandler(
 			frameName,
 			request.Order == -1 ? existFrames.Count : request.Order);
 
+		await using var stream = request.Frame.OpenReadStream();
+
+		await minioService.UploadFileAsync(
+			null,
+			frameName,
+			stream,
+			request.Frame.ContentType);
+
 		var frameEntity = mapper.Map<MovieFrameEntity>(frameModel);
 
 		await unitOfWork.Repository<MovieFrameEntity>().CreateAsync(frameEntity, cancellationToken);

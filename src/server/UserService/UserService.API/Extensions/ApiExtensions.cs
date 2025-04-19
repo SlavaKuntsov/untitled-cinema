@@ -3,6 +3,9 @@ using Extensions.Exceptions.Middlewares;
 using Mapster;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Behaviors;
 using UserService.API.Contracts.Examples;
@@ -23,10 +26,34 @@ public static class ApiExtensions
 
 		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
 
+		var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+		var clientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+
+		if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+			throw new Exception("Google client data is null.");
+
+		services
+			.AddAuthentication(
+				options =>
+				{
+					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				})
+			.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+			.AddGoogle(
+				GoogleDefaults.AuthenticationScheme,
+				options =>
+				{
+					options.ClientId = clientId;
+					options.ClientSecret = clientSecret;
+					options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					options.CallbackPath = "/google-response";
+				});
+
 		services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-		
+
 		var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
 		typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
 
