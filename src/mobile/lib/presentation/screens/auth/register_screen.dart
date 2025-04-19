@@ -28,6 +28,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (authProvider.savedEmail != null &&
+        authProvider.savedEmail!.isNotEmpty) {
+      _emailController.text = authProvider.savedEmail!;
+      FocusScope.of(context).requestFocus(_passwordFocusNode);
+    }
+  }
+
   bool _isGoogleSignIn = false;
 
   @override
@@ -68,23 +81,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
         Navigator.of(context).pop();
-      }
-    }
-  }
-
-  void _onLoginPressed() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
-
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
-        email: email,
-        password: password,
-      );
-
-      if (success && mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
       }
     }
   }
@@ -267,6 +263,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             // Возврат на экран входа
                             Navigator.of(context).pop();
+                            final email = _emailController.text.trim();
+                            final authProvider = Provider.of<AuthProvider>(
+                              context,
+                              listen: false,
+                            );
+                            authProvider.updateSavedEmail(email);
                           },
                           child: const Text('Войти'),
                         ),

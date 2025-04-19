@@ -41,6 +41,9 @@ class ApiConstants {
   static const String contentType = 'application/json';
   static const String authorization = 'Authorization';
   static const String bearer = 'Bearer';
+  
+  // JWT константы
+  static const String REFRESH_COOKIE_NAME = "yummy-cackes";
 }
 
 // Константы JWT

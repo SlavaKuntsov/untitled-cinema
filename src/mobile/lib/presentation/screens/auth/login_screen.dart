@@ -21,6 +21,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (authProvider.savedEmail != null &&
+        authProvider.savedEmail!.isNotEmpty) {
+      _emailController.text = authProvider.savedEmail!;
+      FocusScope.of(context).requestFocus(_passwordFocusNode);
+    }
+  }
+
   bool _isGoogleSignIn = false;
 
   @override
@@ -191,6 +204,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             // Навигация на экран регистрации
                             Navigator.of(context).pushNamed('/register');
+                            final email = _emailController.text.trim();
+                            final authProvider = Provider.of<AuthProvider>(
+                              context,
+                              listen: false,
+                            );
+                            authProvider.updateSavedEmail(email);
                           },
                           child: const Text('Зарегистрироваться'),
                         ),

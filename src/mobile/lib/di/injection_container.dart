@@ -59,7 +59,17 @@ Future<void> init() async {
   // Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
-  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl(), sl()));
+  // Регистрируем ApiClient с колбэком для выхода из системы
+  sl.registerLazySingleton<ApiClient>(() => ApiClient(
+        sl<Dio>(), 
+        sl<SharedPreferences>(),
+        onLogoutRequired: () {
+          // Получаем экземпляр AuthProvider и вызываем logout
+          if (sl.isRegistered<AuthProvider>()) {
+            sl<AuthProvider>().forceLogout();
+          }
+        },
+      ));
 
   // External
   final sharedPreferences = await SharedPreferences.getInstance();

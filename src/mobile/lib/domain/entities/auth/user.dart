@@ -17,6 +17,20 @@ class User extends Equatable {
     required this.createdAt,
   });
 
+  // Фабричный метод для создания объекта User из JSON
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] ?? '',
+      email: json['email'] ?? '',
+      name: json['name'] ?? json['firstName'] ?? '',  // Поддерживает оба варианта (name или firstName)
+      photoUrl: json['photoUrl'] ?? json['photo'],  // Поддерживает варианты photoUrl или photo
+      isEmailVerified: json['isEmailVerified'] ?? false,
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : DateTime.now(),
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
