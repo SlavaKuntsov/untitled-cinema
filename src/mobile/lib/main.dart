@@ -17,7 +17,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Устанавливаем окружение (dev для разработки)
-  EnvironmentConfig.setEnvironment(Environment.dev);
+  EnvironmentConfig.setEnvironment(Environment.prod);
+  // EnvironmentConfig.setEnvironment(Environment.dev);
 
   // Инициализируем зависимости
   await di.init();
@@ -34,8 +35,8 @@ void main() async {
             // Добавляем слушатель для отслеживания изменений статуса аутентификации
             provider.addListener(() {
               // Если статус изменился на 'не аутентифицирован' и есть сообщение об ошибке
-              if (provider.authStatus == AuthStatus.unauthenticated && 
-                  provider.errorMessage != null && 
+              if (provider.authStatus == AuthStatus.unauthenticated &&
+                  provider.errorMessage != null &&
                   provider.errorMessage!.contains('сессия истекла')) {
                 // Показываем сообщение и перенаправляем на экран входа
                 _handleSessionExpired(provider.errorMessage!);
@@ -62,9 +63,12 @@ void _handleSessionExpired(String message) {
         duration: const Duration(seconds: 5),
       ),
     );
-    
+
     // Перенаправляем на экран входа
-    navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/login',
+      (route) => false,
+    );
   }
 }
 

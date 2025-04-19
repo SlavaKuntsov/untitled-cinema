@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Вход в CinemaApp',
+                      'Вход в Untitled-Cinema',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -192,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _onGoogleSignInPressed,
                       isLoading: authProvider.isLoading && _isGoogleSignIn,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

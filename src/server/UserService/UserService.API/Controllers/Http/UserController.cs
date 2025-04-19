@@ -41,7 +41,7 @@ public class UserController(IMediator mediator, IMapper mapper) : ControllerBase
 			JwtConstants.REFRESH_COOKIE_NAME,
 			authResultDto.RefreshToken);
 
-		return Ok(new { authResultDto.AccessToken });
+		return Ok(new { authResultDto.AccessToken, authResultDto.RefreshToken });
 	}
 
 	[HttpPost("/users/registration")]
@@ -52,7 +52,7 @@ public class UserController(IMediator mediator, IMapper mapper) : ControllerBase
 	{
 		var authResultDto = await mediator.Send(request, cancellationToken);
 
-		return Ok(new { authResultDto.AccessToken });
+		return Ok(new { authResultDto.AccessToken, authResultDto.RefreshToken });
 	}
 
 	[HttpPatch("/users")]

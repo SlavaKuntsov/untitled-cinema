@@ -8,7 +8,7 @@ import '../../domain/entities/auth/token.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../models/auth/access_token_model.dart';
+import '../models/auth/token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -22,7 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) : _googleSignClient = googleSignIn;
 
   @override
-  Future<Either<Failure, AccessTokenModel>> login({
+  Future<Either<Failure, TokenModel>> login({
     required String email,
     required String password,
   }) async {
@@ -46,7 +46,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AccessTokenModel>> register({
+  Future<Either<Failure, TokenModel>> register({
     required String email,
     required String password,
     required String firstName,

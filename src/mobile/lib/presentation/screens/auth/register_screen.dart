@@ -128,7 +128,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final errorMessage = authProvider.errorMessage;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Регистрация')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -140,14 +139,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Создайте аккаунт',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32),
+                      child: const Text(
+                        'Создайте аккаунт',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     AuthInputField(
                       label: 'Имя',
                       hintText: 'Введите ваше имя',
