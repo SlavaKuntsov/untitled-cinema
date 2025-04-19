@@ -13,7 +13,6 @@ public static class InfrastructureExtensions
 	{
 		services.AddRedis(configuration);
 
-		services.AddScoped<IRedisCacheService, RedisCacheService>();
 		services.AddScoped<IAuthGrpcService, AuthGrpcService>();
 		services.AddScoped<ISeatsGrpcService, SeatsGrpcService>();
 

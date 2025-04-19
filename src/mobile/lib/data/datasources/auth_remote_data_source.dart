@@ -1,5 +1,4 @@
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile/data/models/auth/access_token_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -10,12 +9,9 @@ import '../models/auth/user_model.dart';
 import 'google_auth_service.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<AccessTokenModel> login({
-    required String email,
-    required String password,
-  });
+  Future<TokenModel> login({required String email, required String password});
 
-  Future<AccessTokenModel> register({
+  Future<TokenModel> register({
     required String firstName,
     required String lastName,
     required String email,
@@ -43,7 +39,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) : _googleSignClient = googleSignIn;
 
   @override
-  Future<AccessTokenModel> login({
+  Future<TokenModel> login({
     required String email,
     required String password,
   }) async {
@@ -53,20 +49,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {'email': email, 'password': password},
       );
 
-      final AccessTokenModel accessTokenModel = AccessTokenModel.fromJson(
-        response,
-      );
+      final tokenData = {
+        'access_token': response['authResultDto']['accessToken'],
+        'refresh_token': response['authResultDto']['refreshToken'],
+      };
 
-      await _saveAccessToken(accessTokenModel.accessToken);
+      final TokenModel tokenModel = TokenModel.fromJson(tokenData);
 
-      return accessTokenModel;
+      _saveTokens(tokenModel);
+
+      return tokenModel;
     } catch (e) {
       throw AuthException(e.toString());
     }
   }
 
   @override
-  Future<AccessTokenModel> register({
+  Future<TokenModel> register({
     required String firstName,
     required String lastName,
     required String email,
@@ -84,13 +83,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      final AccessTokenModel accessTokenModel = AccessTokenModel.fromJson(
-        response,
-      );
+      final tokenData = {
+        'access_token': response['authResultDto']['accessToken'],
+        'refresh_token': response['authResultDto']['refreshToken'],
+      };
 
-      await _saveAccessToken(accessTokenModel.accessToken);
+      final TokenModel tokenModel = TokenModel.fromJson(tokenData);
 
-      return accessTokenModel;
+      await _saveTokens(tokenModel);
+
+      return tokenModel;
     } catch (e) {
       throw AuthException(e.toString());
     }
@@ -170,18 +172,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> _saveTokens(TokenModel tokenModel) async {
     await prefs.setString('access_token', tokenModel.accessToken);
     await prefs.setString('refresh_token', tokenModel.refreshToken);
-    await prefs.setInt('token_expires_in', tokenModel.expiresIn);
-    await prefs.setString('token_type', tokenModel.tokenType);
-  }
-
-  Future<void> _saveAccessToken(String accessToken) async {
-    await prefs.setString('access_token', accessToken);
   }
 
   Future<void> _clearTokens() async {
     await prefs.remove('access_token');
     await prefs.remove('refresh_token');
-    await prefs.remove('token_expires_in');
-    await prefs.remove('token_type');
   }
 }

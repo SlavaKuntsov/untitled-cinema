@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:7002"
+      "applicationUrl": "http://localhost:7102"
     },
     "https": {
       "commandName": "Project",
@@ -18,7 +18,17 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7002;http://localhost:7002"
+      "applicationUrl": "https://localhost:7002"
+    },
+    "ip": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://192.168.0.102:7002"
     }
   }
 }

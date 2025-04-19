@@ -40,7 +40,7 @@ public class AuthController(IMediator mediator, ICookieService cookieService) : 
 			JwtConstants.REFRESH_COOKIE_NAME,
 			authResultDto.RefreshToken);
 
-		return Ok(new { authResultDto.AccessToken });
+		return Ok(new { authResultDto.AccessToken, authResultDto.RefreshToken });
 	}
 
 	[HttpGet("authorize")]

@@ -12,7 +12,6 @@ import '../../di/injection_container.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/usecases/auth/google_sign_in.dart';
 import '../../domain/usecases/auth/login.dart';
-import '../../main.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
@@ -48,42 +47,50 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-    
+
     try {
       // Получаем SharedPreferences для проверки наличия токенов
       final prefs = sl<SharedPreferences>();
       final accessToken = prefs.getString('access_token');
       final refreshToken = prefs.getString('refresh_token');
-      
-      debugPrint('Проверка статуса авторизации: access_token=${accessToken != null}');
-      
+
+      debugPrint(accessToken);
+      debugPrint(refreshToken);
+
+      debugPrint(
+        'Проверка статуса авторизации: access_token=${accessToken != null}',
+      );
+
       // Если нет токенов, то пользователь не авторизован
-      if (accessToken == null || accessToken.isEmpty || 
-          refreshToken == null || refreshToken.isEmpty) {
+      if (accessToken == null ||
+          accessToken.isEmpty ||
+          refreshToken == null ||
+          refreshToken.isEmpty) {
         _authStatus = AuthStatus.unauthenticated;
         _isLoading = false;
         notifyListeners();
         return;
       }
-      
+
       // Есть токены, проверяем их валидность через API
       final apiClient = sl<ApiClient>();
-      
+
       try {
         // Отправляем запрос на авторизацию
         final response = await apiClient.get(ApiConstants.authorize);
-        
+
         // Обрабатываем ответ в зависимости от его типа
         if (response != null) {
           _authStatus = AuthStatus.authenticated;
-          
+
           // Пробуем извлечь данные пользователя
           try {
             Map<String, dynamic>? userData;
-            
+
             if (response is Map<String, dynamic>) {
               // Если response уже является Map, проверяем наличие ключа 'user'
-              if (response.containsKey('user') && response['user'] is Map<String, dynamic>) {
+              if (response.containsKey('user') &&
+                  response['user'] is Map<String, dynamic>) {
                 userData = response['user'] as Map<String, dynamic>;
                 debugPrint('Получены данные пользователя из ключа "user"');
               } else {
@@ -91,38 +98,52 @@ class AuthProvider extends ChangeNotifier {
                 userData = response;
                 debugPrint('Используем весь ответ как данные пользователя');
               }
-            } else if (response is List && response.isNotEmpty && response[0] is Map<String, dynamic>) {
+            } else if (response is List &&
+                response.isNotEmpty &&
+                response[0] is Map<String, dynamic>) {
               // Иногда API может вернуть массив с одним объектом
               userData = response[0] as Map<String, dynamic>;
-              debugPrint('Получены данные пользователя из первого элемента массива');
-            } else if (response.toString().contains('{') && response.toString().contains('}')) {
+              debugPrint(
+                'Получены данные пользователя из первого элемента массива',
+              );
+            } else if (response.toString().contains('{') &&
+                response.toString().contains('}')) {
               // Если ответ является строкой, содержащей JSON
               try {
                 final dynamic jsonData = jsonDecode(response.toString());
                 if (jsonData is Map<String, dynamic>) {
                   userData = jsonData;
                   debugPrint('Преобразовали строку в JSON');
-                  if (userData.containsKey('user') && userData['user'] is Map<String, dynamic>) {
+                  if (userData.containsKey('user') &&
+                      userData['user'] is Map<String, dynamic>) {
                     userData = userData['user'] as Map<String, dynamic>;
-                    debugPrint('Получены данные пользователя из ключа "user" в JSON');
+                    debugPrint(
+                      'Получены данные пользователя из ключа "user" в JSON',
+                    );
                   }
                 }
               } catch (e) {
                 debugPrint('Не удалось преобразовать строку в JSON: $e');
               }
             }
-            
+
             // Если удалось извлечь данные пользователя, создаем объект User
             if (userData != null) {
               // Проверяем наличие необходимых полей
               if (userData.containsKey('email')) {
                 _currentUser = User.fromJson(userData);
-                debugPrint('Создан объект пользователя: ${_currentUser?.name}, email: ${_currentUser?.email}');
+                debugPrint(
+                  'Создан объект пользователя: ${_currentUser?.name}, email: ${_currentUser?.email}',
+                );
               } else {
-                debugPrint('В данных пользователя отсутствует email: $userData');
+                debugPrint(
+                  'В данных пользователя отсутствует email: $userData',
+                );
               }
             } else {
-              debugPrint('Не удалось извлечь данные пользователя из ответа: $response');
+              debugPrint(
+                'Не удалось извлечь данные пользователя из ответа: $response',
+              );
             }
           } catch (e) {
             debugPrint('Ошибка при обработке данных пользователя: $e');
@@ -134,7 +155,7 @@ class AuthProvider extends ChangeNotifier {
           // Даже если ответ пустой, но нет ошибки, считаем токен валидным
           _authStatus = AuthStatus.authenticated;
         }
-        
+
         _isLoading = false;
         notifyListeners();
       } catch (e) {
@@ -175,11 +196,11 @@ class AuthProvider extends ChangeNotifier {
       },
       (response) {
         _authStatus = AuthStatus.authenticated;
-        
+
         // Модель AccessTokenModel не содержит данных пользователя
         // Загрузим данные пользователя через отдельный запрос
         checkAuthStatus();
-        
+
         notifyListeners();
         return true;
       },
@@ -216,7 +237,7 @@ class AuthProvider extends ChangeNotifier {
       },
       (response) {
         _authStatus = AuthStatus.authenticated;
-        
+
         // Создаем базовый объект пользователя, так как мы знаем его имя и email
         _currentUser = User(
           id: '', // ID будет получен позже при запросе данных пользователя
@@ -225,10 +246,10 @@ class AuthProvider extends ChangeNotifier {
           isEmailVerified: false,
           createdAt: DateTime.now(),
         );
-        
+
         // Загрузим полные данные пользователя
         checkAuthStatus();
-        
+
         notifyListeners();
         return true;
       },
@@ -263,13 +284,13 @@ class AuthProvider extends ChangeNotifier {
         (response) {
           _authStatus = AuthStatus.authenticated;
           debugPrint('Успешная аутентификация Google Sign-In');
-          
+
           // Загрузим данные из Google аккаунта
           _loadGoogleUserData();
-          
+
           // Также загрузим данные пользователя с сервера
           checkAuthStatus();
-          
+
           notifyListeners();
           return true;
         },
@@ -283,7 +304,7 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-  
+
   // Вспомогательный метод для загрузки данных пользователя из GoogleSignIn
   Future<void> _loadGoogleUserData() async {
     try {
@@ -295,10 +316,13 @@ class AuthProvider extends ChangeNotifier {
           email: googleUser.email,
           name: googleUser.displayName ?? '',
           photoUrl: googleUser.photoUrl,
-          isEmailVerified: true, // Считаем, что пользователь Google верифицирован
+          isEmailVerified:
+              true, // Считаем, что пользователь Google верифицирован
           createdAt: DateTime.now(),
         );
-        debugPrint('Получены данные пользователя из Google: ${_currentUser?.name}');
+        debugPrint(
+          'Получены данные пользователя из Google: ${_currentUser?.name}',
+        );
       }
     } catch (e) {
       debugPrint('Ошибка при загрузке данных пользователя из Google: $e');
@@ -312,10 +336,10 @@ class AuthProvider extends ChangeNotifier {
     try {
       // Получаем SharedPreferences для удаления токенов
       final prefs = sl<SharedPreferences>();
-      
+
       // Получаем ApiClient для отправки запроса на выход
       final apiClient = sl<ApiClient>();
-      
+
       try {
         // Пытаемся отправить запрос на удаление сессии на сервере
         await apiClient.post(ApiConstants.logout);
@@ -323,11 +347,11 @@ class AuthProvider extends ChangeNotifier {
         // Игнорируем ошибки при запросе на выход
         debugPrint('Ошибка при запросе на выход: $e');
       }
-      
+
       // Удаляем токены локально в любом случае
       await prefs.remove('access_token');
       await prefs.remove('refresh_token');
-      
+
       // Выходим из Google аккаунта, если он использовался
       try {
         await _googleSignIn.signOut();
@@ -335,7 +359,7 @@ class AuthProvider extends ChangeNotifier {
         // Игнорируем ошибки при выходе из Google
         debugPrint('Ошибка при выходе из Google: $e');
       }
-      
+
       // Обновляем состояние
       _authStatus = AuthStatus.unauthenticated;
       _currentUser = null;
@@ -354,7 +378,7 @@ class AuthProvider extends ChangeNotifier {
     _currentUser = null;
     _errorMessage = 'Ваша сессия истекла. Пожалуйста, войдите снова.';
     notifyListeners();
-    
+
     // Навигация на экран входа с использованием глобального навигатора
     // Это будет обработано в main.dart через слушатель
   }
