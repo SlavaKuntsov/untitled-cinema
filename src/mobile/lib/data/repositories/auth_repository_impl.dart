@@ -51,6 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String firstName,
     required String lastName,
+    required String dateOfBirth,
   }) async {
     if (await networkInfo.isConnected) {
       try {
@@ -59,6 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
           lastName: lastName,
           email: email,
           password: password,
+          dateOfBirth: dateOfBirth,
         );
         return Right(tokenModel);
       } on AuthException catch (e) {

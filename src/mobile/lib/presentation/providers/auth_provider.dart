@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile/domain/usecases/auth/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -12,6 +11,7 @@ import '../../di/injection_container.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/usecases/auth/google_sign_in.dart';
 import '../../domain/usecases/auth/login.dart';
+import '../../domain/usecases/auth/registration.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
@@ -133,7 +133,8 @@ class AuthProvider extends ChangeNotifier {
               if (userData.containsKey('email')) {
                 _currentUser = User.fromJson(userData);
                 debugPrint(
-                  'Создан объект пользователя: ${_currentUser?.name}, email: ${_currentUser?.email}',
+                  'Создан объект пользователя: ${_currentUser?.name}, email: '
+                  '${_currentUser?.email}, role: ${_currentUser?.role}',
                 );
               } else {
                 debugPrint(
@@ -212,6 +213,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
     required String firstName,
     required String lastName,
+    required String dateOfBirth,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -223,6 +225,7 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         firstName: firstName,
         lastName: lastName,
+        dateOfBirth: dateOfBirth,
       ),
     );
 
@@ -243,7 +246,9 @@ class AuthProvider extends ChangeNotifier {
           id: '', // ID будет получен позже при запросе данных пользователя
           email: email,
           name: '$firstName $lastName',
-          isEmailVerified: false,
+          dateOfBirth: dateOfBirth,
+          role: '',
+          balance: 0,
           createdAt: DateTime.now(),
         );
 
@@ -305,19 +310,22 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Вспомогательный метод для загрузки данных пользователя из GoogleSignIn
   Future<void> _loadGoogleUserData() async {
     try {
       final googleUser = await _googleSignIn.signInSilently();
       if (googleUser != null) {
         // Создаем базовый объект пользователя из данных Google
         _currentUser = User(
-          id: googleUser.id,
-          email: googleUser.email,
+          id: googleUser.id ?? '', // Добавлена проверка на null
+          email: googleUser.email ?? '', // Добавлена проверка на null
           name: googleUser.displayName ?? '',
-          photoUrl: googleUser.photoUrl,
-          isEmailVerified:
-              true, // Считаем, что пользователь Google верифицирован
+          photoUrl:
+              googleUser.photoUrl ??
+              '', // Проверьте, может ли это поле быть null
+          role: '',
+          dateOfBirth: '',
+          // Если balance должен быть типа Decimal
+          balance: 0,
           createdAt: DateTime.now(),
         );
         debugPrint(
@@ -371,16 +379,24 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Метод для принудительного выхода при истечении срока действия токена
+  // Обновленный метод forceLogout в AuthProvider
   void forceLogout() {
     debugPrint('Принудительный выход из системы: токен истек');
+
+    // Очищаем учетные данные
     _authStatus = AuthStatus.unauthenticated;
     _currentUser = null;
     _errorMessage = 'Ваша сессия истекла. Пожалуйста, войдите снова.';
+
+    // Очищаем токены в SharedPreferences (для страховки)
+    final prefs = sl<SharedPreferences>();
+    prefs.remove('access_token');
+    prefs.remove('refresh_token');
+
+    // Уведомляем слушателей об изменении
     notifyListeners();
 
-    // Навигация на экран входа с использованием глобального навигатора
-    // Это будет обработано в main.dart через слушатель
+    // Навигация на экран входа будет обработана в main.dart через слушатель
   }
 
   void updateSavedEmail(String email) {

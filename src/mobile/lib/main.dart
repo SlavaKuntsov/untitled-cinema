@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/config/google_services_config.dart';
 import 'package:provider/provider.dart';
+import 'package:untitledCinema/presentation/screens/navigation_screen.dart';
+import 'package:untitledCinema/presentation/screens/splash_screen.dart';
 
 import 'config/theme.dart';
 import 'core/config/environment_config.dart';
+import 'core/config/google_services_config.dart';
+import 'core/constants/app_constants.dart';
 import 'di/injection_container.dart' as di;
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/theme_provider.dart';
@@ -82,7 +85,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey, // Устанавливаем глобальный ключ навигатора
-      title: 'Cinema App',
+      title: AppConstants.appName,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
@@ -92,89 +95,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/home': (context) => const NavigationScreen(),
       },
-    );
-  }
-}
-
-// Простая реализация страницы-заглушки для Home экрана
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cinema App'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              authProvider.logout();
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text('Главный экран приложения', style: TextStyle(fontSize: 18)),
-      ),
-    );
-  }
-}
-
-// Простая реализация страницы-заглушки для SplashScreen
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuthStatus();
-  }
-
-  Future<void> _checkAuthStatus() async {
-    // Имитация загрузки
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.checkAuthStatus();
-
-      if (authProvider.authStatus == AuthStatus.authenticated) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      } else {
-        Navigator.of(context).pushReplacementNamed('/login');
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Cinema App',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
-            CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

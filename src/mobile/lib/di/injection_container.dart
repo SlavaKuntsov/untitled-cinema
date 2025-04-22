@@ -2,7 +2,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile/domain/usecases/auth/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constants/oauth_constants.dart';
@@ -14,6 +13,7 @@ import '../data/repositories/auth_repository_impl.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../domain/usecases/auth/google_sign_in.dart';
 import '../domain/usecases/auth/login.dart';
+import '../domain/usecases/auth/registration.dart';
 import '../presentation/providers/auth_provider.dart';
 import '../presentation/providers/theme_provider.dart';
 
@@ -60,16 +60,18 @@ Future<void> init() async {
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   // Регистрируем ApiClient с колбэком для выхода из системы
-  sl.registerLazySingleton<ApiClient>(() => ApiClient(
-        sl<Dio>(), 
-        sl<SharedPreferences>(),
-        onLogoutRequired: () {
-          // Получаем экземпляр AuthProvider и вызываем logout
-          if (sl.isRegistered<AuthProvider>()) {
-            sl<AuthProvider>().forceLogout();
-          }
-        },
-      ));
+  sl.registerLazySingleton<ApiClient>(
+    () => ApiClient(
+      sl<Dio>(),
+      sl<SharedPreferences>(),
+      onLogoutRequired: () {
+        // Получаем экземпляр AuthProvider и вызываем logout
+        if (sl.isRegistered<AuthProvider>()) {
+          sl<AuthProvider>().forceLogout();
+        }
+      },
+    ),
+  );
 
   // External
   final sharedPreferences = await SharedPreferences.getInstance();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/utils/input_validator.dart';
@@ -21,12 +22,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _birthDateController = TextEditingController();
 
   final _firstNameFocusNode = FocusNode();
   final _lastNameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
+
+  bool _isGoogleSignIn = false;
+  DateTime? _selectedDate;
 
   @override
   void didChangeDependencies() {
@@ -40,8 +45,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       FocusScope.of(context).requestFocus(_passwordFocusNode);
     }
   }
-
-  bool _isGoogleSignIn = false;
 
   @override
   void dispose() {
@@ -63,6 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final firstName = _firstNameController.text.trim();
       final lastName = _lastNameController.text.trim();
       final password = _passwordController.text;
+      final dateOfBirth = _birthDateController.text;
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.registration(
@@ -70,6 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: password,
         firstName: firstName,
         lastName: lastName,
+        dateOfBirth: dateOfBirth,
       );
 
       if (mounted && success) {
@@ -120,6 +125,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
       value,
       _passwordController.text,
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue, // Цвет выбранной даты
+              onPrimary: Colors.white, // Цвет текста выбранной даты
+              onSurface: Colors.black, // Цвет текста в календаре
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue, // Цвет кнопок
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _birthDateController.text = DateFormat('dd.MM.yyyy').format(picked);
+      });
+    }
   }
 
   @override
@@ -214,6 +252,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textInputAction: TextInputAction.done,
                       onEditingComplete: _onRegisterPressed,
                       prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: AbsorbPointer(
+                        child: AuthInputField(
+                          label: 'Дата рождения',
+                          hintText: 'Выберите дату',
+                          controller: _birthDateController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Пожалуйста, выберите дату рождения';
+                            }
+                            return null;
+                          },
+                          prefixIcon: const Icon(Icons.calendar_today),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     if (errorMessage != null) ...[

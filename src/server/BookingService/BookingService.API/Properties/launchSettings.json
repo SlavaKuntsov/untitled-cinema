@@ -28,7 +28,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://192.168.0.102:7003"
+      "applicationUrl": "http://192.168.0.101:7003"
     }
   }
 }

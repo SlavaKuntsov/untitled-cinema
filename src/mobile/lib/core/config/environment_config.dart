@@ -2,6 +2,7 @@ enum Environment { dev, prod }
 
 class EnvironmentConfig {
   static Environment _environment = Environment.dev;
+  static String ipAddress = "192.168.0.101";
 
   static void setEnvironment(Environment env) {
     _environment = env;
@@ -25,7 +26,7 @@ class EnvironmentConfig {
         return 'http://10.0.2.2:7001';
       // return 'https://localhost:7001';
       case Environment.prod:
-        return 'http://192.168.0.102:7001';
+        return 'http://$ipAddress:7001';
     }
   }
 
@@ -34,7 +35,7 @@ class EnvironmentConfig {
       case Environment.dev:
         return 'https://localhost:7002';
       case Environment.prod:
-        return 'http://192.168.0.102:7002';
+        return 'http://$ipAddress:7002';
     }
   }
 
@@ -43,7 +44,7 @@ class EnvironmentConfig {
       case Environment.dev:
         return 'https://localhost:7003';
       case Environment.prod:
-        return 'http://192.168.0.102:7003';
+        return 'http://$ipAddress:7003';
     }
   }
 }

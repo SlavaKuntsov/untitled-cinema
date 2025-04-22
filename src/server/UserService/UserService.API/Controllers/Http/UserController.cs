@@ -41,7 +41,12 @@ public class UserController(IMediator mediator, IMapper mapper) : ControllerBase
 			JwtConstants.REFRESH_COOKIE_NAME,
 			authResultDto.RefreshToken);
 
-		return Ok(new { authResultDto.AccessToken, authResultDto.RefreshToken });
+		return Ok(
+			new
+			{
+				accessToken = authResultDto.AccessToken,
+				refreshToken = authResultDto.RefreshToken
+			});
 	}
 
 	[HttpPost("/users/registration")]

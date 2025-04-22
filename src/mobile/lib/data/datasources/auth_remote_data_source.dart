@@ -16,6 +16,7 @@ abstract class AuthRemoteDataSource {
     required String lastName,
     required String email,
     required String password,
+    required String dateOfBirth,
   });
 
   Future<TokenModel> googleSignIn();
@@ -70,6 +71,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String lastName,
     required String email,
     required String password,
+    required String dateOfBirth,
   }) async {
     try {
       final response = await client.post(
@@ -79,7 +81,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
           'firstName': firstName,
           'lastName': lastName,
-          'dateOfBirth': '',
+          'dateOfBirth': dateOfBirth,
         },
       );
 
@@ -115,8 +117,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         final tokenData = {
           'access_token': response['authResultDto']['accessToken'],
           'refresh_token': prefs.getString('refresh_token') ?? '',
-          'token_type': 'Bearer',
-          'expires_in': 3600, // Значение по умолчанию, если не указано в ответе
         };
 
         final TokenModel tokenModel = TokenModel.fromJson(tokenData);

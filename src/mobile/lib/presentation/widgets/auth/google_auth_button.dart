@@ -53,7 +53,7 @@ class GoogleAuthButton extends StatelessWidget {
                             'G',
                             style: TextStyle(
                               color: Colors.red[700],
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -63,7 +63,7 @@ class GoogleAuthButton extends StatelessWidget {
                       Text(
                         text,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

@@ -16,6 +16,7 @@ abstract class AuthRepository {
     required String lastName,
     required String email,
     required String password,
+    required String dateOfBirth,
   });
 
   Future<Either<Failure, Token>> googleSignIn();

@@ -21,7 +21,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 var host = builder.Host;
 
-builder.UseHttps();
+// builder.UseHttps();
 
 services
 	.AddCommon()

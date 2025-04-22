@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
+import '../../presentation/screens/navigation_screen.dart';
+import '../../presentation/screens/splash_screen.dart';
 
 class AppRouter {
   static const String initial = '/';
@@ -19,7 +20,7 @@ class AppRouter {
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case home:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (_) => const NavigationScreen());
       default:
         return MaterialPageRoute(
           builder:
@@ -37,7 +38,7 @@ class AppRouter {
       initial: (context) => const SplashScreen(),
       login: (context) => const LoginScreen(),
       register: (context) => const RegisterScreen(),
-      home: (context) => const HomeScreen(),
+      home: (context) => const NavigationScreen(),
     };
   }
 

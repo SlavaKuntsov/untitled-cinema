@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/input_validator.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth/auth_button.dart';
@@ -44,8 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordFocusNode.dispose();
     super.dispose();
   }
-
-  // TODO при загрузке логина вставлять savedEmail из AuthProviider если он есть
 
   void _onLoginPressed() async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -111,8 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Вход в Untitled-Cinema',
+                    Text(
+                      'Вход в ${AppConstants.appName}',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,

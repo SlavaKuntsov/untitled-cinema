@@ -2,20 +2,15 @@ import '../../../domain/entities/auth/user.dart';
 
 class UserModel extends User {
   const UserModel({
-    required String id,
-    required String email,
-    required String name,
-    String? photoUrl,
-    required bool isEmailVerified,
-    required DateTime createdAt,
-  }) : super(
-         id: id,
-         email: email,
-         name: name,
-         photoUrl: photoUrl,
-         isEmailVerified: isEmailVerified,
-         createdAt: createdAt,
-       );
+    required super.id,
+    required super.email,
+    required super.name,
+    required super.role,
+    required super.dateOfBirth,
+    required super.balance,
+    super.photoUrl,
+    required super.createdAt,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -23,7 +18,9 @@ class UserModel extends User {
       email: json['email'],
       name: json['name'],
       photoUrl: json['photo_url'],
-      isEmailVerified: json['is_email_verified'] ?? false,
+      role: json['role'] ?? '',
+      dateOfBirth: json['dateOfBirth'] ?? '',
+      balance: json['balance'] ?? 0,
       createdAt: DateTime.parse(json['created_at']),
     );
   }
@@ -34,7 +31,6 @@ class UserModel extends User {
       'email': email,
       'name': name,
       'photo_url': photoUrl,
-      'is_email_verified': isEmailVerified,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -45,8 +41,10 @@ class UserModel extends User {
       email: user.email,
       name: user.name,
       photoUrl: user.photoUrl,
-      isEmailVerified: user.isEmailVerified,
       createdAt: user.createdAt,
+      dateOfBirth: user.dateOfBirth,
+      role: user.role,
+      balance: user.balance,
     );
   }
 
@@ -55,15 +53,19 @@ class UserModel extends User {
     String? email,
     String? name,
     String? photoUrl,
-    bool? isEmailVerified,
+    String? role,
+    String? dateOfBirth,
+    double? balance,
     DateTime? createdAt,
   }) {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
       name: name ?? this.name,
+      role: role ?? this.role,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      balance: balance ?? this.balance,
       photoUrl: photoUrl ?? this.photoUrl,
-      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       createdAt: createdAt ?? this.createdAt,
     );
   }
