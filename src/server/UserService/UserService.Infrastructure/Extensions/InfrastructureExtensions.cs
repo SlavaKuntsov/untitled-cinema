@@ -19,7 +19,6 @@ public static class InfrastructureExtensions
 
 		services.AddRedis(configuration);
 
-		services.AddScoped<IRedisCacheService, RedisCacheService>();
 		services.AddScoped<ICookieService, CookieService>();
 		services.AddScoped<IPasswordHash, PasswordHash>();
 		services.AddScoped<IJwt, Jwt>();

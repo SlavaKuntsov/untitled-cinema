@@ -20,6 +20,12 @@ public class UsersRepository(UserServiceDBContext context) : IUsersRepository
 
 		return a;
 	}
+	public async Task<UserEntity?> GetAsync(string email, CancellationToken cancellationToken)
+	{
+		return await context.Users
+			.AsNoTracking()
+			.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+	}
 
 	public async Task<(Guid?, Role?, Guid?)> GetIdWithRoleAndTokenAsync(
 		Guid userId,

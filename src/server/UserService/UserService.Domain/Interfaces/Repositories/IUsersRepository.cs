@@ -7,6 +7,7 @@ public interface IUsersRepository
 {
 	Task<Guid> CreateAsync(UserEntity user, RefreshTokenEntity refreshToken, CancellationToken cancellationToken);
 	Task<UserEntity?> GetAsync(Guid id, CancellationToken cancellationToken);
+	Task<UserEntity?> GetAsync(string email, CancellationToken cancellationToken);
 	Task<IList<UserEntity>> GetAsync(CancellationToken cancellationToken);
 	Task<Guid?> GetIdAsync(string email, CancellationToken cancellationToken);
 	Task<IList<Guid>> GetByRole(Role role, CancellationToken cancellationToken);
