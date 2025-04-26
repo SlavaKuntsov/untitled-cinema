@@ -1,5 +1,8 @@
-﻿using MediatR;
+﻿using Extensions.Enums;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Minios.Enums;
+using Minios.Services;
 using MovieService.API.Contracts.RequestExamples.Movies;
 using MovieService.API.Contracts.Requests;
 using MovieService.Application.Handlers.Commands.Movies;
@@ -21,6 +24,7 @@ namespace MovieService.API.Controllers.Http;
 [Route("[controller]")]
 public class MovieController(
 	IMediator mediator,
+	IMinioService minioService,
 	ILogger<MovieController> logger) : ControllerBase
 {
 	[HttpGet("/movies")]
@@ -94,8 +98,18 @@ public class MovieController(
 
 		return NoContent();
 	}
+	
+	[HttpGet("/movies/{id:Guid}/poster")]
+	public async Task<IActionResult> GetMoviePoster(
+		[FromRoute] Guid id,
+		CancellationToken cancellationToken)
+	{
+		var poster = await mediator.Send(new GetMoviePoster(id), cancellationToken);
 
-	[HttpPost("/movies/{id:Guid}/poster")]
+		return Ok(poster);
+	}
+
+	[HttpPatch("/movies/{id:Guid}/poster")]
 	[Consumes("multipart/form-data")]
 	//[Authorize(Policy = "AdminOnly")]
 	public async Task<IActionResult> ChangeMoviePoster(
@@ -106,6 +120,26 @@ public class MovieController(
 		var poster = await mediator.Send(new ChangeMoviePosterCommand(id, file), cancellationToken);
 
 		return Ok(poster);
+	}
+	
+	[HttpGet("/movies/poster/{fileName}")]
+	public async Task<IActionResult> Delete([FromRoute] string fileName)
+	{
+		var stream = await minioService.GetFileAsync(Buckets.Poster.GetDescription(), fileName);
+		
+		var contentType = Path.GetExtension(fileName).ToLower() switch
+		{
+			".jpg" or ".jpeg" => "image/jpeg",
+			".png" => "image/png",
+			".gif" => "image/gif",
+			".webp" => "image/webp",
+			_ => "application/octet-stream"
+		};
+		
+		Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
+		Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
+
+		return File(stream, contentType);
 	}
 
 	[HttpGet("/movies/frames")]

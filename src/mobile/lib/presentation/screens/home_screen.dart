@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../domain/entities/movie/movie.dart';
+import '../providers/movie_provider.dart';
+import '../widgets/home/afisha_widget.dart';
+import '../widgets/home/pagination_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,9 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   String selectedGenre = 'Все';
+  final ScrollController _scrollController = ScrollController();
 
-  // Имитация списка фильмов (в реальном приложении данные будут приходить с API)
-  final List<Map<String, dynamic>> movies = [
+  // Добавляем списки доступных размеров страниц
+  final List<int> pageSizes = [1, 5, 10, 20, 50];
+  int selectedPageSize = 10; // Значение по умолчанию
+
+  // Имитация списка фильмов
+  final List<Map<String, dynamic>> featuredMovies = [
     {
       'title': 'Дюна: Часть вторая',
       'genre': 'Фантастика',
@@ -50,45 +61,111 @@ class _HomeScreenState extends State<HomeScreen> {
       'imageUrl': 'assets/images/avengers.jpg',
       'showTimes': ['10:30', '13:45', '17:00', '20:15'],
     },
-    {
-      'title': 'Тихое место 3',
-      'genre': 'Ужасы',
-      'rating': 4.3,
-      'imageUrl': 'assets/images/quiet_place.jpg',
-      'showTimes': ['11:00', '14:15', '17:30', '20:45'],
-    },
-    {
-      'title': 'Дэдпул и Росомаха',
-      'genre': 'Комедии',
-      'rating': 4.9,
-      'imageUrl': 'assets/images/deadpool.jpg',
-      'showTimes': ['12:30', '15:45', '19:00', '22:15'],
-    },
-    {
-      'title': 'Бегущий по лезвию 2099',
-      'genre': 'Фантастика',
-      'rating': 4.4,
-      'imageUrl': 'assets/images/blade_runner.jpg',
-      'showTimes': ['11:45', '15:00', '18:15', '21:30'],
-    },
-    {
-      'title': 'Миссия невыполнима 8',
-      'genre': 'Триллеры',
-      'rating': 4.6,
-      'imageUrl': 'assets/images/mission_impossible.jpg',
-      'showTimes': ['10:15', '13:00', '16:15', '19:30'],
-    },
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    // Загружаем первую страницу при инициализации
+    Future.microtask(() {
+      List<String>? filters;
+      List<String>? filterValues;
+
+      if (selectedGenre != 'Все') {
+        filters = ['genre'];
+        filterValues = [selectedGenre];
+      }
+
+      Provider.of<MovieProvider>(context, listen: false).fetchMovies(
+        page: 1,
+        limit: selectedPageSize,
+        filters: filters,
+        filterValues: filterValues,
+      );
+    });
+
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      List<String>? filters;
+      List<String>? filterValues;
+
+      if (selectedGenre != 'Все') {
+        filters = ['genre'];
+        filterValues = [selectedGenre];
+      }
+
+      Provider.of<MovieProvider>(context, listen: false).nextPage();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  void _updateGenreFilter(String genre) {
+    setState(() {
+      selectedGenre = genre;
+    });
+
+    List<String>? filters;
+    List<String>? filterValues;
+
+    if (genre != 'Все') {
+      filters = ['genre'];
+      filterValues = [genre];
+    }
+
+    Provider.of<MovieProvider>(context, listen: false).fetchMovies(
+      page: 1,
+      limit: selectedPageSize,
+      filters: filters,
+      filterValues: filterValues,
+    );
+  }
+
+  void _updatePageSize(int? newSize) {
+    if (newSize != null && newSize != selectedPageSize) {
+      setState(() {
+        selectedPageSize = newSize;
+      });
+
+      List<String>? filters;
+      List<String>? filterValues;
+
+      if (selectedGenre != 'Все') {
+        filters = ['genre'];
+        filterValues = [selectedGenre];
+      }
+
+      Provider.of<MovieProvider>(context, listen: false).fetchMovies(
+        limit: newSize,
+        filters: filters,
+        filterValues: filterValues,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Фильтруем фильмы по выбранному жанру
-    final filteredMovies =
-        selectedGenre == 'Все'
-            ? movies
-            : movies.where((movie) => movie['genre'] == selectedGenre).toList();
+    final movieProvider = Provider.of<MovieProvider>(context);
+    final moviesState = movieProvider.moviesState;
 
     return SingleChildScrollView(
+      controller: _scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -108,10 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0.3,
-                    child: Image.network(
-                      'https://via.placeholder.com/800x400',
-                      fit: BoxFit.cover,
-                    ),
+                    child: Icon(Icons.icecream_outlined),
                   ),
                 ),
                 Center(
@@ -128,9 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
-                        onPressed: () {
-                          // Действие при нажатии на кнопку "Купить билет"
-                        },
+                        onPressed: () {},
                         icon: const Icon(Icons.local_activity),
                         label: const Text('Купить билет'),
                         style: ElevatedButton.styleFrom(
@@ -177,9 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: Text(genre),
                           selected: isSelected,
                           onSelected: (selected) {
-                            setState(() {
-                              selectedGenre = genre;
-                            });
+                            _updateGenreFilter(genre);
                           },
                           backgroundColor: Colors.grey.shade200,
                           selectedColor: Colors.blue.shade100,
@@ -210,36 +280,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 230,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: 4, // Возьмем первые 4 фильма для популярных
+                    itemCount: featuredMovies.length,
                     itemBuilder: (context, index) {
-                      final movie = movies[index];
+                      final movie = featuredMovies[index];
 
                       return GestureDetector(
-                        onTap: () {
-                          // Переход на страницу с деталями фильма
-                        },
+                        onTap: () {},
                         child: Container(
                           width: 140,
                           margin: const EdgeInsets.only(right: 12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Обложка фильма
                               Container(
                                 height: 160,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   color: Colors.grey.shade300,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(
-                                      'https://via.placeholder.com/300x450?text=${Uri.encodeComponent(movie['title'])}',
-                                    ),
-                                  ),
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              // Название фильма
                               Text(
                                 movie['title'],
                                 maxLines: 2,
@@ -248,7 +308,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              // Рейтинг
                               Row(
                                 children: [
                                   Icon(
@@ -279,169 +338,221 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 16),
 
-          // Список всех фильмов
-          // Padding(
-          //   padding: const EdgeInsets.all(16),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           Text(
-          //             selectedGenre == 'Все' ? 'Все фильмы' : selectedGenre,
-          //             style: const TextStyle(
-          //               fontSize: 18,
-          //               fontWeight: FontWeight.bold,
-          //             ),
-          //           ),
-          //           Text(
-          //             '${filteredMovies.length} фильмов',
-          //             style: TextStyle(color: Colors.grey.shade600),
-          //           ),
-          //         ],
-          //       ),
-          //       const SizedBox(height: 16),
-          //       ListView.builder(
-          //         shrinkWrap: true,
-          //         physics: const NeverScrollableScrollPhysics(),
-          //         itemCount: filteredMovies.length,
-          //         itemBuilder: (context, index) {
-          //           final movie = filteredMovies[index];
-          //
-          //           return Card(
-          //             margin: const EdgeInsets.only(bottom: 16),
-          //             elevation: 2,
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(12),
-          //             ),
-          //             child: InkWell(
-          //               onTap: () {
-          //                 // Переход на страницу с деталями фильма
-          //               },
-          //               borderRadius: BorderRadius.circular(12),
-          //               child: Row(
-          //                 crossAxisAlignment: CrossAxisAlignment.start,
-          //                 children: [
-          //                   // Обложка фильма
-          //                   ClipRRect(
-          //                     borderRadius: const BorderRadius.only(
-          //                       topLeft: Radius.circular(12),
-          //                       bottomLeft: Radius.circular(12),
-          //                     ),
-          //                     child: Image.network(
-          //                       'https://via.placeholder.com/300x450?text=${Uri.encodeComponent(movie['title'])}',
-          //                       width: 100,
-          //                       height: 150,
-          //                       fit: BoxFit.cover,
-          //                     ),
-          //                   ),
-          //                   // Информация о фильме
-          //                   Expanded(
-          //                     child: Padding(
-          //                       padding: const EdgeInsets.all(12),
-          //                       child: Column(
-          //                         crossAxisAlignment: CrossAxisAlignment.start,
-          //                         children: [
-          //                           // Название и рейтинг
-          //                           Row(
-          //                             mainAxisAlignment:
-          //                                 MainAxisAlignment.spaceBetween,
-          //                             children: [
-          //                               Expanded(
-          //                                 child: Text(
-          //                                   movie['title'],
-          //                                   style: const TextStyle(
-          //                                     fontWeight: FontWeight.bold,
-          //                                     fontSize: 16,
-          //                                   ),
-          //                                 ),
-          //                               ),
-          //                               const SizedBox(width: 8),
-          //                               Row(
-          //                                 children: [
-          //                                   Icon(
-          //                                     Icons.star,
-          //                                     size: 18,
-          //                                     color: Colors.amber.shade700,
-          //                                   ),
-          //                                   const SizedBox(width: 4),
-          //                                   Text(
-          //                                     '${movie['rating']}',
-          //                                     style: const TextStyle(
-          //                                       fontWeight: FontWeight.bold,
-          //                                     ),
-          //                                   ),
-          //                                 ],
-          //                               ),
-          //                             ],
-          //                           ),
-          //                           const SizedBox(height: 8),
-          //                           // Жанр
-          //                           Text(
-          //                             movie['genre'],
-          //                             style: TextStyle(
-          //                               color: Colors.grey.shade600,
-          //                               fontSize: 14,
-          //                             ),
-          //                           ),
-          //                           const SizedBox(height: 12),
-          //                           // Расписание сеансов
-          //                           const Text(
-          //                             'Сеансы сегодня:',
-          //                             style: TextStyle(
-          //                               fontWeight: FontWeight.bold,
-          //                               fontSize: 14,
-          //                             ),
-          //                           ),
-          //                           const SizedBox(height: 8),
-          //                           // Время сеансов
-          //                           Wrap(
-          //                             spacing: 8,
-          //                             runSpacing: 8,
-          //                             children:
-          //                                 (movie['showTimes'] as List<String>).map<
-          //                                   Widget
-          //                                 >((time) {
-          //                                   return OutlinedButton(
-          //                                     onPressed: () {
-          //                                       // Действие при выборе сеанса
-          //                                     },
-          //                                     style: OutlinedButton.styleFrom(
-          //                                       foregroundColor:
-          //                                           Colors.blue.shade700,
-          //                                       side: BorderSide(
-          //                                         color: Colors.blue.shade700,
-          //                                       ),
-          //                                       padding:
-          //                                           const EdgeInsets.symmetric(
-          //                                             horizontal: 12,
-          //                                             vertical: 4,
-          //                                           ),
-          //                                       minimumSize: Size.zero,
-          //                                       tapTargetSize:
-          //                                           MaterialTapTargetSize
-          //                                               .shrinkWrap,
-          //                                     ),
-          //                                     child: Text(time),
-          //                                   );
-          //                                 }).toList(),
-          //                           ),
-          //                         ],
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           );
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          // Список всех фильмов с пагинацией
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          selectedGenre == 'Все' ? 'Все фильмы' : selectedGenre,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (moviesState.status == MovieStatus.loaded)
+                      Text(
+                        'Всего: ${moviesState.total}',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Управление состояниями
+                if (moviesState.status == MovieStatus.initial ||
+                    (moviesState.status == MovieStatus.loading &&
+                        moviesState.movies.isEmpty))
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (moviesState.status == MovieStatus.error &&
+                    moviesState.movies.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            moviesState.errorMessage ??
+                                'Произошла ошибка при загрузке фильмов',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.red.shade800),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => movieProvider.refreshMovies(),
+                            child: const Text('Попробовать снова'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (moviesState.movies.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text(
+                        'Фильмы не найдены',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  )
+                else
+                  Column(
+                    // mainAxisSize: MainAxisSize.max,
+                    children: [
+                      // Список фильмов
+                      MovieListWidget(
+                        moviesState: moviesState,
+                        onMovieTap: (movieId) {
+                          Navigator.pushNamed(
+                            context,
+                            '/movie-details',
+                            arguments: movieId,
+                          );
+                        },
+                        getShowTimes: _getShowTimes,
+                        getAgeLimitColor: _getAgeLimitColor,
+                      ),
+
+                      PaginationWidget(
+                        moviesState: moviesState,
+                        selectedPageSize: selectedPageSize,
+                        pageSizes: pageSizes,
+                        onPageSizeChanged: _updatePageSize,
+                        onNextPage: () => movieProvider.nextPage(),
+                        onPrevPage: () => movieProvider.prevPage(),
+                      ),
+
+                      // Пагинация
+                      // const SizedBox(width: 16),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Row(
+                      //       children: [
+                      //         if (moviesState.movies.isNotEmpty &&
+                      //             (moviesState.hasPrevPage ||
+                      //                 moviesState.hasNextPage))
+                      //           Padding(
+                      //             padding: const EdgeInsets.symmetric(
+                      //               vertical: 16,
+                      //             ),
+                      //             child: Row(
+                      //               mainAxisAlignment: MainAxisAlignment.center,
+                      //               children: [
+                      //                 if (moviesState.hasPrevPage)
+                      //                   ElevatedButton(
+                      //                     onPressed:
+                      //                         () => movieProvider.prevPage(),
+                      //                     style: ElevatedButton.styleFrom(
+                      //                       foregroundColor: Colors.black87,
+                      //                       backgroundColor:
+                      //                           Colors.grey.shade200,
+                      //                     ),
+                      //                     child: const Row(
+                      //                       mainAxisSize: MainAxisSize.min,
+                      //                       children: [
+                      //                         Icon(Icons.arrow_back, size: 16),
+                      //                         SizedBox(width: 4),
+                      //                         Text('Пред.'),
+                      //                       ],
+                      //                     ),
+                      //                   ),
+                      //                 Padding(
+                      //                   padding: const EdgeInsets.symmetric(
+                      //                     horizontal: 16,
+                      //                   ),
+                      //                   child: Text(
+                      //                     'Стр. ${moviesState.currentPage + 1} из ${(moviesState.total / selectedPageSize).ceil()}',
+                      //                     style: const TextStyle(
+                      //                       fontWeight: FontWeight.bold,
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //                 if (moviesState.hasNextPage)
+                      //                   ElevatedButton(
+                      //                     onPressed:
+                      //                         () => movieProvider.nextPage(),
+                      //                     child: const Row(
+                      //                       mainAxisSize: MainAxisSize.min,
+                      //                       children: [
+                      //                         Text('След.'),
+                      //                         SizedBox(width: 4),
+                      //                         Icon(
+                      //                           Icons.arrow_forward,
+                      //                           size: 16,
+                      //                         ),
+                      //                       ],
+                      //                     ),
+                      //                   ),
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         const Text(
+                      //           'Показывать:',
+                      //           style: TextStyle(fontSize: 14),
+                      //         ),
+                      //         const SizedBox(width: 8),
+                      //         DropdownButton<int>(
+                      //           value: selectedPageSize,
+                      //           isDense: true,
+                      //           items:
+                      //               pageSizes.map((size) {
+                      //                 return DropdownMenuItem<int>(
+                      //                   value: size,
+                      //                   child: Text('$size'),
+                      //                 );
+                      //               }).toList(),
+                      //           onChanged: _updatePageSize,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ],
+                      // ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  List<String> _getShowTimes(Movie movie) {
+    final int numberOfTimes = (movie.id.hashCode % 4) + 1;
+    final List<String> times = [];
+
+    final baseHour = 10 + (movie.id.hashCode % 6);
+    for (int i = 0; i < numberOfTimes; i++) {
+      final hour = (baseHour + i * 3) % 24;
+      final minute = (movie.id.hashCode * (i + 1)) % 60;
+      times.add(
+        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
+      );
+    }
+
+    return times;
+  }
+
+  Color _getAgeLimitColor(int ageLimit) {
+    if (ageLimit >= 18) return Colors.red;
+    if (ageLimit >= 16) return Colors.orange;
+    if (ageLimit >= 12) return Colors.amber.shade700;
+    if (ageLimit >= 6) return Colors.green;
+    return Colors.blue;
   }
 }

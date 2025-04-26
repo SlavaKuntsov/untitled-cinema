@@ -1,11 +1,11 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/constants/api_constants.dart';
-import '../../core/errors/exceptions.dart';
-import '../../core/network/api_client.dart';
-import '../models/auth/token_model.dart';
-import '../models/auth/user_model.dart';
+import '../../../core/constants/api_constants.dart';
+import '../../../core/errors/exceptions.dart';
+import '../../../core/network/api_client.dart';
+import '../../models/auth/token_model.dart';
+import '../../models/auth/user_model.dart';
 import 'google_auth_service.dart';
 
 abstract class AuthRemoteDataSource {

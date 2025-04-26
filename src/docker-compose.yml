@@ -167,7 +167,7 @@ services:
       MINIO_BROWSER: "on"
     volumes:
       - minio-data:/data
-    command: server /data --console-address ":9001"
+    command: server /data --address 0.0.0.0:9000 --console-address 0.0.0.0:9001
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s

@@ -7,7 +7,7 @@ import '../../core/network/network_info.dart';
 import '../../domain/entities/auth/token.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_data_source.dart';
+import '../datasources/auth/auth_remote_data_source.dart';
 import '../models/auth/token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {

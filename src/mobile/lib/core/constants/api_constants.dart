@@ -13,7 +13,7 @@ class ApiConstants {
   static String get googleMobileAuth =>
       '$userServiceBaseUrl/auth/google-mobile-auth';
   static String get logout => '$userServiceBaseUrl/auth/unauthorize';
-  static String get refreshToken => '$userServiceBaseUrl/auth/refresh-token';
+  static String get refreshToken => '$userServiceBaseUrl/auth/refreshToken';
   static String get authorize => '$userServiceBaseUrl/auth/authorize';
 
   // Movie Service Endpoints
@@ -26,6 +26,7 @@ class ApiConstants {
   static String get nowPlaying => '$movieServiceBaseUrl/movies/now-playing';
   static String get upcoming => '$movieServiceBaseUrl/movies/upcoming';
   static String get search => '$movieServiceBaseUrl/movies/search';
+  static String get moviePoster => '$movieServiceBaseUrl/movies/poster';
 
   // Booking Service Endpoints
   static String get bookingServiceBaseUrl =>
@@ -41,7 +42,7 @@ class ApiConstants {
   static const String contentType = 'application/json';
   static const String authorization = 'Authorization';
   static const String bearer = 'Bearer';
-  
+
   // JWT константы
   static const String REFRESH_COOKIE_NAME = "yummy-cackes";
 }

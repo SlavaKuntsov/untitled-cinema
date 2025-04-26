@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_constants.dart';
 import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkAuthStatus() async {
     // Имитация загрузки
-    await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
 
     if (mounted) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -37,20 +36,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              AppConstants.appName,
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      body: Stack(
+        children: [
+          // Фоновое изображение
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/back.png',
+              fit: BoxFit.cover, // Использует contain вместо cover для лого
             ),
-            const SizedBox(height: 24),
-            CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
+          ),
+
+          // Индикатор загрузки внизу экрана
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 60,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

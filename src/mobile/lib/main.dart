@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitledCinema/presentation/providers/movie_provider.dart';
 import 'package:untitledCinema/presentation/screens/navigation_screen.dart';
 import 'package:untitledCinema/presentation/screens/splash_screen.dart';
 
@@ -48,6 +49,7 @@ void main() async {
             return provider;
           },
         ),
+        ChangeNotifierProvider(create: (_) => di.sl<MovieProvider>()),
       ],
       child: const MyApp(),
     ),
@@ -81,7 +83,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
 
     return MaterialApp(
       navigatorKey: navigatorKey, // Устанавливаем глобальный ключ навигатора

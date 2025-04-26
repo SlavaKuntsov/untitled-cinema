@@ -1,5 +1,7 @@
 using Domain.Exceptions;
+using Extensions.Enums;
 using MediatR;
+using Minios.Enums;
 using Minios.Services;
 using MovieService.Application.DTOs;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -24,7 +26,9 @@ public sealed class GetMovieFramesByMovieIdQueryHandler(
 
 		foreach (var frame in frames.OrderBy(f => f.Order))
 		{
-			var url = await minioService.GetPresignedUrlAsync(null, frame.FrameName);
+			var url = await minioService.GetPresignedUrlAsync(
+				Buckets.Frames.GetDescription(),
+				frame.FrameName);
 
 			result.Add(
 				new MovieFrameDto(
