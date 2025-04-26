@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/api_constants.dart';
 import '../../core/network/api_client.dart';
-import '../../data/datasources/google_auth_service.dart';
+import '../../data/datasources/auth/google_auth_service.dart';
 import '../../di/injection_container.dart';
 import '../../domain/entities/auth/user.dart';
 import '../../domain/usecases/auth/google_sign_in.dart';

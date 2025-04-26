@@ -3,14 +3,18 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitledCinema/data/datasources/movies_remote_data_source.dart';
+import 'package:untitledCinema/presentation/providers/movie_provider.dart';
 
 import '../core/constants/oauth_constants.dart';
 import '../core/network/api_client.dart';
 import '../core/network/network_info.dart';
-import '../data/datasources/auth_remote_data_source.dart';
-import '../data/datasources/google_auth_service.dart';
+import '../data/datasources/auth/auth_remote_data_source.dart';
+import '../data/datasources/auth/google_auth_service.dart';
 import '../data/repositories/auth_repository_impl.dart';
+import '../data/repositories/movies_repository_impl.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/movies_repository.dart';
 import '../domain/usecases/auth/google_sign_in.dart';
 import '../domain/usecases/auth/login.dart';
 import '../domain/usecases/auth/registration.dart';
@@ -29,6 +33,7 @@ Future<void> init() async {
       googleSignIn: sl(),
     ),
   );
+  sl.registerFactory(() => MovieProvider(repository: sl()));
 
   sl.registerFactory(() => ThemeProvider());
 
@@ -50,10 +55,19 @@ Future<void> init() async {
     ),
   );
 
+  //Repository
+  sl.registerLazySingleton<MovieRepository>(
+    () => MovieRepositoryImpl(remoteDataSource: sl()),
+  );
+
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () =>
         AuthRemoteDataSourceImpl(client: sl(), googleSignIn: sl(), prefs: sl()),
+  );
+  // Data sources
+  sl.registerLazySingleton<MovieRemoteDataSource>(
+    () => MovieRemoteDataSourceImpl(client: sl()),
   );
 
   // Core

@@ -62,9 +62,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   Widget _buildFloatingNavBar() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(14.0),
       child: Container(
-        height: 60,
+        height: 70,
         decoration: BoxDecoration(
           color: AppTheme.primaryColor,
           borderRadius: BorderRadius.circular(35),
@@ -95,7 +95,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
       onTap: () => _onItemTapped(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected ? activeColor : Colors.transparent,
           borderRadius: BorderRadius.circular(25),

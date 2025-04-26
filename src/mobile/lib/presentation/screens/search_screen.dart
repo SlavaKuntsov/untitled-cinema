@@ -330,12 +330,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             contentPadding: const EdgeInsets.all(12),
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                'https://via.placeholder.com/300x450?text=${Uri.encodeComponent(movie['title'])}',
-                                width: 60,
-                                height: 90,
-                                fit: BoxFit.cover,
-                              ),
+                              child: Icon(Icons.import_contacts),
+                              // Image.network(
+                              //   'https://via.placeholder.com/300x450?text=${Uri.encodeComponent(movie['title'])}',
+                              //   width: 60,
+                              //   height: 90,
+                              //   fit: BoxFit.cover,
+                              // ),
                             ),
                             title: Text(
                               movie['title'],
