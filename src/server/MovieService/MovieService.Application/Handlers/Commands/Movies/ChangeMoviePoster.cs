@@ -1,7 +1,9 @@
 using Domain.Exceptions;
+using Extensions.Enums;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Minios.Enums;
 using Minios.Services;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -30,7 +32,7 @@ public sealed class ChangeMoviePosterCommandHandler(
 		await using var stream = request.Poster.OpenReadStream();
 
 		await minioService.UploadFileAsync(
-			null,
+			Buckets.Poster.GetDescription(),
 			posterName,
 			stream,
 			request.Poster.ContentType);

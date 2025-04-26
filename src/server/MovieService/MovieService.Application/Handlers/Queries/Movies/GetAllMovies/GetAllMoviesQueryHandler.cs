@@ -134,7 +134,7 @@ public class GetAllMoviesQueryHandler(
 		var moviesEntities = await unitOfWork.MoviesRepository.ToListAsync(query, cancellationToken);
 
 		var movies = mapper.Map<IList<MovieModel>>(moviesEntities);
-
+		
 		await redisCacheService.SetValueAsync(cacheKey, movies, TimeSpan.FromMinutes(10));
 
 		return new PaginationWrapperDto<MovieModel>(

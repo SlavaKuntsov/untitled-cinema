@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.ApiEndpoints;
@@ -7,7 +8,10 @@ using Minios.Models;
 
 namespace Minios.Services;
 
-public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> options) : IMinioService
+public class MinioService(
+	IMinioClient minioClient,
+	IOptions<MinioOptions> options,
+	IHttpContextAccessor httpContextAccessor) : IMinioService
 {
 	private readonly MinioOptions _options = options.Value;
 
@@ -88,21 +92,6 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 		await minioClient.RemoveObjectAsync(removeObjectArgs);
 	}
 
-	public async Task<string> GetPresignedUrlAsync(
-		string? bucketName,
-		string objectName,
-		int expiryInSeconds = 604800)
-	{
-		bucketName ??= _options.DefaultBucket;
-
-		var args = new PresignedGetObjectArgs()
-			.WithBucket(bucketName)
-			.WithObject(objectName)
-			.WithExpiry(expiryInSeconds);
-
-		return await minioClient.PresignedGetObjectAsync(args);
-	}
-
 	public async Task<IEnumerable<FileMetadata>> ListFilesAsync(string? bucketName = null)
 	{
 		bucketName ??= _options.DefaultBucket;
@@ -133,6 +122,55 @@ public class MinioService(IMinioClient minioClient, IOptions<MinioOptions> optio
 
 	public string CreateObjectName(string fileName)
 	{
-		 return Guid.NewGuid() + Path.GetExtension(fileName);
+		return Guid.NewGuid() + Path.GetExtension(fileName);
+	}
+
+	public async Task<string> GetPresignedUrlAsync(
+		string? bucketName,
+		string objectName,
+		int expiresInSeconds = 604800)
+	{
+		bucketName ??= _options.DefaultBucket;
+		
+		var minioEndpoint = GetEndpointForCurrentRequest();
+
+		var minioClient2 = new MinioClient()
+			.WithEndpoint(minioEndpoint)
+			.WithCredentials(_options.AccessKey, _options.SecretKey)
+			.WithSSL(_options.UseSsl)
+			.Build();
+
+		return await minioClient2.PresignedGetObjectAsync(
+			new PresignedGetObjectArgs()
+				.WithBucket(bucketName)
+				.WithObject(objectName)
+				.WithExpiry(expiresInSeconds));
+	}
+
+	// public async Task<string> GetPresignedUrlAsync(
+	// 	string? bucketName,
+	// 	string objectName,
+	// 	int expiryInSeconds = 604800)
+	// {
+	// 	bucketName ??= _options.DefaultBucket;
+	//
+	// 	var args = new PresignedGetObjectArgs()
+	// 		.WithBucket(bucketName)
+	// 		.WithObject(objectName)
+	// 		.WithExpiry(expiryInSeconds);
+	//
+	// 	return await minioClient.PresignedGetObjectAsync(args);
+	// }
+
+	private string GetEndpointForCurrentRequest()
+	{
+		var host = httpContextAccessor.HttpContext?.Request.Host.Host;
+
+		// Если запрос пришел с localhost, используем локальный endpoint
+		if (host == "localhost" || host == "127.0.0.1")
+			return _options.Endpoint;
+
+		// Иначе используем внешний endpoint, если он указан
+		return _options.ExternalEndpoint ?? _options.Endpoint;
 	}
 }
