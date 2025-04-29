@@ -123,7 +123,7 @@ public class MovieController(
 	}
 	
 	[HttpGet("/movies/poster/{fileName}")]
-	public async Task<IActionResult> Delete([FromRoute] string fileName)
+	public async Task<IActionResult> GetPosters([FromRoute] string fileName)
 	{
 		var stream = await minioService.GetFileAsync(Buckets.Poster.GetDescription(), fileName);
 		
@@ -159,6 +159,36 @@ public class MovieController(
 
 		return Ok(frames);
 	}
+	
+	[HttpGet("/movies/frames/{fileName}")]
+	public async Task<IActionResult> GetFrames([FromRoute] string fileName)
+	{
+		var stream = await minioService.GetFileAsync(Buckets.Frames.GetDescription(), fileName);
+		
+		var contentType = Path.GetExtension(fileName).ToLower() switch
+		{
+			".jpg" or ".jpeg" => "image/jpeg",
+			".png" => "image/png",
+			".gif" => "image/gif",
+			".webp" => "image/webp",
+			_ => "application/octet-stream"
+		};
+		
+		Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
+		Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
+
+		return File(stream, contentType);
+	}
+
+	// [HttpGet("/movies/{id:Guid}/frames/url")]
+	// public async Task<IActionResult> GetFramesUrl(
+	// 	[FromRoute] Guid id,
+	// 	CancellationToken cancellationToken)
+	// {
+	// 	var frames = await mediator.Send(new GetMovieFramesByMovieIdQuery(id), cancellationToken);
+	//
+	// 	return Ok(frames.Select(f => f.FrameUrl));
+	// }
 
 	/// <summary>
 	/// </summary>

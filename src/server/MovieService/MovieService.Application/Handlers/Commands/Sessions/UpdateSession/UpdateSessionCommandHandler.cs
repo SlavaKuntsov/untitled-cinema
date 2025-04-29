@@ -32,7 +32,7 @@ public class UpdateSessionCommandHandler(
 		var movie = await unitOfWork.MoviesRepository.GetAsync(request.MovieId, cancellationToken)
 					?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
 
-		_ = await unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
+		var hall = await unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
@@ -44,6 +44,7 @@ public class UpdateSessionCommandHandler(
 			throw new UnprocessableContentException("Session end time cannot be later than the end of the day.");
 
 		var sameExistSessions = await unitOfWork.SessionsRepository.GetOverlappingAsync(
+			hall.Id,
 			parsedStartTime,
 			calculateEndTime,
 			cancellationToken);

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Filters;
 using UserService.API.Behaviors;
 using UserService.API.Contracts.Examples;
-using UserService.API.Controllers.Grpc;
 using UserService.Infrastructure.Hubs.Notification;
 
 namespace UserService.API.Extensions;
@@ -18,11 +17,11 @@ public static class ApiExtensions
 {
 	public static IServiceCollection AddAPI(this IServiceCollection services)
 	{
-		services.AddGrpc(
-			options =>
-			{
-				options.Interceptors.Add<GlobalGrpcExceptionInterceptor>();
-			});
+		// services.AddGrpc(
+		// 	options =>
+		// 	{
+		// 		options.Interceptors.Add<GlobalGrpcExceptionInterceptor>();
+		// 	});
 
 		services.AddSwaggerExamplesFromAssemblyOf<CreateUserRequestExample>();
 
@@ -65,7 +64,7 @@ public static class ApiExtensions
 
 	public static WebApplication AddAPI(this WebApplication app)
 	{
-		app.MapGrpcService<AuthController>();
+		// app.MapGrpcService<AuthController>();
 
 		app.MapHub<NotificationHub>("/notificationsHub");
 

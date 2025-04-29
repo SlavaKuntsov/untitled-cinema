@@ -1,10 +1,13 @@
-﻿using Domain.Constants;
+﻿using Brokers.Interfaces;
+using Brokers.Models.DTOs;
+using Brokers.Models.Request;
+using Brokers.Models.Response;
+using Domain.Constants;
 using Domain.Exceptions;
 using Extensions.Strings;
 using MapsterMapper;
 using MediatR;
 using MovieService.Domain.Entities;
-using MovieService.Domain.Interfaces.Grpc;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
 using Redis.Services;
@@ -14,7 +17,7 @@ namespace MovieService.Application.Handlers.Commands.Sessions.FillSession;
 public class FillSessionCommandHandler(
 	IUnitOfWork unitOfWork,
 	IRedisCacheService redisCacheService,
-	ISeatsGrpcService seatsGrpcService,
+	IRabbitMQProducer rabbitMQProducer,
 	IMapper mapper) : IRequestHandler<FillSessionCommand, Guid>
 {
 	public async Task<Guid> Handle(FillSessionCommand request, CancellationToken cancellationToken)
@@ -31,7 +34,7 @@ public class FillSessionCommandHandler(
 		var movie = await unitOfWork.MoviesRepository.GetAsync(request.MovieId, cancellationToken)
 					?? throw new NotFoundException($"Movie with id {request.MovieId} doesn't exists");
 
-		_ = await unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
+		var hall = await unitOfWork.Repository<HallEntity>().GetAsync(request.HallId, cancellationToken)
 			?? throw new NotFoundException($"Hall with id {request.MovieId} doesn't exists");
 
 		var calculateEndTime = parsedStartTime.AddMinutes(movie.DurationMinutes);
@@ -45,6 +48,7 @@ public class FillSessionCommandHandler(
 				"Session end time cannot be later than the end of the day.");
 
 		var sameExistSessions = await unitOfWork.SessionsRepository.GetOverlappingAsync(
+			hall.Id,
 			parsedStartTime,
 			calculateEndTime,
 			cancellationToken);
@@ -75,7 +79,18 @@ public class FillSessionCommandHandler(
 			session.Id,
 			cancellationToken);
 
-		await seatsGrpcService.CreateEmptySessionSeats(session.Id, availableSeats, cancellationToken);
+		var seats = mapper.Map<IList<SeatDto>>(availableSeats);
+
+		var createSeatsData = new CreateSeatsRequest(session.Id, seats);
+
+		var response = await
+			rabbitMQProducer.RequestReplyAsync<CreateSeatsRequest, CreateSeatsResponse>(
+				createSeatsData,
+				Guid.NewGuid(),
+				cancellationToken);
+		
+		if (!string.IsNullOrWhiteSpace(response.Error))
+			throw new InvalidOperationException(response.Error);
 
 		await redisCacheService.RemoveValuesByPatternAsync("movies_*");
 

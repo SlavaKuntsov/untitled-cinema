@@ -1,5 +1,6 @@
 ﻿using BookingService.Application.DTOs;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
+using BookingService.Application.Interfaces.Seats;
 using BookingService.Domain.Enums;
 using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
@@ -10,7 +11,6 @@ using Extensions.Enums;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Application.Jobs.Bookings;
 

@@ -21,6 +21,8 @@ abstract class MovieRemoteDataSource {
   Future<MovieModel> getMovieById(String id);
 
   Future<String> getMoviePosterUrl(String id);
+
+  Future<List<String>> getMovieFrames(String id);
 }
 
 class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
@@ -74,7 +76,7 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
 
       // Проверяем, что responseData не null и является Map
       if (responseData != null && responseData is Map<String, dynamic>) {
-        // Заменяем localhost на 192.168.0.101 в постерах
+        // Заменяем localhost на 192.168.0.104 в постерах
         // _replaceLocalhostInPosters(responseData);
 
         return PaginatedResponseModel<MovieModel>.fromJson(
@@ -92,47 +94,12 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
     }
   }
 
-  void _replaceLocalhostInPosters(Map<String, dynamic> response) {
-    if (response.containsKey('items') && response['items'] is List) {
-      final items = response['items'] as List;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i] is Map<String, dynamic>) {
-          final item = items[i] as Map<String, dynamic>;
-          if (item.containsKey('poster') &&
-              item['poster'] != null &&
-              item['poster'] is String &&
-              (item['poster'] as String).isNotEmpty) {
-            item['poster'] = (item['poster'] as String).replaceAll(
-              'http://localhost:',
-              'http://192.168.0.101:',
-            );
-          }
-        }
-      }
-    }
-  }
-
   @override
   Future<MovieModel> getMovieById(String id) async {
     final response = await client.get('${ApiConstants.movies}/$id');
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final movie = MovieModel.fromJson(data);
-
-      // Если у фильма нет постера, попробуем загрузить URL
-      if (movie.poster.isEmpty) {
-        try {
-          final posterUrl = await getMoviePosterUrl(id);
-          // Возвращаем копию фильма с постером
-          return movie.copyWith(poster: posterUrl);
-        } catch (e) {
-          // Если не удалось получить постер, вернем фильм без него
-          return movie;
-        }
-      }
-
-      return movie;
+    if (response != null) {
+      return MovieModel.fromJson(response);
     } else {
       throw Exception('Failed to load movie: ${response.statusCode}');
     }
@@ -147,6 +114,29 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       return data['url'] ?? '';
     } else {
       throw Exception('Failed to load movie poster: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<List<String>> getMovieFrames(String id) async {
+    try {
+      final response = await client.get('${ApiConstants.movies}/$id/frames');
+
+      if (response != null) {
+        // Предполагаем, что response - это список объектов JSON
+        final List<dynamic> framesData = response as List<dynamic>;
+
+        // Извлекаем только поле frameName из каждого объекта
+        final List<String> frameNames =
+            framesData.map((frame) => frame['frameName'] as String).toList();
+
+        return frameNames;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Ошибка при получении кадров: ${e.toString()}');
+      return [];
     }
   }
 }

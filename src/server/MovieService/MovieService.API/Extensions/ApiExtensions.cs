@@ -35,17 +35,17 @@ public static class ApiExtensions
 		if (string.IsNullOrEmpty(bookingPort))
 			bookingPort = configuration.GetValue<string>("ApplicationSettings:BookingsPort");
 
-		services.AddGrpcClient<AuthService.AuthServiceClient>(
-			options =>
-			{
-				options.Address = new Uri($"https://localhost:{usersPort}");
-			});
-
-		services.AddGrpcClient<SeatsService.SeatsServiceClient>(
-			options =>
-			{
-				options.Address = new Uri($"https://localhost:{bookingPort}");
-			});
+		// services.AddGrpcClient<AuthService.AuthServiceClient>(
+		// 	options =>
+		// 	{
+		// 		options.Address = new Uri($"https://localhost:{usersPort}");
+		// 	});
+		//
+		// services.AddGrpcClient<SeatsService.SeatsServiceClient>(
+		// 	options =>
+		// 	{
+		// 		options.Address = new Uri($"https://localhost:{bookingPort}");
+		// 	});
 
 		services.AddSwaggerExamplesFromAssemblyOf<CreateMovieRequestExample>();
 

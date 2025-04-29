@@ -1,7 +1,7 @@
 ﻿using BookingService.Application.DTOs;
+using BookingService.Application.Interfaces.Seats;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Infrastructure.Hubs.Seats;
 

@@ -1,7 +1,9 @@
 using Domain.Exceptions;
+using Extensions.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Minios.Enums;
 using Minios.Services;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
@@ -55,7 +57,7 @@ public sealed class AddMovieFrameCommandHandler(
 		await using var stream = request.Frame.OpenReadStream();
 
 		await minioService.UploadFileAsync(
-			null,
+			Buckets.Frames.GetDescription(),
 			frameName,
 			stream,
 			request.Frame.ContentType);
