@@ -42,4 +42,9 @@ class MovieRepositoryImpl implements MovieRepository {
   Future<String> getMoviePosterUrl(String id) async {
     return await remoteDataSource.getMoviePosterUrl(id);
   }
+
+  @override
+  Future<List<String>> getMovieFrames(String id) async {
+    return await remoteDataSource.getMovieFrames(id);
+  }
 }

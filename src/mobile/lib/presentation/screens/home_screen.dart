@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../domain/entities/movie/movie.dart';
 import '../providers/movie_provider.dart';
-import '../widgets/home/afisha_widget.dart';
+import '../widgets/home/movie_list_widget.dart';
 import '../widgets/home/pagination_widget.dart';
+import 'movie_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -157,6 +158,14 @@ class _HomeScreenState extends State<HomeScreen> {
         filterValues: filterValues,
       );
     }
+  }
+
+  void navigateToMovieDetails(BuildContext context, String movieId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MovieDetailsPage(movieId: movieId),
+      ),
+    );
   }
 
   @override
@@ -417,11 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       MovieListWidget(
                         moviesState: moviesState,
                         onMovieTap: (movieId) {
-                          Navigator.pushNamed(
-                            context,
-                            '/movie-details',
-                            arguments: movieId,
-                          );
+                          navigateToMovieDetails(context, movieId);
                         },
                         getShowTimes: _getShowTimes,
                         getAgeLimitColor: _getAgeLimitColor,
@@ -435,93 +440,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         onNextPage: () => movieProvider.nextPage(),
                         onPrevPage: () => movieProvider.prevPage(),
                       ),
-
-                      // Пагинация
-                      // const SizedBox(width: 16),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //   children: [
-                      //     Row(
-                      //       children: [
-                      //         if (moviesState.movies.isNotEmpty &&
-                      //             (moviesState.hasPrevPage ||
-                      //                 moviesState.hasNextPage))
-                      //           Padding(
-                      //             padding: const EdgeInsets.symmetric(
-                      //               vertical: 16,
-                      //             ),
-                      //             child: Row(
-                      //               mainAxisAlignment: MainAxisAlignment.center,
-                      //               children: [
-                      //                 if (moviesState.hasPrevPage)
-                      //                   ElevatedButton(
-                      //                     onPressed:
-                      //                         () => movieProvider.prevPage(),
-                      //                     style: ElevatedButton.styleFrom(
-                      //                       foregroundColor: Colors.black87,
-                      //                       backgroundColor:
-                      //                           Colors.grey.shade200,
-                      //                     ),
-                      //                     child: const Row(
-                      //                       mainAxisSize: MainAxisSize.min,
-                      //                       children: [
-                      //                         Icon(Icons.arrow_back, size: 16),
-                      //                         SizedBox(width: 4),
-                      //                         Text('Пред.'),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //                 Padding(
-                      //                   padding: const EdgeInsets.symmetric(
-                      //                     horizontal: 16,
-                      //                   ),
-                      //                   child: Text(
-                      //                     'Стр. ${moviesState.currentPage + 1} из ${(moviesState.total / selectedPageSize).ceil()}',
-                      //                     style: const TextStyle(
-                      //                       fontWeight: FontWeight.bold,
-                      //                     ),
-                      //                   ),
-                      //                 ),
-                      //                 if (moviesState.hasNextPage)
-                      //                   ElevatedButton(
-                      //                     onPressed:
-                      //                         () => movieProvider.nextPage(),
-                      //                     child: const Row(
-                      //                       mainAxisSize: MainAxisSize.min,
-                      //                       children: [
-                      //                         Text('След.'),
-                      //                         SizedBox(width: 4),
-                      //                         Icon(
-                      //                           Icons.arrow_forward,
-                      //                           size: 16,
-                      //                         ),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //               ],
-                      //             ),
-                      //           ),
-                      //         const Text(
-                      //           'Показывать:',
-                      //           style: TextStyle(fontSize: 14),
-                      //         ),
-                      //         const SizedBox(width: 8),
-                      //         DropdownButton<int>(
-                      //           value: selectedPageSize,
-                      //           isDense: true,
-                      //           items:
-                      //               pageSizes.map((size) {
-                      //                 return DropdownMenuItem<int>(
-                      //                   value: size,
-                      //                   child: Text('$size'),
-                      //                 );
-                      //               }).toList(),
-                      //           onChanged: _updatePageSize,
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ],
-                      // ),
                     ],
                   ),
               ],

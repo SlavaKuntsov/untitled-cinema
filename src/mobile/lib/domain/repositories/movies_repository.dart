@@ -15,4 +15,6 @@ abstract class MovieRepository {
   Future<Movie> getMovieById(String id);
 
   Future<String> getMoviePosterUrl(String id);
+
+  Future<List<String>> getMovieFrames(String id);
 }

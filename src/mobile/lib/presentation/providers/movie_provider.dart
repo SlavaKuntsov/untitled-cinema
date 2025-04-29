@@ -67,6 +67,32 @@ class MovieProvider extends ChangeNotifier {
   MovieProvider({required MovieRepository repository})
     : _repository = repository;
 
+  Future<Movie> fetchMovieById({required String id}) async {
+    try {
+      final movie = await _repository.getMovieById(id);
+      return movie;
+    } catch (e) {
+      _moviesState = _moviesState.copyWith(
+        status: MovieStatus.error,
+        errorMessage: 'Ошибка при получении фильма: ${e.toString()}',
+      );
+      notifyListeners();
+      throw e;
+    }
+  }
+
+  Future<List<String>> fetchMoviesFrames({required String id}) async {
+    try {
+      // Выполняем API запрос через repository
+      final frames = await _repository.getMovieFrames(id);
+      return frames;
+    } catch (e) {
+      // В случае ошибки, возвращаем пустой список и логируем ошибку
+      print('Ошибка при получении кадров: ${e.toString()}');
+      return [];
+    }
+  }
+
   Future<void> fetchMovies({
     int? page,
     int? limit,
