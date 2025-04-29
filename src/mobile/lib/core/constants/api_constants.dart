@@ -27,6 +27,7 @@ class ApiConstants {
   static String get upcoming => '$movieServiceBaseUrl/movies/upcoming';
   static String get search => '$movieServiceBaseUrl/movies/search';
   static String get moviePoster => '$movieServiceBaseUrl/movies/poster';
+  static String get sessions => '$movieServiceBaseUrl/sessions';
 
   // Booking Service Endpoints
   static String get bookingServiceBaseUrl =>
