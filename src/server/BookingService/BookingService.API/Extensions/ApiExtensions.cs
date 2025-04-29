@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using BookingService.API.Behaviors;
-using BookingService.API.Controllers.Grpc;
+// using BookingService.API.Controllers.Grpc;
 using BookingService.Infrastructure.Hubs.Seats;
 using Domain.Constants;
 using Extensions.Exceptions.Middlewares;
@@ -29,11 +29,11 @@ public static class ApiExtensions
 		if (string.IsNullOrEmpty(usersPort))
 			usersPort = configuration.GetValue<string>("ApplicationSettings:UsersPort");
 
-		services.AddGrpcClient<AuthService.AuthServiceClient>(
-			options =>
-			{
-				options.Address = new Uri($"https://localhost:{usersPort}");
-			});
+		// services.AddGrpcClient<AuthService.AuthServiceClient>(
+		// 	options =>
+		// 	{
+		// 		options.Address = new Uri($"https://localhost:{usersPort}");
+		// 	});
 
 		var hangfireConnectionString =
 			Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
@@ -132,7 +132,7 @@ public static class ApiExtensions
 
 	public static WebApplication AddAPI(this WebApplication app)
 	{
-		app.MapGrpcService<BookingController>();
+		// app.MapGrpcService<BookingController>();
 
 		app.MapHub<SeatsHub>("/seatsHub");
 

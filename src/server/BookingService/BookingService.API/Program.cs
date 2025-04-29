@@ -7,7 +7,6 @@ using Extensions.Authorization;
 using Extensions.Common;
 using Extensions.Exceptions;
 using Extensions.Exceptions.Middlewares;
-using Extensions.Host;
 using Extensions.Logging;
 using Hangfire;
 using HealthChecks.UI.Client;

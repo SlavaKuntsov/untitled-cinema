@@ -1,4 +1,5 @@
 ﻿using BookingService.Application.DTOs;
+using BookingService.Application.Interfaces.Seats;
 using BookingService.Domain.Constants;
 using BookingService.Domain.Entities;
 using BookingService.Domain.Enums;
@@ -11,7 +12,6 @@ using Domain.Exceptions;
 using Extensions.Enums;
 using MapsterMapper;
 using MediatR;
-using UserService.Application.Interfaces.Notification;
 
 namespace BookingService.Application.Handlers.Commands.Bookings.CreateBooking;
 

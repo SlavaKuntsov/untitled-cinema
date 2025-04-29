@@ -1,6 +1,6 @@
 ﻿using BookingService.Application.DTOs;
 
-namespace UserService.Application.Interfaces.Notification;
+namespace BookingService.Application.Interfaces.Seats;
 
 public interface ISeatsService
 {

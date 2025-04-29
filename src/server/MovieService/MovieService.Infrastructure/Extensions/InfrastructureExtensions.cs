@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MovieService.Domain.Interfaces.Grpc;
-using MovieService.Infrastructure.Grpc;
 using Redis;
-using Redis.Services;
 
 namespace MovieService.Infrastructure.Extensions;
 
@@ -13,8 +10,8 @@ public static class InfrastructureExtensions
 	{
 		services.AddRedis(configuration);
 
-		services.AddScoped<IAuthGrpcService, AuthGrpcService>();
-		services.AddScoped<ISeatsGrpcService, SeatsGrpcService>();
+		// services.AddScoped<IAuthGrpcService, AuthGrpcService>();
+		// services.AddScoped<ISeatsGrpcService, SeatsGrpcService>();
 
 		return services;
 	}
