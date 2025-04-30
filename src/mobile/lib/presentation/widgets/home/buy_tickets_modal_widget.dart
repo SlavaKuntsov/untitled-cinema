@@ -48,6 +48,8 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
         date: formattedDate,
       );
 
+      final qweqwe = _sessions;
+
       setState(() {
         _isLoading = false;
       });
@@ -59,10 +61,12 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
     }
   }
 
-  void navigateToMovieSession(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => MovieSessionScreen()));
+  void navigateToMovieSession(BuildContext context, Session session) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MovieSessionScreen(session: session),
+      ),
+    );
   }
 
   @override
@@ -232,6 +236,7 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
       }
       sessionsByHall[session.hall.name]!.add(session);
     }
+    final qwe = sessionsByHall;
 
     return Expanded(
       child: ListView.builder(
@@ -270,7 +275,7 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                     return GestureDetector(
                       onTap: () {
                         // Действие при выборе сеанса, например переход к выбору мест
-                        navigateToMovieSession(context);
+                        navigateToMovieSession(context, session);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(

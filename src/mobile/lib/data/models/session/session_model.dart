@@ -1,6 +1,8 @@
+// lib/data/models/session/session_model.dart
+import 'package:untitledCinema/data/models/session/hall_dto.dart';
+
 import '../../../domain/entities/session/hall.dart';
 import '../../../domain/entities/session/session.dart';
-import 'hall_model.dart';
 
 class SessionModel extends Session {
   const SessionModel({
@@ -29,31 +31,53 @@ class SessionModel extends Session {
       return 0.0;
     }
 
-    return SessionModel(
-      id: json['id']?.toString() ?? '',
-      movieId: json['movieId']?.toString() ?? '',
-      hall:
-          json['hall'] != null
-              ? HallModel.fromJson(json['hall'])
-              : const HallModel(id: '', name: ''),
-      dayId: json['dayId']?.toString() ?? '',
-      priceModifier: parseDouble(json['priceModifier']),
-      startTime:
-          json['startTime'] != null
-              ? DateTime.parse(json['startTime'].toString())
-              : DateTime.now(),
-      endTime:
-          json['endTime'] != null
-              ? DateTime.parse(json['endTime'].toString())
-              : DateTime.now(),
-    );
+    try {
+      // Используем обновленный HallModel.fromJson, который поддерживает разные форматы
+      return SessionModel(
+        id: json['id']?.toString() ?? '',
+        movieId: json['movieId']?.toString() ?? '',
+        hall:
+            json['hall'] != null
+                ? HallDto.fromJson(json['hall'])
+                : const HallDto(id: '', name: ''),
+        dayId: json['dayId']?.toString() ?? '',
+        priceModifier: parseDouble(json['priceModifier']),
+        startTime:
+            json['startTime'] != null
+                ? DateTime.parse(json['startTime'].toString())
+                : DateTime.now(),
+        endTime:
+            json['endTime'] != null
+                ? DateTime.parse(json['endTime'].toString())
+                : DateTime.now(),
+      );
+    } catch (e) {
+      print('Ошибка при создании SessionModel из JSON: $e');
+      // Возвращаем модель с минимально необходимыми данными
+      return SessionModel(
+        id: json['id']?.toString() ?? '',
+        movieId: json['movieId']?.toString() ?? '',
+        hall: const HallDto(id: '', name: 'Ошибка загрузки зала'),
+        dayId: json['dayId']?.toString() ?? '',
+        priceModifier: 1.0,
+        startTime: DateTime.now(),
+        endTime: DateTime.now(),
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
+    final hall = this.hall;
+    // Подготавливаем JSON для hall в формате API
+    final hallJson =
+        hall is HallDto
+            ? hall.toJson()
+            : {'hallId': hall.id, 'hallName': hall.name};
+
     return {
       'id': id,
       'movieId': movieId,
-      'hall': (hall as HallModel).toJson(),
+      'hall': hallJson,
       'dayId': dayId,
       'priceModifier': priceModifier,
       'startTime': startTime.toIso8601String(),
@@ -66,9 +90,9 @@ class SessionModel extends Session {
       id: session.id,
       movieId: session.movieId,
       hall:
-          session.hall is HallModel
+          session.hall is HallDto
               ? session.hall
-              : HallModel.fromEntity(session.hall),
+              : HallDto.fromEntity(session.hall),
       dayId: session.dayId,
       priceModifier: session.priceModifier,
       startTime: session.startTime,

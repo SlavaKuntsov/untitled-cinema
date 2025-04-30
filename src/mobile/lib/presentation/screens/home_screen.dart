@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void navigateToMovieDetails(BuildContext context, String movieId) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => MovieDetailsPage(movieId: movieId),
+        builder: (context) => MovieDetailsScreen(movieId: movieId),
       ),
     );
   }

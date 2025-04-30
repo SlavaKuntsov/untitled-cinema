@@ -1,9 +1,10 @@
 // lib/data/datasources/session_remote_data_source.dart
 import 'package:dio/dio.dart';
 
-// lib/data/datasources/session_remote_data_source_impl.dart
 import '../../core/constants/api_constants.dart';
 import '../../core/errors/exceptions.dart';
+import '../models/session/hall_model.dart';
+import '../models/session/seat_type_model.dart';
 import '../models/session/session_model.dart';
 
 abstract class SessionRemoteDataSource {
@@ -32,6 +33,28 @@ abstract class SessionRemoteDataSource {
   /// Возвращает [SessionModel]
   /// Выбрасывает [ServerException] при ошибке
   Future<SessionModel> getSessionById(String id);
+
+  /// Получает список всех залов
+  ///
+  /// Возвращает список [HallModel]
+  /// Выбрасывает [ServerException] при ошибке
+  Future<List<HallModel>> getHalls();
+
+  /// Получает зал по ID
+  /// Параметры:
+  /// [id] - ID зала
+  ///
+  /// Возвращает [HallModel]
+  /// Выбрасывает [ServerException] при ошибке
+  Future<HallModel> getHallById(String id);
+
+  /// Получает типы сидений по ID зала
+  /// Параметры:
+  /// [hallId] - ID зала
+  ///
+  /// Возвращает список [SeatTypeModel]
+  /// Выбрасывает [ServerException] при ошибке
+  Future<List<SeatTypeModel>> getSeatTypesByHallId(String hallId);
 }
 
 class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
@@ -99,6 +122,82 @@ class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
         throw e;
       }
       throw ServerException('Ошибка при получении сессии: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<HallModel>> getHalls() async {
+    try {
+      final response = await client.get(ApiConstants.halls);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => HallModel.fromJson(json)).toList();
+      } else {
+        throw ServerException(
+          'Ошибка при получении залов: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException('Ошибка при получении залов: ${e.toString()}');
+    }
+  }
+
+  // Обновленный метод в SessionRemoteDataSourceImpl
+  @override
+  Future<HallModel> getHallById(String id) async {
+    try {
+      final response = await client.get('${ApiConstants.halls}/$id');
+
+      if (response.statusCode == 200) {
+        // Проверяем тип данных в ответе
+        if (response.data is Map<String, dynamic>) {
+          // Если ответ - это объект, используем его напрямую
+          return HallModel.fromJson(response.data);
+        } else if (response.data is List && response.data.isNotEmpty) {
+          // Если ответ - это список, берем первый элемент
+          return HallModel.fromJson(response.data[0]);
+        } else {
+          throw ServerException('Неверный формат данных при получении зала');
+        }
+      } else {
+        throw ServerException(
+          'Ошибка при получении зала: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException('Ошибка при получении зала: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<SeatTypeModel>> getSeatTypesByHallId(String hallId) async {
+    try {
+      final response = await client.get(
+        '${ApiConstants.seatsType}/hall/$hallId',
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => SeatTypeModel.fromJson(json)).toList();
+      } else {
+        throw ServerException(
+          'Ошибка при получении типов сидений по залу: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException(
+        'Ошибка при получении типов сидений по залу: ${e.toString()}',
+      );
     }
   }
 }
