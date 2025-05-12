@@ -337,7 +337,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           ),
           _buildInfoRow(
             Icons.monetization_on,
-            'Цена: ${_movie!.price.toStringAsFixed(0)} ₽',
+            'Цена: ${_movie!.price.toStringAsFixed(0)} Br',
           ),
           _buildInfoRow(Icons.person, 'Режиссер: ${_movie!.producer}'),
 

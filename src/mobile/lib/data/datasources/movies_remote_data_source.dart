@@ -76,7 +76,7 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
 
       // Проверяем, что responseData не null и является Map
       if (responseData != null && responseData is Map<String, dynamic>) {
-        // Заменяем localhost на 192.168.0.101 в постерах
+        // Заменяем localhost на  в постерах
         // _replaceLocalhostInPosters(responseData);
 
         return PaginatedResponseModel<MovieModel>.fromJson(

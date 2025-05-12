@@ -13,6 +13,7 @@ import 'package:untitledCinema/presentation/providers/session_provider.dart';
 import '../core/constants/oauth_constants.dart';
 import '../core/network/api_client.dart';
 import '../core/network/network_info.dart';
+import '../core/services/signalr_service.dart';
 import '../data/datasources/auth/auth_remote_data_source.dart';
 import '../data/datasources/auth/google_auth_service.dart';
 import '../data/repositories/auth_repository_impl.dart';
@@ -51,6 +52,13 @@ Future<void> init() async {
     () => GoogleAuthService(googleSignIn: sl(), prefs: sl()),
   );
 
+  sl.registerLazySingleton(() {
+    final prefs = sl<SharedPreferences>();
+    final accessToken = prefs.getString('access_token');
+
+    return SignalRService(accessToken: accessToken);
+  });
+
   // Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -79,7 +87,7 @@ Future<void> init() async {
   );
   // Data sources
   sl.registerLazySingleton<SessionRemoteDataSource>(
-    () => SessionRemoteDataSourceImpl(client: sl()),
+    () => SessionRemoteDataSourceImpl(client: sl(), signalRService: sl()),
   );
 
   // Core

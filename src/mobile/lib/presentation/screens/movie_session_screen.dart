@@ -9,6 +9,7 @@ import 'package:untitledCinema/presentation/screens/movie_detail_screen.dart';
 import '../../../domain/entities/movie/movie.dart';
 import '../../core/constants/api_constants.dart';
 import '../../domain/entities/session/hall.dart';
+import '../../domain/entities/session/selected_seat.dart';
 import '../providers/movie_provider.dart';
 import '../widgets/home/seat_map_widget.dart';
 import 'navigation_screen.dart';
@@ -30,21 +31,33 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
   String? _errorMessage;
 
   // Добавьте эти переменные в начало класса _MovieSessionScreenState
-  List<SeatPosition> _selectedSeats = [];
+  List<SelectedSeat> _selectedSeats = [];
   double _totalPrice = 0;
 
-  // Добавьте этот метод для расчета общей стоимости
+  // Исправленный метод для расчета общей стоимости
   void _updateTotalPrice() {
     double total = 0;
     for (var seat in _selectedSeats) {
-      // Базовая цена фильма * модификатор сеанса * модификатор типа места
-      final seatType = _seatTypes!.firstWhere(
-        (type) => type.id == seat.type.toString(),
-        orElse: () => SeatType(id: '1', name: 'Стандарт', priceModifier: 1.0),
-      );
+      // Ищем тип места в списке, но используем безопасный подход
 
-      total +=
-          _movie!.price * widget.session.priceModifier * seatType.priceModifier;
+      // // Проверяем, не null ли _seatTypes и не пуст ли он
+      // if (_seatTypes != null && _seatTypes!.isNotEmpty) {
+      //   try {
+      //     // Ищем соответствующий тип места
+      //     for (var type in _seatTypes!) {
+      //       if (type.id == seat.seatType.toString()) {
+      //         priceModifier = type.priceModifier;
+      //         break;
+      //       }
+      //     }
+      //   } catch (e) {
+      //     print('Ошибка при поиске типа места: $e');
+      //   }
+      // }
+
+      // Рассчитываем цену места
+      // total += _movie!.price * widget.session.priceModifier * priceModifier;
+      total += seat.price;
     }
     _totalPrice = total;
   }
@@ -430,12 +443,221 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
 
           // Разделитель внизу секции
           const Divider(color: Colors.white30, thickness: 1, height: 1),
+
+          _buildSeatsSection(),
         ],
       ),
     );
   }
 
+  Widget _buildSeatsSection() {
+    if (_hall == null || _seatTypes == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Выбрать места',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Контейнер с тенью для выделения секции выбора мест
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                height: 400, // Фиксированная высота для схемы зала
+                child: SeatMapWidget(
+                  hall: _hall!,
+                  sessionId: widget.session.id,
+                  seatTypes: _seatTypes!,
+                  onSeatsSelected: (seats) {
+                    setState(() {
+                      // Обработка выбранных мест
+                      _selectedSeats = seats;
+                      _updateTotalPrice();
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
+
+        // Информация об итоговой стоимости
+        if (_selectedSeats.isNotEmpty)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.primaryColor),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Заголовок с количеством выбранных мест
+                Text(
+                  'Выбрано: ${_selectedSeats.length} ${_getSeatsWordForm(_selectedSeats.length)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+
+                // Карточки выбранных мест
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children:
+                      _selectedSeats.map((seat) {
+                        // Список стандартных цветов для типов мест
+                        final List<Color> colors = [
+                          Colors.blue, // Стандарт
+                          Colors.orange, // Комфорт
+                          Colors.red, // Премиум
+                          Colors.purple, // VIP
+                        ];
+
+                        // Находим индекс типа места в списке доступных типов
+                        int typeIndex = -1;
+                        if (_seatTypes != null) {
+                          typeIndex = _seatTypes!.indexWhere(
+                            (type) => type.id == seat.seatType.id,
+                          );
+                        }
+
+                        // Если тип не найден или индекс за пределами списка цветов, используем стандартный цвет
+                        Color cardColor =
+                            typeIndex >= 0 && typeIndex < colors.length
+                                ? colors[typeIndex]
+                                : Colors.blue; // Стандартный цвет по умолчанию
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedSeats.remove(seat);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: cardColor,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Ряд ${seat.row + 1}, Место ${seat.column + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
+
+                // Разделитель между карточками и ценой
+                const SizedBox(height: 16),
+                const Divider(color: Colors.grey),
+                const SizedBox(height: 8),
+
+                // Строка с итоговой ценой
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Итого: ${_totalPrice.toStringAsFixed(2)} Br',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Кнопка оформления билетов
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed:
+                        _selectedSeats.isNotEmpty ? _proceedToCheckout : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Оформить билеты',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Добавьте этот вспомогательный метод
+  String _getSeatsWordForm(int count) {
+    if (count % 10 == 1 && count % 100 != 11) {
+      return 'место';
+    } else if ((count % 10 >= 2 && count % 10 <= 4) &&
+        (count % 100 < 10 || count % 100 >= 20)) {
+      return 'места';
+    } else {
+      return 'мест';
+    }
+  }
+
+  // Добавьте этот метод для обработки нажатия на кнопку оформления
+  void _proceedToCheckout() {
+    // В будущем: переход к экрану оформления заказа
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Оформление заказа на ${_selectedSeats.length} ${_getSeatsWordForm(_selectedSeats.length)}',
+        ),
+        action: SnackBarAction(label: 'OK', onPressed: () {}),
       ),
     );
   }

@@ -3,21 +3,16 @@ import 'package:dio/dio.dart';
 
 import '../../core/constants/api_constants.dart';
 import '../../core/errors/exceptions.dart';
+import '../../core/services/signalr_service.dart';
+import '../../domain/entities/session/selected_seat.dart';
 import '../models/session/hall_model.dart';
 import '../models/session/seat_type_model.dart';
+import '../models/session/selected_seat_model.dart';
 import '../models/session/session_model.dart';
+import '../models/session/session_seats_model.dart';
 
 abstract class SessionRemoteDataSource {
   /// Получает список сессий с сервера
-  /// Параметры:
-  /// [limit] - количество сессий для получения
-  /// [offset] - смещение от начала списка
-  /// [movieId] - ID фильма для фильтрации (опционально)
-  /// [date] - дата для фильтрации в формате DD-MM-YYYY (опционально)
-  /// [hall] - ID зала для фильтрации (опционально)
-  ///
-  /// Возвращает список [SessionModel]
-  /// Выбрасывает [ServerException] при ошибке
   Future<List<SessionModel>> getSessions({
     int limit = 10,
     int offset = 0,
@@ -27,40 +22,40 @@ abstract class SessionRemoteDataSource {
   });
 
   /// Получает информацию о конкретной сессии по ID
-  /// Параметры:
-  /// [id] - ID сессии
-  ///
-  /// Возвращает [SessionModel]
-  /// Выбрасывает [ServerException] при ошибке
   Future<SessionModel> getSessionById(String id);
 
   /// Получает список всех залов
-  ///
-  /// Возвращает список [HallModel]
-  /// Выбрасывает [ServerException] при ошибке
   Future<List<HallModel>> getHalls();
 
   /// Получает зал по ID
-  /// Параметры:
-  /// [id] - ID зала
-  ///
-  /// Возвращает [HallModel]
-  /// Выбрасывает [ServerException] при ошибке
   Future<HallModel> getHallById(String id);
 
   /// Получает типы сидений по ID зала
-  /// Параметры:
-  /// [hallId] - ID зала
-  ///
-  /// Возвращает список [SeatTypeModel]
-  /// Выбрасывает [ServerException] при ошибке
   Future<List<SeatTypeModel>> getSeatTypesByHallId(String hallId);
+
+  /// Получает список забронированных мест для сессии
+  Future<SessionSeatsModel> getReservedSeats(String sessionId);
+
+  /// Запускает соединение с хабом сигналов для обновления бронирований
+  Future<void> startSeatsConnection(String sessionId);
+
+  /// Останавливает соединение с хабом сигналов
+  Future<void> stopSeatsConnection(String sessionId);
+
+  /// Возвращает поток обновлений бронирований
+  Stream<SessionSeatsModel> seatsUpdateStream();
+
+  Future<SelectedSeat> getSelectedSeat(String sessionId, int row, int column);
 }
 
 class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
   final Dio client;
+  final SignalRService signalRService;
 
-  SessionRemoteDataSourceImpl({required this.client});
+  SessionRemoteDataSourceImpl({
+    required this.client,
+    required this.signalRService,
+  });
 
   @override
   Future<List<SessionModel>> getSessions({
@@ -197,6 +192,75 @@ class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
       }
       throw ServerException(
         'Ошибка при получении типов сидений по залу: ${e.toString()}',
+      );
+    }
+  }
+
+  @override
+  Future<SessionSeatsModel> getReservedSeats(String sessionId) async {
+    try {
+      final response = await client.get(
+        '${ApiConstants.reservedSeats}/$sessionId',
+      );
+
+      if (response.statusCode == 200) {
+        return SessionSeatsModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          'Ошибка при получении забронированных мест: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException(
+        'Ошибка при получении забронированных мест: ${e.toString()}',
+      );
+    }
+  }
+
+  @override
+  Future<void> startSeatsConnection(String sessionId) async {
+    await signalRService.startConnection(sessionId);
+  }
+
+  @override
+  Future<void> stopSeatsConnection(String sessionId) async {
+    await signalRService.stopConnection(sessionId);
+  }
+
+  @override
+  Stream<SessionSeatsModel> seatsUpdateStream() {
+    return signalRService.seatChangedStream.map(
+      (event) => SessionSeatsModel.fromJson(event),
+    );
+  }
+
+  @override
+  Future<SelectedSeat> getSelectedSeat(
+    String sessionId,
+    int row,
+    int column,
+  ) async {
+    try {
+      final response = await client.get(
+        '${ApiConstants.seats}/$sessionId/$row/$column',
+      );
+
+      if (response.statusCode == 200) {
+        return SelectedSeatModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          'Ошибка при получении забронированных мест: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException(
+        'Ошибка при получении забронированных мест: ${e.toString()}',
       );
     }
   }

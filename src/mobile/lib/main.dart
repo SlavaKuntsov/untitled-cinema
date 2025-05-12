@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
+import 'package:untitledCinema/presentation/providers/notification_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
 import 'package:untitledCinema/presentation/screens/navigation_screen.dart';
 import 'package:untitledCinema/presentation/screens/splash_screen.dart';
@@ -52,6 +53,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => di.sl<MovieProvider>()),
         ChangeNotifierProvider(create: (_) => di.sl<SessionProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<NotificationProvider>()),
       ],
       child: const MyApp(),
     ),
