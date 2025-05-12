@@ -3,7 +3,6 @@ using MapsterMapper;
 using MediatR;
 using MovieService.Application.DTOs;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
-using MovieService.Domain.Models;
 
 namespace MovieService.Application.Handlers.Queries.Seats.GetSeatByIndex;
 

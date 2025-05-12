@@ -37,7 +37,6 @@ public class CancelBookingAfterExpiredJob(
 			cancellationToken);
 		//
 
-
 		foreach (var seat in seats)
 		{
 			var updatedSeatsDto = new UpdatedSeatDTO(

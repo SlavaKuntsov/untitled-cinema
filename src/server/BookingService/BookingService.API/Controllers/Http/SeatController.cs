@@ -15,7 +15,7 @@ public class SeatController(
 		[FromRoute] Guid sessionId,
 		CancellationToken cancellationToken)
 	{
-		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, true), cancellationToken);
+		var seats = await mediator.Send(new GetSeatsBySessionIdQuery(sessionId, true), cancellationToken);
 
 		return Ok(seats);
 	}
@@ -25,7 +25,7 @@ public class SeatController(
 		[FromRoute] Guid sessionId,
 		CancellationToken cancellationToken)
 	{
-		var seats = await mediator.Send(new GetSeatsByIdQuery(sessionId, false), cancellationToken);
+		var seats = await mediator.Send(new GetSeatsBySessionIdQuery(sessionId, false), cancellationToken);
 
 		return Ok(seats);
 	}

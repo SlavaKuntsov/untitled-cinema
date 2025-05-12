@@ -2,8 +2,6 @@
 using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
-using Brokers.Models.Request;
-using Brokers.Models.Response;
 using Domain.Exceptions;
 using Extensions.Enums;
 using MapsterMapper;
@@ -29,17 +27,17 @@ public class PayBookingCommandHandler(
 		if (existBooking.Status == BookingStatus.Paid.GetDescription())
 			throw new InvalidOperationException($"Booking with id '{existBooking.Id}' already paid.");
 
-		var data = new BookingPayRequest(
-			request.UserId,
-			existBooking.TotalPrice);
-
-		var response = await rabbitMQProducer.RequestReplyAsync<BookingPayRequest, BookingPayResponse>(
-			data,
-			Guid.NewGuid(),
-			cancellationToken);
-
-		if (!string.IsNullOrWhiteSpace(response.Error))
-			throw new InvalidOperationException(response.Error);
+		// var data = new BookingPayRequest(
+		// 	request.UserId,
+		// 	existBooking.TotalPrice);
+		//
+		// var response = await rabbitMQProducer.RequestReplyAsync<BookingPayRequest, BookingPayResponse>(
+		// 	data,
+		// 	Guid.NewGuid(),
+		// 	cancellationToken);
+		//
+		// if (!string.IsNullOrWhiteSpace(response.Error))
+		// 	throw new InvalidOperationException(response.Error);
 
 		await bookingsRepository.UpdateStatusAsync(
 			request.BookingId,

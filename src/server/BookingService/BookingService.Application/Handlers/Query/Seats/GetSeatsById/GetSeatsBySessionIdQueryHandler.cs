@@ -6,11 +6,11 @@ using MediatR;
 
 namespace BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
-public class GetSeatsByIdQueryHandler(
+public class GetSeatsBySessionIdQueryHandler(
 	ISessionSeatsRepository seatsRepository,
-	IMapper mapper) : IRequestHandler<GetSeatsByIdQuery, SessionSeatsModel>
+	IMapper mapper) : IRequestHandler<GetSeatsBySessionIdQuery, SessionSeatsModel>
 {
-	public async Task<SessionSeatsModel> Handle(GetSeatsByIdQuery request, CancellationToken cancellationToken)
+	public async Task<SessionSeatsModel> Handle(GetSeatsBySessionIdQuery request, CancellationToken cancellationToken)
 	{
 		var seat = await seatsRepository.GetAsync(
 						b => b.SessionId == request.SessionId,

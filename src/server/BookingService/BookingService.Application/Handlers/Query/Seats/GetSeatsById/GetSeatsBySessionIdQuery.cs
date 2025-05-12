@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookingService.Application.Handlers.Query.Seats.GetSeatsById;
 
-public class GetSeatsByIdQuery(
+public class GetSeatsBySessionIdQuery(
 	Guid sessionId,
 	bool isAvailable) : IRequest<SessionSeatsModel>
 {

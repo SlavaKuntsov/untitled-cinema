@@ -93,6 +93,13 @@ public class BookingController(
 	{
 		var booking = await mediator.Send(new PayBookingCommand(bookingId, userId), cancellationToken);
 
+		await mediator.Send(
+			new UpdateSeatsCommand(
+				booking.SessionId,
+				booking.Seats, 
+				true), 
+			cancellationToken);
+
 		return Ok(booking);
 	}
 
