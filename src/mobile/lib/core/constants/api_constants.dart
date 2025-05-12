@@ -15,6 +15,8 @@ class ApiConstants {
   static String get logout => '$userServiceBaseUrl/auth/unauthorize';
   static String get refreshToken => '$userServiceBaseUrl/auth/refreshToken';
   static String get authorize => '$userServiceBaseUrl/auth/authorize';
+  static String get notifications => '$userServiceBaseUrl/notifications';
+  static String get notificationsHub => '$userServiceBaseUrl/notificationsHub';
 
   // Movie Service Endpoints
   static String get movieServiceBaseUrl =>
@@ -28,6 +30,9 @@ class ApiConstants {
   static String get search => '$movieServiceBaseUrl/movies/search';
   static String get moviePoster => '$movieServiceBaseUrl/movies/poster';
   static String get sessions => '$movieServiceBaseUrl/sessions';
+  static String get halls => '$movieServiceBaseUrl/halls';
+  static String get seatsType => '$movieServiceBaseUrl/seats/types';
+  static String get seats => '$movieServiceBaseUrl/seats';
 
   // Booking Service Endpoints
   static String get bookingServiceBaseUrl =>
@@ -35,6 +40,8 @@ class ApiConstants {
 
   // Booking endpoints
   static String get bookings => '$bookingServiceBaseUrl/bookings';
+  static String get reservedSeats =>
+      '$bookingServiceBaseUrl/bookingsSeats/reserved/session';
   static String get createBooking => '$bookingServiceBaseUrl/bookings/create';
 
   // API Keys и прочие константы

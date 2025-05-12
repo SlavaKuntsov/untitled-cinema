@@ -50,7 +50,7 @@ public class CreateBookingsConsumeService(
 
 				var notification = new NotificationDto(
 					booking.UserId,
-					$"You have {JobsConstants.AFTER_BOOKING_EXPIRED_TEST} to pay tickets, " +
+					$"You have {JobsConstants.AfterBookingExpiredTest} to pay tickets, " +
 					$"otherwise the booking can be canceled.",
 					NotificationType.Success.GetDescription());
 				
@@ -65,7 +65,7 @@ public class CreateBookingsConsumeService(
 						booking!.Seats,
 						booking!.UserId,
 						cancellationToken),
-					JobsConstants.AFTER_BOOKING_EXPIRED_TEST);
+					JobsConstants.AfterBookingExpiredTest);
 
 				logger.LogInformation("Processed consume booking create.");
 			});

@@ -7,16 +7,16 @@ import '../../../domain/entities/movie/movie.dart';
 import '../providers/movie_provider.dart';
 import '../providers/session_provider.dart';
 
-class MovieDetailsPage extends StatefulWidget {
+class MovieDetailsScreen extends StatefulWidget {
   final String movieId;
 
-  const MovieDetailsPage({super.key, required this.movieId});
+  const MovieDetailsScreen({super.key, required this.movieId});
 
   @override
-  State<MovieDetailsPage> createState() => _MovieDetailsPageState();
+  State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
 }
 
-class _MovieDetailsPageState extends State<MovieDetailsPage> {
+class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   bool _isLoading = true;
   Movie? _movie;
   List<String> _frames = [];
@@ -56,7 +56,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
       appBar: AppBar(
         title: Text(_movie?.title ?? 'Загрузка фильма...'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.home),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -337,7 +337,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
           ),
           _buildInfoRow(
             Icons.monetization_on,
-            'Цена: ${_movie!.price.toStringAsFixed(0)} ₽',
+            'Цена: ${_movie!.price.toStringAsFixed(0)} Br',
           ),
           _buildInfoRow(Icons.person, 'Режиссер: ${_movie!.producer}'),
 

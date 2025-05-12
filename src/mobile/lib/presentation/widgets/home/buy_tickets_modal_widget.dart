@@ -27,6 +27,48 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
   void initState() {
     super.initState();
     _loadSessions();
+    _ensureSelectedDateIsValid();
+  }
+
+  // Метод для проверки и коррекции выбранной даты
+  void _ensureSelectedDateIsValid() {
+    // Определяем границы допустимого диапазона дат
+    final DateTime minDate = DateTime.now().subtract(const Duration(days: 3));
+    final DateTime maxDate = DateTime.now().add(const Duration(days: 14));
+
+    // Приводим даты к единому формату для корректного сравнения
+    // (обнуляем часы, минуты, секунды, миллисекунды)
+    final DateTime selectedDateNormalized = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
+
+    final DateTime minDateNormalized = DateTime(
+      minDate.year,
+      minDate.month,
+      minDate.day,
+    );
+
+    final DateTime maxDateNormalized = DateTime(
+      maxDate.year,
+      maxDate.month,
+      maxDate.day,
+    );
+
+    // Если выбранная дата меньше минимальной, устанавливаем минимальную
+    if (selectedDateNormalized.isBefore(minDateNormalized)) {
+      setState(() {
+        _selectedDate = minDate;
+      });
+    }
+
+    // Если выбранная дата больше максимальной, устанавливаем максимальную
+    if (selectedDateNormalized.isAfter(maxDateNormalized)) {
+      setState(() {
+        _selectedDate = maxDate;
+      });
+    }
   }
 
   Future<void> _loadSessions() async {
@@ -48,6 +90,8 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
         date: formattedDate,
       );
 
+      final qweqwe = _sessions;
+
       setState(() {
         _isLoading = false;
       });
@@ -59,10 +103,12 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
     }
   }
 
-  void navigateToMovieSession(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => MovieSessionScreen()));
+  void navigateToMovieSession(BuildContext context, Session session) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MovieSessionScreen(session: session),
+      ),
+    );
   }
 
   @override
@@ -114,13 +160,27 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              itemCount: 14, // Показываем на 2 недели вперед
+              itemCount: 18,
               itemBuilder: (context, index) {
-                final date = DateTime.now().add(Duration(days: index));
+                final date = DateTime.now()
+                    .subtract(const Duration(days: 3))
+                    .add(Duration(days: index));
                 final isSelected =
                     _selectedDate.year == date.year &&
                     _selectedDate.month == date.month &&
                     _selectedDate.day == date.day;
+                final isToday =
+                    DateTime.now().year == date.year &&
+                    DateTime.now().month == date.month &&
+                    DateTime.now().day == date.day;
+
+                // Новое условие: если выбрана не сегодняшняя дата, а текущая ячейка - сегодня
+                final isTodayWithOtherSelected =
+                    isToday &&
+                    !isSelected &&
+                    (_selectedDate.year != DateTime.now().year ||
+                        _selectedDate.month != DateTime.now().month ||
+                        _selectedDate.day != DateTime.now().day);
 
                 return GestureDetector(
                   onTap: () {
@@ -140,8 +200,17 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                       color:
                           isSelected
                               ? AppTheme.accentColor
+                              : isToday
+                              ? AppTheme.primaryColor.withOpacity(0.2)
                               : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
+                      border:
+                          isToday && !isSelected
+                              ? Border.all(
+                                color: AppTheme.primaryColor,
+                                width: 1,
+                              )
+                              : null,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +218,12 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                         Text(
                           _getDayOfWeek(date),
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : isTodayWithOtherSelected
+                                    ? Colors.white
+                                    : Colors.black87,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -158,7 +232,12 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : isTodayWithOtherSelected
+                                    ? Colors.white
+                                    : Colors.black87,
                           ),
                         ),
                       ],
@@ -232,6 +311,7 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
       }
       sessionsByHall[session.hall.name]!.add(session);
     }
+    final qwe = sessionsByHall;
 
     return Expanded(
       child: ListView.builder(
@@ -270,7 +350,7 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                     return GestureDetector(
                       onTap: () {
                         // Действие при выборе сеанса, например переход к выбору мест
-                        navigateToMovieSession(context);
+                        navigateToMovieSession(context, session);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -303,7 +383,7 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
                             Text('до ${_formatTime(session.endTime)}'),
                             const Spacer(),
                             Text(
-                              '${price.toStringAsFixed(0)} ₽',
+                              '${price.toStringAsFixed(0)} Br',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,

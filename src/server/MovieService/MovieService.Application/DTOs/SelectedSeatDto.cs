@@ -1,5 +1,3 @@
-using MovieService.Domain.Models;
-
 namespace MovieService.Application.DTOs;
 
 public record struct SelectedSeatDto(

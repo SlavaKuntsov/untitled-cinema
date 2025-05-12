@@ -235,7 +235,7 @@ class _MovieMetaInfo extends StatelessWidget {
         if (price > 0)
           _MetaItem(
             icon: Icons.local_offer,
-            text: '${price.toStringAsFixed(0)} ₽',
+            text: '${price.toStringAsFixed(0)} Br',
           ),
       ],
     );
