@@ -3,5 +3,5 @@
 public class JobsConstants
 {
 	public static readonly TimeSpan AfterBookingExpired = TimeSpan.FromHours(1);
-	public static readonly TimeSpan AfterBookingExpiredTest = TimeSpan.FromSeconds(10);
+	public static readonly TimeSpan AfterBookingExpiredTest = TimeSpan.FromMinutes(1);
 }

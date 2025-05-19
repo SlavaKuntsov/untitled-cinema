@@ -1,42 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Bogus;
-
+﻿using Bogus;
+using Domain.Enums;
+using Domain.Exceptions;
 using FluentAssertions;
-
 using MapsterMapper;
-
 using Moq;
-
-using Newtonsoft.Json.Linq;
-
-using UserService.Application.DTOs;
-using UserService.Application.Exceptions;
+using Redis.Services;
+using UserService.Application.Data;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Handlers.Queries.Users.GetUserById;
 using UserService.Application.Interfaces.Auth;
-using UserService.Application.Interfaces.Caching;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;
-
 using Xunit;
 
 namespace UserService.Tests.Unit.Auth;
 
 public class AuthorizeCommandTests
 {
-	private readonly Mock<IUsersRepository> _usersRepositoryMock = new();
-	private readonly Mock<IRedisCacheService> _redisCacheService = new();
-	private readonly Mock<IPasswordHash> _passwordHashMock = new();
-	private readonly Mock<IJwt> _jwtMock = new();
-	private readonly Mock<IMapper> _mapperMock = new();
-	private readonly UserRegistrationCommandHandler _handler;
+	private readonly Mock<IDBContext> _dbcontextMock = new();
+
 	private readonly Faker _faker = new();
+
+	private readonly UserRegistrationCommandHandler _handler;
+
+	private readonly Mock<IJwt> _jwtMock = new();
+
+	private readonly Mock<IMapper> _mapperMock = new();
+
+	private readonly Mock<IPasswordHash> _passwordHashMock = new();
+
+	private readonly Mock<IRedisCacheService> _redisCacheService = new();
+
+	private readonly Mock<IUsersRepository> _usersRepositoryMock = new();
+
+	public AuthorizeCommandTests()
+	{
+		_handler = new UserRegistrationCommandHandler(
+			_usersRepositoryMock.Object,
+			_jwtMock.Object,
+			_passwordHashMock.Object,
+			_dbcontextMock.Object,
+			_mapperMock.Object
+		);
+	}
 
 	[Fact]
 	public async Task ShouldReturnEntity_WhenUserExist()
@@ -44,16 +51,15 @@ public class AuthorizeCommandTests
 		// Arrange
 		var userId = Guid.NewGuid();
 		var userEntity = CreateUserEntity(userId);
-		var userDto = CreateUserDto(userEntity);
-		var userWithStringDateOfBirthEntity = CreateUserWithStringDateOfBirthEntity(userEntity);
+		var userModel = CreateUserModel(userId);
 
 		_usersRepositoryMock
-			.Setup(repo => repo.GetWithStringDateOfBirthAsync(userId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(userWithStringDateOfBirthEntity);
+			.Setup(repo => repo.GetAsync(userId, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(userEntity);
 
 		_mapperMock
-			.Setup(m => m.Map<UserWithStringDateOfBirthDto>(It.IsAny<UserWithStringDateOfBirthEntity>()))
-			.Returns(userDto);
+			.Setup(m => m.Map<UserModel>(It.IsAny<UserEntity>()))
+			.Returns(userModel);
 
 		var handler = CreateHandler();
 		var command = new GetUserByIdQuery(userId);
@@ -72,10 +78,11 @@ public class AuthorizeCommandTests
 	{
 		// Arrange
 		var userId = Guid.NewGuid();
+		var userEntity = CreateUserEntity(userId);
 
 		_usersRepositoryMock
-			.Setup(repo => repo.GetWithStringDateOfBirthAsync(userId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync((UserWithStringDateOfBirthEntity?)null);
+			.Setup(repo => repo.GetAsync(userId, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(userEntity);
 
 		var handler = CreateHandler();
 		var command = new GetUserByIdQuery(userId);
@@ -90,11 +97,10 @@ public class AuthorizeCommandTests
 		// Arrange
 		var userId = Guid.NewGuid();
 		var userEntity = CreateUserEntity(userId);
-		var cachedUserDto = CreateUserDto(userEntity);
 
 		_redisCacheService
-			.Setup(cache => cache.GetValueAsync<UserWithStringDateOfBirthDto>($"users_{userId}"))
-			.ReturnsAsync(cachedUserDto);
+			.Setup(cache => cache.GetValueAsync<UserEntity>($"users_{userId}"))
+			.ReturnsAsync(userEntity);
 
 		var handler = CreateHandler();
 		var command = new GetUserByIdQuery(userId);
@@ -105,59 +111,35 @@ public class AuthorizeCommandTests
 		// Assert
 		userAct.Should().NotBeNull();
 		userAct.Id.Should().Be(userId);
-		userAct.Email.Should().Be(cachedUserDto.Email);
 
-		// Проверяем, что запрос в БД не выполнялся
-		_usersRepositoryMock.Verify(repo => repo.GetWithStringDateOfBirthAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+		_usersRepositoryMock.Verify(
+			repo => repo.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+			Times
+				.Never);
 	}
 
-	public AuthorizeCommandTests()
-	{
-		_handler = new UserRegistrationCommandHandler(
-			_usersRepositoryMock.Object,
-			_passwordHashMock.Object,
-			_jwtMock.Object,
-			_mapperMock.Object
-		);
-	}
-
-	private UserModel CreateUserEntity(Guid userId)
+	private UserModel CreateUserModel(Guid userId)
 	{
 		return new UserModel(
 			userId,
 			_faker.Internet.Email(),
 			_faker.Internet.Password(),
-			Domain.Enums.Role.User,
+			Role.User,
 			_faker.Name.FirstName(),
 			_faker.Name.LastName(),
-			_faker.Date.Past(20));
+			_faker.Date.Past(20).ToString());
 	}
 
-	private UserWithStringDateOfBirthDto CreateUserDto(UserModel userEntity)
+	private UserEntity CreateUserEntity(Guid userId)
 	{
-		return new UserWithStringDateOfBirthDto(
-			userEntity.Id,
-			userEntity.Email,
-			userEntity.Role.ToString(),
-			userEntity.FirstName,
-			userEntity.LastName,
-			userEntity.DateOfBirth.ToString("dd-MM-yyyy"),
-			userEntity.Balance
-		);
-	}
-
-	private UserWithStringDateOfBirthEntity CreateUserWithStringDateOfBirthEntity(UserModel userEntity)
-	{
-		return new UserWithStringDateOfBirthEntity
+		return new UserEntity
 		{
-			Id = userEntity.Id,
-			Email = userEntity.Email,
-			Password = userEntity.Password,
-			Role = userEntity.Role,
-			FirstName = userEntity.FirstName,
-			LastName = userEntity.LastName,
-			DateOfBirth = userEntity.DateOfBirth.ToString("dd-MM-yyyy"),
-			Balance = userEntity.Balance
+			Id = userId,
+			Email = _faker.Internet.Email(),
+			Password = _faker.Internet.Password(),
+			FirstName = _faker.Name.FirstName(),
+			LastName = _faker.Name.LastName(),
+			DateOfBirth = _faker.Date.Past(20).ToString()
 		};
 	}
 

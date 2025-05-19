@@ -82,6 +82,7 @@ public class CreateBookingCommandHandler(
 						$"Booking with id '{existBooking.Id}' already exist.");
 
 				existBooking.Status = BookingStatus.Reserved.GetDescription();
+				existBooking.UpdatedAt = DateTime.UtcNow;
 
 				await bookingsRepository.DeleteAsync(
 					b => b.Id == existBooking.Id,

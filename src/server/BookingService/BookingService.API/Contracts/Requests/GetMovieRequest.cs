@@ -27,7 +27,7 @@ public class GetBookingHistoryRequest
 	public string SortBy { get; set; }
 
 	[FromQuery]
-	[DefaultValue("asc")]
+	[DefaultValue("desc")]
 	public string SortDirection { get; set; }
 
 	[FromQuery]

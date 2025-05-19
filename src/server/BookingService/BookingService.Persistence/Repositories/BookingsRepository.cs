@@ -30,7 +30,7 @@ public class BookingsRepository(BookingServiceDBContext context) : IBookingsRepo
 			.Where(predicate);
 	}
 
-	public async Task<BookingEntity> GetOneAsync(
+	public async Task<BookingEntity?> GetOneAsync(
 		Expression<Func<BookingEntity, bool>> predicate,
 		CancellationToken cancellationToken)
 	{
@@ -61,7 +61,8 @@ public class BookingsRepository(BookingServiceDBContext context) : IBookingsRepo
 		CancellationToken cancellationToken)
 	{
 		var updateDefinition = Builders<BookingEntity>.Update
-			.Set(x => x.Status, status);
+			.Set(x => x.Status, status)
+			.Set(x => x.UpdatedAt, DateTime.UtcNow);
 
 		var options = new UpdateOptions();
 
