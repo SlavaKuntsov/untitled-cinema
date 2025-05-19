@@ -7,6 +7,7 @@ import 'package:untitledCinema/data/datasources/movies_remote_data_source.dart';
 import 'package:untitledCinema/data/datasources/session_remote_data_source.dart';
 import 'package:untitledCinema/data/repositories/sessions_repository_impl.dart';
 import 'package:untitledCinema/domain/repositories/sessions_repository.dart';
+import 'package:untitledCinema/presentation/providers/booking_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
 
@@ -16,9 +17,12 @@ import '../core/network/network_info.dart';
 import '../core/services/signalr_service.dart';
 import '../data/datasources/auth/auth_remote_data_source.dart';
 import '../data/datasources/auth/google_auth_service.dart';
+import '../data/datasources/booking_remote_data_source.dart';
 import '../data/repositories/auth_repository_impl.dart';
+import '../data/repositories/booking_repository_impl.dart';
 import '../data/repositories/movies_repository_impl.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/booking_repository.dart';
 import '../domain/repositories/movies_repository.dart';
 import '../domain/usecases/auth/google_sign_in.dart';
 import '../domain/usecases/auth/login.dart';
@@ -36,12 +40,29 @@ Future<void> init() async {
       registrationUseCase: sl(),
       googleSignInUseCase: sl(),
       googleSignIn: sl(),
+      prefs: sl(),
     ),
   );
   sl.registerFactory(() => MovieProvider(repository: sl()));
   sl.registerFactory(() => SessionProvider(repository: sl()));
-
+  sl.registerFactory(() => BookingProvider(repository: sl(), prefs: sl()));
   sl.registerFactory(() => ThemeProvider());
+
+  // Notification Provider с внедрением зависимости
+  // sl.registerFactory(() => NotificationProvider(notificationService: sl()));
+
+  // Notification Service
+  // sl.registerLazySingleton<NotificationService>(
+  //   () => NotificationService(
+  //     client: sl<Dio>(),
+  //     signalRService: sl<SignalRService>(),
+  //   ),
+  // );
+
+  // Notification Manager
+  // sl.registerLazySingleton(
+  //   () => NotificationManager(notificationService: sl<NotificationService>()),
+  // );
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -71,6 +92,10 @@ Future<void> init() async {
   sl.registerLazySingleton<MovieRepository>(
     () => MovieRepositoryImpl(remoteDataSource: sl()),
   );
+  // Repository
+  sl.registerLazySingleton<BookingRepository>(
+    () => BookingRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
   //Repository
   sl.registerLazySingleton<SessionRepository>(
     () => SessionRepositoryImpl(remoteDataSource: sl()),
@@ -89,17 +114,19 @@ Future<void> init() async {
   sl.registerLazySingleton<SessionRemoteDataSource>(
     () => SessionRemoteDataSourceImpl(client: sl(), signalRService: sl()),
   );
+  // Data sources
+  sl.registerLazySingleton<BookingRemoteDataSource>(
+    () => BookingRemoteDataSourceImpl(client: sl()),
+  );
 
   // Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
-  // Регистрируем ApiClient с колбэком для выхода из системы
   sl.registerLazySingleton<ApiClient>(
     () => ApiClient(
       sl<Dio>(),
       sl<SharedPreferences>(),
       onLogoutRequired: () {
-        // Получаем экземпляр AuthProvider и вызываем logout
         if (sl.isRegistered<AuthProvider>()) {
           sl<AuthProvider>().forceLogout();
         }

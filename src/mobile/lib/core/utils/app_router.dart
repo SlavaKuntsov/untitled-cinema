@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
+import '../../presentation/screens/history_screen.dart';
 import '../../presentation/screens/navigation_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 
@@ -10,6 +11,7 @@ class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
+  static const String history = '/history';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -21,6 +23,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case home:
         return MaterialPageRoute(builder: (_) => const NavigationScreen());
+      case history:
+        return MaterialPageRoute(builder: (_) => const HistoryScreen());
       default:
         return MaterialPageRoute(
           builder:

@@ -6,6 +6,7 @@ class Session extends Equatable {
   final String id;
   final String movieId;
   final Hall hall;
+  final String hallId;
   final String dayId;
   final double priceModifier;
   final DateTime startTime;
@@ -14,6 +15,7 @@ class Session extends Equatable {
   const Session({
     required this.id,
     required this.movieId,
+    required this.hallId,
     required this.hall,
     required this.dayId,
     required this.priceModifier,
@@ -25,6 +27,7 @@ class Session extends Equatable {
   List<Object?> get props => [
     id,
     movieId,
+    hallId,
     hall,
     dayId,
     priceModifier,

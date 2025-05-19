@@ -5,7 +5,7 @@ import 'package:untitledCinema/data/models/movie/movie_model.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/network/api_client.dart';
-import '../models/movie/paginated_movies_model.dart';
+import '../models/paginated_response.dart';
 
 abstract class MovieRemoteDataSource {
   Future<PaginatedResponseModel<MovieModel>> getMovies({

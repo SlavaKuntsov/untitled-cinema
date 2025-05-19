@@ -112,7 +112,6 @@ class MovieProvider extends ChangeNotifier {
 
       final pageSize = limit ?? _moviesState.pageSize;
       final currentPage = page ?? _moviesState.currentPage;
-      // final offset = currentPage * pageSize;
       final offset = currentPage ?? _moviesState.currentPage;
 
       // Выполняем API запрос через repository

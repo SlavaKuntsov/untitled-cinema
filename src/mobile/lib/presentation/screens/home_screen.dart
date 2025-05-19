@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../domain/entities/movie/movie.dart';
 import '../providers/movie_provider.dart';
 import '../widgets/home/movie_list_widget.dart';
-import '../widgets/home/pagination_widget.dart';
+import '../widgets/home/movie_pagination_widget.dart';
 import 'movie_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -432,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         getAgeLimitColor: _getAgeLimitColor,
                       ),
 
-                      PaginationWidget(
+                      MoviePaginationWidget(
                         moviesState: moviesState,
                         selectedPageSize: selectedPageSize,
                         pageSizes: pageSizes,

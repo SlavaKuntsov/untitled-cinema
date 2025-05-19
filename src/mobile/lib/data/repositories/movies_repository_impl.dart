@@ -11,7 +11,7 @@ class MovieRepositoryImpl implements MovieRepository {
   @override
   Future<PaginatedItems<Movie>> getMovies({
     int limit = 10,
-    int offset = 0,
+    int offset = 1,
     String? sortBy,
     String? sortDirection,
     DateTime? date,

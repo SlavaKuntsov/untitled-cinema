@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../config/theme.dart';
+import 'history_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
-import 'search_screen.dart';
 
 // NavigationScreen
 class NavigationScreen extends StatefulWidget {
@@ -18,17 +18,17 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final List<Widget> _pages = const <Widget>[
     HomeScreen(),
-    SearchScreen(),
+    HistoryScreen(),
     ProfileScreen(),
   ];
 
   final List<IconData> _icons = [
     Icons.home_rounded,
-    Icons.search_rounded,
+    Icons.history,
     Icons.person_rounded,
   ];
 
-  final List<String> _labels = ['Главная', 'Поиск', 'Профиль'];
+  final List<String> _labels = ['Главная', 'История', 'Профиль'];
 
   void _onItemTapped(int index) {
     setState(() {

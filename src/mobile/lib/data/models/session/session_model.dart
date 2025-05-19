@@ -9,6 +9,7 @@ class SessionModel extends Session {
     required super.id,
     required super.movieId,
     required super.hall,
+    required super.hallId,
     required super.dayId,
     required super.priceModifier,
     required super.startTime,
@@ -16,7 +17,6 @@ class SessionModel extends Session {
   });
 
   factory SessionModel.fromJson(Map<String, dynamic> json) {
-    // Функция для безопасного преобразования числовых типов в double
     double parseDouble(dynamic value) {
       if (value == null) return 0.0;
       if (value is int) return value.toDouble();
@@ -32,10 +32,10 @@ class SessionModel extends Session {
     }
 
     try {
-      // Используем обновленный HallModel.fromJson, который поддерживает разные форматы
       return SessionModel(
         id: json['id']?.toString() ?? '',
         movieId: json['movieId']?.toString() ?? '',
+        hallId: json['hallId']?.toString() ?? '',
         hall:
             json['hall'] != null
                 ? HallDto.fromJson(json['hall'])
@@ -57,6 +57,7 @@ class SessionModel extends Session {
       return SessionModel(
         id: json['id']?.toString() ?? '',
         movieId: json['movieId']?.toString() ?? '',
+        hallId: json['hallId']?.toString() ?? '',
         hall: const HallDto(id: '', name: 'Ошибка загрузки зала'),
         dayId: json['dayId']?.toString() ?? '',
         priceModifier: 1.0,
@@ -68,7 +69,6 @@ class SessionModel extends Session {
 
   Map<String, dynamic> toJson() {
     final hall = this.hall;
-    // Подготавливаем JSON для hall в формате API
     final hallJson =
         hall is HallDto
             ? hall.toJson()
@@ -77,6 +77,7 @@ class SessionModel extends Session {
     return {
       'id': id,
       'movieId': movieId,
+      'hallId': hallId,
       'hall': hallJson,
       'dayId': dayId,
       'priceModifier': priceModifier,
@@ -89,6 +90,7 @@ class SessionModel extends Session {
     return SessionModel(
       id: session.id,
       movieId: session.movieId,
+      hallId: session.hallId,
       hall:
           session.hall is HallDto
               ? session.hall
@@ -104,6 +106,7 @@ class SessionModel extends Session {
     String? id,
     String? movieId,
     Hall? hall,
+    String? hallId,
     String? dayId,
     double? priceModifier,
     DateTime? startTime,
@@ -112,6 +115,7 @@ class SessionModel extends Session {
     return SessionModel(
       id: id ?? this.id,
       movieId: movieId ?? this.movieId,
+      hallId: hallId ?? this.movieId,
       hall: hall ?? this.hall,
       dayId: dayId ?? this.dayId,
       priceModifier: priceModifier ?? this.priceModifier,

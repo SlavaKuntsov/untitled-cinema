@@ -1,0 +1,407 @@
+// lib/presentation/widgets/booking/booking_list_item.dart
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:untitledCinema/config/theme.dart';
+import 'package:untitledCinema/domain/entities/session/hall.dart';
+import 'package:untitledCinema/presentation/providers/movie_provider.dart';
+
+import '../../../core/constants/booking_constants.dart';
+import '../../../domain/entities/bookings/bookings.dart';
+import '../../../domain/entities/movie/movie.dart';
+import '../../../domain/entities/session/session.dart';
+import '../../providers/session_provider.dart';
+
+class BookingListItem extends StatefulWidget {
+  final Booking booking;
+  final VoidCallback onCancel;
+  final VoidCallback onPay;
+
+  const BookingListItem({
+    super.key,
+    required this.booking,
+    required this.onCancel,
+    required this.onPay,
+  });
+
+  @override
+  State<BookingListItem> createState() => _BookingListItemState();
+}
+
+class _BookingListItemState extends State<BookingListItem> {
+  late SessionProvider _sessionProvider;
+  late MovieProvider _movieProvider;
+  Session? _session;
+  Hall? _hall;
+  Movie? _movie;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSessionData();
+  }
+
+  Future<void> _loadSessionData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      _sessionProvider = Provider.of<SessionProvider>(context, listen: false);
+      _movieProvider = Provider.of<MovieProvider>(context, listen: false);
+
+      final session = await _sessionProvider.fetchSessionById(
+        id: widget.booking.sessionId,
+      );
+
+      final movie = await _movieProvider.fetchMovieById(id: session.movieId);
+      final hall = await _sessionProvider.fetchHallById(id: session.hallId);
+
+      setState(() {
+        _session = session;
+        _movie = movie;
+        _hall = hall;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Не удалось загрузить информацию о сеансе';
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Получение статуса бронирования из строки
+  BookingStatus _getBookingStatus() {
+    return BookingStatus.fromString(widget.booking.status);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final status = _getBookingStatus();
+    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeaderSection(status, dateFormat),
+
+            _buildSessionSection(),
+
+            _buildSeatsSection(),
+
+            _buildFooterSection(status),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection(BookingStatus status, DateFormat dateFormat) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.accentColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Дата бронирования',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                dateFormat.format(widget.booking.createdAt),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: status.color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: status.color),
+            ),
+            child: Text(
+              status.label,
+              style: TextStyle(
+                color: status.color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSessionSection() {
+    if (_isLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            children: [
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Colors.red.shade800),
+              ),
+              TextButton(
+                onPressed: _loadSessionData,
+                child: const Text('Повторить'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_session == null) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Text('Информация о сеансе недоступна'),
+      );
+    }
+
+    // Формат даты для отображения времени сеанса
+    final timeFormat = DateFormat('dd-MM-yyyy HH:mm');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Постер фильма (если есть)
+          // if (_movie!.poster.isNotEmpty)
+          //   ClipRRect(
+          //     borderRadius: BorderRadius.circular(8),
+          //     child: Image.network(
+          //       _movie!.poster,
+          //       width: 80,
+          //       height: 120,
+          //       fit: BoxFit.cover,
+          //       errorBuilder:
+          //           (_, __, ___) => Container(
+          //             width: 80,
+          //             height: 120,
+          //             color: Colors.grey.shade300,
+          //             child: const Icon(Icons.movie, color: Colors.white),
+          //           ),
+          //     ),
+          //   ),
+          // _movie!.poster.isNotEmpty
+          //     ? ClipRRect(
+          //       borderRadius: BorderRadius.circular(8),
+          //       child: CachedNetworkImage(
+          //         imageUrl: '${ApiConstants.moviePoster}/${_movie!.poster}',
+          //         width: 130,
+          //         height: 160,
+          //         fit: BoxFit.cover,
+          //         placeholder:
+          //             (context, url) => Container(
+          //               width: 130,
+          //               height: 160,
+          //               color: Colors.grey[300],
+          //               child: const Center(
+          //                 child: SizedBox(
+          //                   width: 30,
+          //                   height: 30,
+          //                   child: CircularProgressIndicator(strokeWidth: 2),
+          //                 ),
+          //               ),
+          //             ),
+          //         errorWidget: (context, url, error) {
+          //           debugPrint('Error loading image: $error');
+          //           return const _PlaceholderPoster();
+          //         },
+          //         fadeInDuration: const Duration(milliseconds: 100),
+          //       ),
+          //     )
+          //     : const _PlaceholderPoster(),
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _movie!.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    const Icon(Icons.theater_comedy, size: 16),
+                    const SizedBox(width: 8),
+                    Text(_hall!.name, style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.access_time, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${timeFormat.format(_session!.startTime)}\t — \t"
+                      "${timeFormat.format(_session!.endTime)}",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.timelapse, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_movie!.durationMinutes} мин',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSeatsSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Места',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                widget.booking.seats.map((seat) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.blue),
+                    ),
+                    child: Text(
+                      'Ряд ${seat.row}, Место ${seat.column}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  );
+                }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooterSection(BookingStatus status) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Итоговая цена
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Итого',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                '${widget.booking.totalPrice.toStringAsFixed(2)} Br',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
+          // Кнопки действий
+          Row(
+            children: [
+              // Кнопка отмены (если статус "Reserved")
+              if (status == BookingStatus.reserved)
+                ElevatedButton(
+                  onPressed: widget.onCancel,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Отменить'),
+                ),
+
+              // Кнопка оплаты (если статус "Reserved")
+              if (status == BookingStatus.reserved) ...[
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: widget.onPay,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Оплатить'),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlaceholderPoster extends StatelessWidget {
+  const _PlaceholderPoster();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 130,
+      height: 160,
+      color: Colors.grey.shade300,
+      child: const Icon(Icons.movie, size: 50, color: Colors.white),
+    );
+  }
+}

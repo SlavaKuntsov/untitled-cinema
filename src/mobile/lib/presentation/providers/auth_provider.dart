@@ -20,28 +20,33 @@ class AuthProvider extends ChangeNotifier {
   final RegistrationUseCase _registrationUseCase;
   final GoogleSignInUseCase _googleSignInUseCase;
   final GoogleSignIn _googleSignIn;
+  final SharedPreferences _prefs;
 
   AuthStatus _authStatus = AuthStatus.unknown;
   User? _currentUser;
   String? _savedEmail;
   String? _errorMessage;
   bool _isLoading = false;
+  String? _token;
 
   AuthProvider({
     required LoginUseCase loginUseCase,
     required RegistrationUseCase registrationUseCase,
     required GoogleSignInUseCase googleSignInUseCase,
     required GoogleSignIn googleSignIn,
+    required SharedPreferences prefs,
   }) : _loginUseCase = loginUseCase,
        _registrationUseCase = registrationUseCase,
        _googleSignInUseCase = googleSignInUseCase,
-       _googleSignIn = googleSignIn;
+       _googleSignIn = googleSignIn,
+       _prefs = prefs;
 
   AuthStatus get authStatus => _authStatus;
   User? get currentUser => _currentUser;
   String? get savedEmail => _savedEmail;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  String? get token => _prefs.getString('access_token');
 
   Future<void> checkAuthStatus() async {
     _isLoading = true;
@@ -53,6 +58,8 @@ class AuthProvider extends ChangeNotifier {
       final prefs = sl<SharedPreferences>();
       final accessToken = prefs.getString('access_token');
       final refreshToken = prefs.getString('refresh_token');
+
+      _token = accessToken;
 
       debugPrint(accessToken);
       debugPrint(refreshToken);

@@ -24,29 +24,9 @@ class SeatMapWidget extends StatefulWidget {
   @override
   State<SeatMapWidget> createState() => _SeatMapWidgetState();
 }
-//
-// class SeatPosition {
-//   final int row;
-//   final int seat;
-//   final int type;
-//   final double price;
-//
-//   SeatPosition({
-//     required this.row,
-//     required this.seat,
-//     required this.type,
-//     required this.price,
-//   });
-//
-//   @override
-//   String toString() {
-//     return 'Ряд ${row + 1}, Место ${seat + 1}';
-//   }
-// }
 
 class _SeatMapWidgetState extends State<SeatMapWidget> {
   late SessionProvider _sessionProvider;
-  final List<SelectedSeat> _selectedSeats = [];
   double _basePrice = 250.0;
   bool _isLoading = false;
   bool _isInitialized = false;
