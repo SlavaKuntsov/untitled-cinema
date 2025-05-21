@@ -43,6 +43,8 @@ class ApiConstants {
 
   // Booking endpoints
   static String get bookings => '$bookingServiceBaseUrl/bookings';
+  static String get cancel => '$bookingServiceBaseUrl/bookings/cancel';
+  static String get pay => '$bookingServiceBaseUrl/bookings/pay';
   static String get bookingsHistory =>
       '$bookingServiceBaseUrl/bookings/history';
   static String get reservedSeats =>

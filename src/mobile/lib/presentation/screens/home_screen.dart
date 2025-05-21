@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/theme.dart';
 import '../../domain/entities/movie/movie.dart';
 import '../providers/movie_provider.dart';
 import '../widgets/home/movie_list_widget.dart';
@@ -15,54 +17,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> genres = [
-    'Все',
-    'Боевики',
-    'Комедии',
-    'Драмы',
-    'Триллеры',
-    'Ужасы',
-    'Фантастика',
-  ];
+  // Search controller
+  final TextEditingController _searchController = TextEditingController();
 
-  String selectedGenre = 'Все';
+  // Selected filters
+  List<String> _selectedGenres = ['Все'];
+  DateTime? _selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month, 
+    DateTime.now().day
+  );
+  
+  // Sorting options
+  String _sortBy = 'title';
+  String _sortDirection = 'asc';
+  
+  // Sorting display options
+  final Map<String, String> _sortOptions = {
+    'title_asc': 'Название (А-Я)',
+    'title_desc': 'Название (Я-А)',
+    'price_asc': 'Цена (низкая-высокая)',
+    'price_desc': 'Цена (высокая-низкая)',
+  };
+  
+  String get _currentSortOption => '${_sortBy}_$_sortDirection';
+
   final ScrollController _scrollController = ScrollController();
 
   // Добавляем списки доступных размеров страниц
   final List<int> pageSizes = [1, 5, 10, 20, 50];
   int selectedPageSize = 10; // Значение по умолчанию
-
-  // Имитация списка фильмов
-  final List<Map<String, dynamic>> featuredMovies = [
-    {
-      'title': 'Дюна: Часть вторая',
-      'genre': 'Фантастика',
-      'rating': 4.8,
-      'imageUrl': 'assets/images/dune.jpg',
-      'showTimes': ['10:00', '13:30', '16:45', '20:00'],
-    },
-    {
-      'title': 'Гладиатор 2',
-      'genre': 'Боевики',
-      'rating': 4.6,
-      'imageUrl': 'assets/images/gladiator.jpg',
-      'showTimes': ['11:15', '14:30', '17:45', '21:00'],
-    },
-    {
-      'title': 'Джокер: Безумие на двоих',
-      'genre': 'Драмы',
-      'rating': 4.5,
-      'imageUrl': 'assets/images/joker.jpg',
-      'showTimes': ['12:00', '15:15', '18:30', '21:45'],
-    },
-    {
-      'title': 'Мстители: Новая эра',
-      'genre': 'Боевики',
-      'rating': 4.7,
-      'imageUrl': 'assets/images/avengers.jpg',
-      'showTimes': ['10:30', '13:45', '17:00', '20:15'],
-    },
-  ];
 
   @override
   void initState() {
@@ -70,20 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Загружаем первую страницу при инициализации
     Future.microtask(() {
-      List<String>? filters;
-      List<String>? filterValues;
-
-      if (selectedGenre != 'Все') {
-        filters = ['genre'];
-        filterValues = [selectedGenre];
-      }
-
-      Provider.of<MovieProvider>(context, listen: false).fetchMovies(
-        page: 1,
-        limit: selectedPageSize,
-        filters: filters,
-        filterValues: filterValues,
-      );
+      // Make sure we use the date in filtering
+      _applyFilters();
     });
 
     _scrollController.addListener(_onScroll);
@@ -93,19 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
     if (_isBottom) {
-      List<String>? filters;
-      List<String>? filterValues;
-
-      if (selectedGenre != 'Все') {
-        filters = ['genre'];
-        filterValues = [selectedGenre];
-      }
-
       Provider.of<MovieProvider>(context, listen: false).nextPage();
     }
   }
@@ -117,24 +82,78 @@ class _HomeScreenState extends State<HomeScreen> {
     return currentScroll >= (maxScroll * 0.9);
   }
 
-  void _updateGenreFilter(String genre) {
+  void _toggleGenreSelection(String genre) {
     setState(() {
-      selectedGenre = genre;
-    });
+      if (genre == 'Все') {
+        // If "All" is selected, clear other selections
+        _selectedGenres = ['Все'];
+      } else {
+        // Remove "All" from selection if it's there
+        _selectedGenres.remove('Все');
 
+        // Toggle the selected genre
+        if (_selectedGenres.contains(genre)) {
+          _selectedGenres.remove(genre);
+          // If no genres are selected, default to "All"
+          if (_selectedGenres.isEmpty) {
+            _selectedGenres = ['Все'];
+          }
+        } else {
+          _selectedGenres.add(genre);
+        }
+      }
+    });
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _selectedGenres = ['Все'];
+      _selectedDate = DateTime(
+        DateTime.now().year,
+        DateTime.now().month, 
+        DateTime.now().day
+      );
+      _searchController.clear();
+    });
+    _applyFilters();
+    Navigator.pop(context);
+  }
+
+  void _applyFilters() {
     List<String>? filters;
     List<String>? filterValues;
 
-    if (genre != 'Все') {
-      filters = ['genre'];
-      filterValues = [genre];
+    // Add genre filters
+    if (!_selectedGenres.contains('Все')) {
+      filters = [];
+      filterValues = [];
+      
+      for (var genre in _selectedGenres) {
+        filters.add('genre');
+        filterValues.add(genre);
+      }
     }
 
+    // Add search term if present
+    if (_searchController.text.isNotEmpty) {
+      filters ??= [];
+      filterValues ??= [];
+      filters.add('title');
+      filterValues.add(_searchController.text);
+    }
+
+    // Debug output
+    print('Applying filters with date: $_selectedDate, sort: $_sortBy $_sortDirection');
+    
+    // Fetch movies with filters
     Provider.of<MovieProvider>(context, listen: false).fetchMovies(
       page: 1,
       limit: selectedPageSize,
       filters: filters,
       filterValues: filterValues,
+      date: _selectedDate,
+      sortBy: _sortBy,
+      sortDirection: _sortDirection,
     );
   }
 
@@ -144,20 +163,279 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedPageSize = newSize;
       });
 
-      List<String>? filters;
-      List<String>? filterValues;
-
-      if (selectedGenre != 'Все') {
-        filters = ['genre'];
-        filterValues = [selectedGenre];
-      }
-
-      Provider.of<MovieProvider>(context, listen: false).fetchMovies(
-        limit: newSize,
-        filters: filters,
-        filterValues: filterValues,
-      );
+      _applyFilters();
     }
+  }
+
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // Make the bottom sheet take up the full screen height
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final movieProvider = Provider.of<MovieProvider>(context);
+            final genres = movieProvider.genres;
+            final isLoadingGenres = movieProvider.loadingGenres;
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Фильтры',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+
+                  // Date filter
+                  const Text(
+                    'Дата сеанса:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final now = DateTime.now();
+                          // Use as initial date either the currently selected date 
+                          // or today, ensuring it's not in the past
+                          final initialDate = _selectedDate != null && 
+                              _selectedDate!.isAfter(DateTime(now.year, now.month, now.day)) ? 
+                              _selectedDate! : DateTime(now.year, now.month, now.day);
+                          
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: initialDate,
+                            firstDate: DateTime(now.year, now.month, now.day), // Today
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
+                          );
+
+                          if (pickedDate != null) {
+                            setState(() {
+                              _selectedDate = pickedDate;
+                            });
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          _selectedDate != null
+                              ? DateFormat('dd-MM-yyyy').format(_selectedDate!)
+                              : 'Выбрать дату',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppTheme.accentColor),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      if (_selectedDate != null)
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _selectedDate =
+                                  DateTime(
+                                    DateTime.now().year,
+                                    DateTime.now().month, 
+                                    DateTime.now().day
+                                  );
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Sorting section
+                  const Text(
+                    'Сортировка:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: _sortOptions.entries.map((entry) {
+                      final key = entry.key;
+                      final value = entry.value;
+                      final isSelected = _currentSortOption == key;
+                      
+                      return FilterChip(
+                        label: Text(value),
+                        selected: isSelected,
+                        onSelected: (_) {
+                          setState(() {
+                            final parts = key.split('_');
+                            _sortBy = parts[0];
+                            _sortDirection = parts[1];
+                          });
+                        },
+                        backgroundColor: AppTheme.cardColor,
+                        selectedColor: AppTheme.accentColor,
+                        checkmarkColor: Colors.black,
+                        showCheckmark: false,
+                        side: BorderSide(color: AppTheme.accentColor),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Genre filter
+                  const Text(
+                    'Жанры:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+
+                  if (isLoadingGenres)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children:
+                          genres.map((genre) {
+                            final isSelected = _selectedGenres.contains(genre);
+                            return FilterChip(
+                              label: Text(genre),
+                              selected: isSelected,
+                              onSelected: (_) {
+                                setState(() {
+                                  if (genre == 'Все') {
+                                    _selectedGenres = ['Все'];
+                                  } else {
+                                    if (isSelected) {
+                                      _selectedGenres.remove(genre);
+                                      if (_selectedGenres.isEmpty) {
+                                        _selectedGenres = ['Все'];
+                                      }
+                                    } else {
+                                      _selectedGenres.remove('Все');
+                                      _selectedGenres.add(genre);
+                                    }
+                                  }
+                                });
+                              },
+                              backgroundColor: AppTheme.cardColor,
+                              selectedColor: AppTheme.accentColor,
+                              checkmarkColor: Colors.black,
+                              showCheckmark: false,
+                              side: BorderSide(color: AppTheme.accentColor),
+                              labelStyle: TextStyle(
+                                color: Colors.white,
+                                fontWeight:
+                                    isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                            );
+                          }).toList(),
+                    ),
+                  const SizedBox(height: 24),
+
+                  // Action buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedGenres = ['Все'];
+                              _selectedDate = null;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.cardColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: AppTheme.accentColor),
+                            ),
+                          ),
+                          child: const Text('Сбросить'),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Use parent setState to update the HomeScreen state
+                            this.setState(() {
+                              // The selected values are already updated via the StatefulBuilder's setState
+                              _selectedGenres = [..._selectedGenres];
+                              // Make sure we preserve the selected date
+                              if (_selectedDate == null) {
+                                _selectedDate = null; // Clear if set to null
+                              }
+                            });
+                            Navigator.pop(context);
+                            _applyFilters();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.accentColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Применить'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void navigateToMovieDetails(BuildContext context, String movieId) {
@@ -168,10 +446,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Helper method to check if date is today
+  bool _isDateToday(DateTime? date) {
+    if (date == null) return false;
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
     final moviesState = movieProvider.moviesState;
+
+    // Determine if we should show filter chips
+    final bool shouldShowFilters =
+        !(_selectedGenres.contains('Все') && 
+          _isDateToday(_selectedDate) && 
+          _currentSortOption == 'title_asc');
 
     return SingleChildScrollView(
       controller: _scrollController,
@@ -232,41 +525,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 16),
 
-          // Фильтр по жанрам
+          // Search bar and filter button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                const Text(
-                  'Жанры',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: genres.length,
-                    itemBuilder: (context, index) {
-                      final genre = genres[index];
-                      final isSelected = genre == selectedGenre;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text(genre),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            _updateGenreFilter(genre);
-                          },
-                          backgroundColor: Colors.grey.shade200,
-                          selectedColor: Colors.blue.shade100,
-                          checkmarkColor: Colors.blue,
-                        ),
-                      );
-                    },
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Поиск фильмов...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon:
+                          _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchController.clear();
+                                    });
+                                    _applyFilters();
+                                  },
+                                )
+                              : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    ),
+                    onSubmitted: (_) => _applyFilters(),
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: _showFilterBottomSheet,
+                  tooltip: 'Фильтры',
                 ),
               ],
             ),
@@ -274,78 +567,92 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 16),
 
-          // Популярные сейчас (горизонтальный список)
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Популярно сейчас',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 230,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: featuredMovies.length,
-                    itemBuilder: (context, index) {
-                      final movie = featuredMovies[index];
-
+          // Filter chips display (show selected filters)
+          if (shouldShowFilters)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // Date filter chip
+                  if (_selectedDate != null &&
+                      (!_isDateToday(_selectedDate) ||
+                          !_selectedGenres.contains('Все')))
+                    Chip(
+                      label: Text(
+                        DateFormat('dd-MM-yyyy').format(_selectedDate!),
+                      ),
+                      backgroundColor: AppTheme.cardColor,
+                      deleteIcon: const Icon(Icons.clear, size: 16),
+                      onDeleted: () {
+                        setState(() {
+                          _selectedDate =
+                              DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month, 
+                                DateTime.now().day
+                              );
+                        });
+                        _applyFilters();
+                      },
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      side: BorderSide(color: AppTheme.accentColor),
+                    ),
+                  
+                  // Sort filter chip (always show unless default)
+                  if (_currentSortOption != 'title_asc') // Only show if not default sort
+                    Chip(
+                      avatar: Icon(Icons.sort, size: 16, color: Colors.white70),
+                      label: Text(
+                        _sortOptions[_currentSortOption]!,
+                      ),
+                      backgroundColor: AppTheme.cardColor,
+                      deleteIcon: const Icon(Icons.clear, size: 16),
+                      onDeleted: () {
+                        setState(() {
+                          _sortBy = 'title';
+                          _sortDirection = 'asc';
+                        });
+                        _applyFilters();
+                      },
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      side: BorderSide(color: AppTheme.accentColor),
+                    ),
+                  
+                  // Genre filter chips
+                  if (!_selectedGenres.contains('Все'))
+                    ..._selectedGenres.map((genre) {
                       return GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: 140,
-                          margin: const EdgeInsets.only(right: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 160,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                movie['title'],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    size: 16,
-                                    color: Colors.amber.shade700,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${movie['rating']}',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                        onTap: () {
+                          _toggleGenreSelection(genre);
+                          _applyFilters();
+                        },
+                        child: Chip(
+                          label: Text(genre),
+                          backgroundColor: AppTheme.cardColor,
+                          deleteIcon: const Icon(Icons.clear, size: 16),
+                          onDeleted: () {
+                            _toggleGenreSelection(genre);
+                            _applyFilters();
+                          },
+                          labelStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal,
                           ),
+                          side: BorderSide(color: AppTheme.accentColor),
                         ),
                       );
-                    },
-                  ),
-                ),
-              ],
+                    }).toList(),
+                ],
+              ),
             ),
-          ),
-
-          const SizedBox(height: 16),
 
           // Список всех фильмов с пагинацией
           Padding(
@@ -356,16 +663,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          selectedGenre == 'Все' ? 'Все фильмы' : selectedGenre,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      _selectedGenres.contains('Все')
+                          ? 'Все фильмы'
+                          : 'Результаты',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     if (moviesState.status == MovieStatus.loaded)
                       Text(
@@ -374,7 +679,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                // const SizedBox(height: 4),
 
                 // Управление состояниями
                 if (moviesState.status == MovieStatus.initial ||
@@ -401,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => movieProvider.refreshMovies(),
+                            onPressed: () => _applyFilters(),
                             child: const Text('Попробовать снова'),
                           ),
                         ],
@@ -420,7 +725,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 else
                   Column(
-                    // mainAxisSize: MainAxisSize.max,
                     children: [
                       // Список фильмов
                       MovieListWidget(
@@ -472,5 +776,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (ageLimit >= 12) return Colors.amber.shade700;
     if (ageLimit >= 6) return Colors.green;
     return Colors.blue;
+  }
+
+  // Helper method to get the formatted date
+  String _formatDate(DateTime date) {
+    return DateFormat('dd-MM-yyyy').format(date);
   }
 }

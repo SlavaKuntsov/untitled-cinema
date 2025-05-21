@@ -63,9 +63,18 @@ class MovieProvider extends ChangeNotifier {
   // Изменено: используем поле с именем moviesState вместо state
   MoviesState _moviesState = MoviesState();
   MoviesState get moviesState => _moviesState;
+  
+  // For genres
+  List<String> _genres = ['Все']; 
+  List<String> get genres => _genres;
+  bool _loadingGenres = false;
+  bool get loadingGenres => _loadingGenres;
 
   MovieProvider({required MovieRepository repository})
-    : _repository = repository;
+    : _repository = repository {
+      // Load genres when provider is initialized
+      fetchGenres();
+    }
 
   Future<Movie> fetchMovieById({required String id}) async {
     try {
@@ -162,5 +171,22 @@ class MovieProvider extends ChangeNotifier {
   // Добавлено: метод для обновления списка фильмов
   Future<void> refreshMovies() async {
     await fetchMovies(page: 0);
+  }
+
+  Future<void> fetchGenres() async {
+    if (_loadingGenres) return;
+    
+    _loadingGenres = true;
+    notifyListeners();
+    
+    try {
+      final fetchedGenres = await _repository.getMovieGenres();
+      _genres = ['Все', ...fetchedGenres];
+    } catch (e) {
+      print('Error fetching genres: ${e.toString()}');
+    } finally {
+      _loadingGenres = false;
+      notifyListeners();
+    }
   }
 }

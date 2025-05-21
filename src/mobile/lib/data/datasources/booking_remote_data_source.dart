@@ -34,6 +34,7 @@ abstract class BookingRemoteDataSource {
   });
 
   Future<bool> cancelBooking(String bookingId);
+  Future<bool> payBooking(String bookingId);
 }
 
 class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
@@ -176,8 +177,19 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
 
   @override
   Future<bool> cancelBooking(String bookingId) async {
-    final response = await client.delete(
-      '${ApiConstants.bookings}/$bookingId/cancel',
+    final response = await client.patch('${ApiConstants.cancel}/$bookingId');
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to load movie poster: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<bool> payBooking(String bookingId, String userId) async {
+    final response = await client.patch(
+      '${ApiConstants.pay}/$bookingId/user/$userId',
     );
 
     if (response.statusCode == 200) {

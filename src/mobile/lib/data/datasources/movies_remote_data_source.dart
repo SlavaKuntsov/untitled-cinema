@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:untitledCinema/data/models/movie/movie_model.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -23,6 +24,8 @@ abstract class MovieRemoteDataSource {
   Future<String> getMoviePosterUrl(String id);
 
   Future<List<String>> getMovieFrames(String id);
+
+  Future<List<String>> getMovieGenres();
 }
 
 class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
@@ -56,16 +59,36 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
         queryParams['sortDirection'] = sortDirection;
       else
         queryParams['sortDirection'] = 'asc';
-      if (date != null) queryParams['date'] = date.toIso8601String();
+      if (date != null)
+        queryParams['date'] = DateFormat('dd-MM-yyyy').format(date);
+      if (date == null) {
+        queryParams['date'] = DateFormat('dd-MM-yyyy').format(DateTime.now());
+      }
 
       // Добавляем фильтры, если они есть
-      if (filters != null && filterValues != null) {
+      if (filters != null &&
+          filterValues != null &&
+          filters.length > 0 &&
+          filters.length == filterValues.length) {
+        final Map<String, List<String>> multiParams = {};
+
         for (var i = 0; i < filters.length; i++) {
-          if (i < filterValues.length) {
-            queryParams['filters[$i]'] = filters[i];
-            queryParams['filterValues[$i]'] = filterValues[i];
+          if (!multiParams.containsKey('Filter')) {
+            multiParams['Filter'] = [];
           }
+          multiParams['Filter']!.add(filters[i]);
+
+          if (!multiParams.containsKey('FilterValue')) {
+            multiParams['FilterValue'] = [];
+          }
+          multiParams['FilterValue']!.add(filterValues[i]);
         }
+
+        multiParams.forEach((key, values) {
+          for (var i = 0; i < values.length; i++) {
+            queryParams['$key'] = values[i];
+          }
+        });
       }
 
       // Выполняем запрос к API
@@ -136,6 +159,42 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       }
     } catch (e) {
       print('Ошибка при получении кадров: ${e.toString()}');
+      return [];
+    }
+  }
+
+  @override
+  Future<List<String>> getMovieGenres() async {
+    try {
+      final response = await client.get(ApiConstants.movieGenres);
+
+      if (response != null) {
+        // Convert dynamic list to string list
+        final List<dynamic> genresData = response as List<dynamic>;
+
+        // Check if each item is a Map with a 'name' field
+        if (genresData.isNotEmpty && genresData.first is Map<String, dynamic>) {
+          final List<String> genres =
+              genresData
+                  .map(
+                    (genre) =>
+                        (genre as Map<String, dynamic>)['name']?.toString() ??
+                        "",
+                  )
+                  .where((name) => name.isNotEmpty)
+                  .toList();
+          return genres;
+        }
+
+        // Fallback to direct toString if not a Map structure
+        final List<String> genres =
+            genresData.map((genre) => genre.toString()).toList();
+        return genres;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Ошибка при получении жанров: ${e.toString()}');
       return [];
     }
   }

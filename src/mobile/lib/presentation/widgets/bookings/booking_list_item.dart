@@ -384,7 +384,7 @@ class _BookingListItemState extends State<BookingListItem> {
               children: [
                 // Кнопка отмены (если статус "Reserved")
                 SizedBox(
-                  width: 140, // Фиксированная ширина кнопки
+                  width: 150, // Фиксированная ширина кнопки
                   child: ElevatedButton(
                     onPressed: widget.onCancel,
                     style: ElevatedButton.styleFrom(
@@ -399,7 +399,7 @@ class _BookingListItemState extends State<BookingListItem> {
 
                 // Кнопка оплаты (если статус "Reserved")
                 SizedBox(
-                  width: 140, // Фиксированная ширина кнопки
+                  width: 150, // Фиксированная ширина кнопки
                   child: ElevatedButton(
                     onPressed: widget.onPay,
                     style: ElevatedButton.styleFrom(
