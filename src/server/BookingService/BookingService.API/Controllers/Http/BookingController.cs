@@ -81,8 +81,9 @@ public class BookingController(
 			request.UserId,
 			request.SessionId);
 
-		return Accepted();
-		//return Ok(bookingId);
+		// return Accepted();
+		// for flutter do 200
+		return Ok();
 	}
 
 	[HttpPatch("/bookings/pay/{bookingId:Guid}/user/{userId:Guid}")]

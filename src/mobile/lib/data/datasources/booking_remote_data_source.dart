@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:untitledCinema/domain/entities/session/seat.dart';
+
 import '../../core/constants/api_constants.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/network/api_client.dart';
@@ -25,12 +27,12 @@ abstract class BookingRemoteDataSource {
   Future<BookingModel> getBookingById(String bookingId);
 
   /// Создает новое бронирование
-  Future<BookingModel> createBooking({
+  Future<bool> createBooking({
+    required String userId,
     required String sessionId,
-    required List<Map<String, dynamic>> seats,
+    required List<Seat> seats,
   });
 
-  /// Отменяет бронирование
   Future<bool> cancelBooking(String bookingId);
 }
 
@@ -133,18 +135,42 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   }
 
   @override
-  Future<BookingModel> createBooking({
+  Future<bool> createBooking({
+    required String userId,
     required String sessionId,
-    required List<Map<String, dynamic>> seats,
+    required List<Seat> seats,
   }) async {
-    final body = {'sessionId': sessionId, 'seats': seats};
+    try {
+      final List<Map<String, dynamic>> seatMaps =
+          seats
+              .map(
+                (seat) => {
+                  'id': seat.id,
+                  'row': seat.row,
+                  'column': seat.column,
+                },
+              )
+              .toList();
 
-    final response = await client.post(ApiConstants.bookings, data: body);
+      final body = {
+        'userId': userId,
+        'sessionId': sessionId,
+        'seats': seatMaps,
+      };
 
-    if (response.statusCode == 201) {
-      return BookingModel.fromJson(response.data);
-    } else {
-      throw Exception('Failed to load movie poster: ${response.statusCode}');
+      final response = await client.post(ApiConstants.bookings, data: body);
+
+      if (response != null) {
+        return true;
+      } else {
+        throw ServerException(
+          'Ошибка при создании бронирования: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw ServerException(
+        'Ошибка при создании бронирования: ${e.toString()}',
+      );
     }
   }
 

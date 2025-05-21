@@ -11,6 +11,7 @@ import '../../../domain/entities/bookings/bookings.dart';
 import '../../../domain/entities/movie/movie.dart';
 import '../../../domain/entities/session/session.dart';
 import '../../providers/session_provider.dart';
+import '../../screens/movie_session_screen.dart';
 
 class BookingListItem extends StatefulWidget {
   final Booking booking;
@@ -84,23 +85,29 @@ class _BookingListItemState extends State<BookingListItem> {
     final status = _getBookingStatus();
     final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeaderSection(status, dateFormat),
+    return GestureDetector(
+      onTap: () => navigateToMovieSession(context, _session!),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // if (status == BookingStatus.reserved) Text("reserved"),
+              //
+              // if (status == BookingStatus.cancelled) Text("cancelled"),
+              _buildHeaderSection(status, dateFormat),
 
-            _buildSessionSection(),
+              _buildSessionSection(),
 
-            _buildSeatsSection(),
+              _buildSeatsSection(),
 
-            _buildFooterSection(status),
-          ],
+              _buildFooterSection(status),
+            ],
+          ),
         ),
       ),
     );
@@ -245,53 +252,63 @@ class _BookingListItemState extends State<BookingListItem> {
           //     : const _PlaceholderPoster(),
           const SizedBox(width: 16),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _movie!.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+          // GestureDetector(
+          //   onTap: () => navigateToMovieSession(context, _session!),
+          //   child:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _movie!.title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  const Icon(Icons.theater_comedy, size: 16),
+                  const SizedBox(width: 8),
+                  Text(_hall!.name, style: TextStyle(fontSize: 16)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(Icons.access_time, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    "${timeFormat.format(_session!.startTime)}\t — \t"
+                    "${timeFormat.format(_session!.endTime)}",
+                    style: TextStyle(fontSize: 16),
                   ),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    const Icon(Icons.theater_comedy, size: 16),
-                    const SizedBox(width: 8),
-                    Text(_hall!.name, style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.access_time, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      "${timeFormat.format(_session!.startTime)}\t — \t"
-                      "${timeFormat.format(_session!.endTime)}",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Icon(Icons.timelapse, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_movie!.durationMinutes} мин',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(Icons.timelapse, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${_movie!.durationMinutes} мин',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ],
           ),
+          // ),
         ],
+      ),
+    );
+  }
+
+  void navigateToMovieSession(BuildContext context, Session session) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MovieSessionScreen(session: session),
       ),
     );
   }
@@ -337,8 +354,8 @@ class _BookingListItemState extends State<BookingListItem> {
   Widget _buildFooterSection(BookingStatus status) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Итоговая цена
           Column(
@@ -358,50 +375,44 @@ class _BookingListItemState extends State<BookingListItem> {
             ],
           ),
 
+          const SizedBox(height: 16),
+
           // Кнопки действий
-          Row(
-            children: [
-              // Кнопка отмены (если статус "Reserved")
-              if (status == BookingStatus.reserved)
-                ElevatedButton(
-                  onPressed: widget.onCancel,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+          if (status == BookingStatus.reserved)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Кнопка отмены (если статус "Reserved")
+                SizedBox(
+                  width: 140, // Фиксированная ширина кнопки
+                  child: ElevatedButton(
+                    onPressed: widget.onCancel,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Отменить'),
                   ),
-                  child: const Text('Отменить'),
                 ),
 
-              // Кнопка оплаты (если статус "Reserved")
-              if (status == BookingStatus.reserved) ...[
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: widget.onPay,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+
+                // Кнопка оплаты (если статус "Reserved")
+                SizedBox(
+                  width: 140, // Фиксированная ширина кнопки
+                  child: ElevatedButton(
+                    onPressed: widget.onPay,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Оплатить'),
                   ),
-                  child: const Text('Оплатить'),
                 ),
               ],
-            ],
-          ),
+            ),
         ],
       ),
-    );
-  }
-}
-
-class _PlaceholderPoster extends StatelessWidget {
-  const _PlaceholderPoster();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 130,
-      height: 160,
-      color: Colors.grey.shade300,
-      child: const Icon(Icons.movie, size: 50, color: Colors.white),
     );
   }
 }

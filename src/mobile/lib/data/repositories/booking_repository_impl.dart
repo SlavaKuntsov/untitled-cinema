@@ -6,6 +6,7 @@ import '../../core/errors/failures.dart';
 import '../../core/network/network_info.dart';
 import '../../domain/entities/bookings/bookings.dart';
 import '../../domain/entities/paginated_items.dart';
+import '../../domain/entities/session/seat.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../datasources/booking_remote_data_source.dart';
 
@@ -56,17 +57,19 @@ class BookingRepositoryImpl implements BookingRepository {
   }
 
   @override
-  Future<Either<Failure, Booking>> createBooking({
+  Future<Either<Failure, bool>> createBooking({
+    required String userId,
     required String sessionId,
-    required List<Map<String, dynamic>> seats,
+    required List<Seat> seats,
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final booking = await remoteDataSource.createBooking(
+        final success = await remoteDataSource.createBooking(
+          userId: userId,
           sessionId: sessionId,
           seats: seats,
         );
-        return Right(booking);
+        return Right(success);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       }

@@ -4,9 +4,9 @@ import 'package:dartz/dartz.dart';
 import '../../core/errors/failures.dart';
 import '../entities/bookings/bookings.dart';
 import '../entities/paginated_items.dart';
+import '../entities/session/seat.dart';
 
 abstract class BookingRepository {
-  /// Получает историю бронирований пользователя
   Future<PaginatedItems<Booking>> getBookingHistory({
     required String userId,
     int limit = 10,
@@ -18,15 +18,13 @@ abstract class BookingRepository {
     String? date,
   });
 
-  /// Получает детали бронирования по ID
   Future<Either<Failure, Booking>> getBookingById(String bookingId);
 
-  /// Создает новое бронирование
-  Future<Either<Failure, Booking>> createBooking({
+  Future<Either<Failure, bool>> createBooking({
+    required String userId,
     required String sessionId,
-    required List<Map<String, dynamic>> seats,
+    required List<Seat> seats,
   });
 
-  /// Отменяет бронирование
   Future<Either<Failure, bool>> cancelBooking(String bookingId);
 }

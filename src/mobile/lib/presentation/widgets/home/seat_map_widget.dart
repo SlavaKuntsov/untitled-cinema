@@ -263,6 +263,7 @@ class _SeatMapWidgetState extends State<SeatMapWidget> {
                     return _buildLegendItem(color, name);
                   }),
                   _buildLegendItem(Colors.green, 'Выбрано'),
+                  _buildLegendItem(Colors.grey, 'Занято'),
                 ],
               ),
             ),

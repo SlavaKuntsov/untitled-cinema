@@ -52,7 +52,8 @@ public class UpdateSeatsCommandHandler(
 		if (request.IsFromAvailableToReserved)
 			foreach (var seat in request.Seats)
 			{
-				var availableSeat = sessionSeatsModel.AvailableSeats.FirstOrDefault(s => s.Id == seat.Id);
+				var availableSeat = sessionSeatsModel.AvailableSeats.FirstOrDefault(s => s.Row == seat.Row 
+					&& s.Column == seat.Column);
 
 				if (availableSeat is null)
 					continue;

@@ -7,14 +7,22 @@ import 'profile_screen.dart';
 
 // NavigationScreen
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  final int initialIndex;
+
+  const NavigationScreen({super.key, this.initialIndex = 0});
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   final List<Widget> _pages = const <Widget>[
     HomeScreen(),
@@ -39,22 +47,22 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Добро пожаловать", style: TextStyle(fontSize: 18)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Уведомления'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text("Добро пожаловать", style: TextStyle(fontSize: 18)),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.notifications),
+      //       onPressed: () {
+      //         ScaffoldMessenger.of(context).showSnackBar(
+      //           const SnackBar(
+      //             content: Text('Уведомления'),
+      //             duration: Duration(seconds: 1),
+      //           ),
+      //         );
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: _buildFloatingNavBar(),
     );

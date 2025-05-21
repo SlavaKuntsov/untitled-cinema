@@ -1,6 +1,7 @@
 // lib/presentation/providers/booking_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitledCinema/domain/entities/session/seat.dart';
 
 import '../../domain/entities/bookings/bookings.dart';
 import '../../domain/repositories/booking_repository.dart';
@@ -147,7 +148,6 @@ class BookingProvider extends ChangeNotifier {
     }
   }
 
-  // Загрузка деталей бронирования
   Future<void> fetchBookingById(String bookingId) async {
     _bookingState = _bookingState.copyWith(
       status: BookingLoadingStatus.loading,
@@ -176,16 +176,17 @@ class BookingProvider extends ChangeNotifier {
     );
   }
 
-  // Создание нового бронирования
   Future<bool> createBooking({
+    required String userId,
     required String sessionId,
-    required List<Map<String, dynamic>> seats,
+    required List<Seat> seats,
   }) async {
     _isCreating = true;
     _operationError = null;
     notifyListeners();
 
     final result = await _repository.createBooking(
+      userId: userId,
       sessionId: sessionId,
       seats: seats,
     );
@@ -196,9 +197,8 @@ class BookingProvider extends ChangeNotifier {
         _operationError = failure.message;
         success = false;
       },
-      (booking) {
-        _selectedBooking = booking;
-        success = true;
+      (isSuccess) {
+        success = isSuccess;
       },
     );
 

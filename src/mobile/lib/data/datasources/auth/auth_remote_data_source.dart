@@ -51,8 +51,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       final tokenData = {
-        'access_token': response['authResultDto']['accessToken'],
-        'refresh_token': response['authResultDto']['refreshToken'],
+        'access_token': response['accessToken'],
+        'refresh_token': response['refreshToken'],
       };
 
       final TokenModel tokenModel = TokenModel.fromJson(tokenData);

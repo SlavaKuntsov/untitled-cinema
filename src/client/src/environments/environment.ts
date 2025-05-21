@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  userBaseUrl: "https://localhost:7001",
-  movieBaseUrl: "https://localhost:7002",
-  bookingBaseUrl: "https://localhost:7003",
+  userBaseUrl: "http://192.168.0.101:7001",
+  movieBaseUrl: "http://192.168.0.101:7002",
+  bookingBaseUrl: "http://192.168.0.101:7003",
 };

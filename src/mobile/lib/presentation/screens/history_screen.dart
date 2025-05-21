@@ -153,7 +153,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.red.shade800),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadBookingHistory,
                     child: const Text('Попробовать снова'),
@@ -167,7 +167,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
           return SingleChildScrollView(
             controller: _scrollController,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(
+                top: 42,
+                left: 16,
+                right: 16,
+                bottom: 16,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -17,7 +17,8 @@ public class PayBookingCommandHandler(
 	public async Task<BookingModel> Handle(PayBookingCommand request, CancellationToken cancellationToken)
 	{
 		var existBooking = await bookingsRepository.GetOneAsync(
-								b => b.Id == request.BookingId,
+								b => b.Id == request.BookingId 
+																	&& b.Status == BookingStatus.Reserved.GetDescription(),
 								cancellationToken)
 							?? throw new NotFoundException($"Booking with id '{request.BookingId}' doesn't exists");
 

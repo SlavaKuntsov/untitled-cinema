@@ -2,7 +2,6 @@
 using System.Text.Json;
 using BookingService.Application.Handlers.Commands.Bookings.SaveBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
-using BookingService.Application.Handlers.Query.Bookings.GetUserBookings;
 using BookingService.Application.Jobs.Bookings;
 using BookingService.Domain.Constants;
 using BookingService.Domain.Enums;
@@ -12,7 +11,6 @@ using Brokers.Interfaces;
 using Brokers.Models.DTOs;
 using Domain.Enums;
 using Extensions.Enums;
-using Grpc.Core;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
