@@ -351,6 +351,17 @@ class ApiClient {
     }
   }
 
+  Future<dynamic> patch(String url, {dynamic data}) async {
+    try {
+      final response = await _dio.patch(url, data: data);
+      return _processResponse(response);
+    } on DioException catch (e) {
+      return _handleDioError(e);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
   Future<dynamic> delete(String url, {dynamic data}) async {
     try {
       final response = await _dio.delete(url, data: data);

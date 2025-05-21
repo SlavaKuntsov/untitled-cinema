@@ -26,4 +26,12 @@ abstract class AuthRepository {
   Future<Either<Failure, User>> getCurrentUser();
 
   Future<Either<Failure, bool>> isAuthenticated();
+
+  Future<Either<Failure, User>> updateUser({
+    required String firstName,
+    required String lastName,
+    required String dateOfBirth,
+  });
+
+  Future<Either<Failure, bool>> deleteUserAccount();
 }

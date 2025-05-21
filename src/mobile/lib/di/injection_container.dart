@@ -36,6 +36,7 @@ Future<void> init() async {
   // Providers
   sl.registerFactory(
     () => AuthProvider(
+      repository: sl(),
       loginUseCase: sl(),
       registrationUseCase: sl(),
       googleSignInUseCase: sl(),

@@ -6,6 +6,8 @@ class ApiConstants {
 
   // Auth endpoints в User Service
   static String get login => '$userServiceBaseUrl/users/login';
+  static String get users => '$userServiceBaseUrl/users';
+  static String get delete => '$userServiceBaseUrl/users/me';
   static String get register => '$userServiceBaseUrl/users/registration';
   static String get googleAuth => '$userServiceBaseUrl/auth/google-login';
   static String get googleResponse =>
@@ -25,6 +27,7 @@ class ApiConstants {
   // Movie endpoints
   static String get movies => '$movieServiceBaseUrl/movies';
   static String get movieDetails => '$movieServiceBaseUrl/movies';
+  static String get movieGenres => '$movieServiceBaseUrl/movies/genres';
   static String get nowPlaying => '$movieServiceBaseUrl/movies/now-playing';
   static String get upcoming => '$movieServiceBaseUrl/movies/upcoming';
   static String get search => '$movieServiceBaseUrl/movies/search';

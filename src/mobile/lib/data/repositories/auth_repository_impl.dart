@@ -140,4 +140,48 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AuthFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, User>> updateUser({
+    required String firstName,
+    required String lastName,
+    required String dateOfBirth,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final user = await remoteDataSource.updateUser(
+          firstName: firstName,
+          lastName: lastName,
+          dateOfBirth: dateOfBirth,
+        );
+        return Right(user);
+      } on AuthException catch (e) {
+        return Left(AuthFailure(e.toString()));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.toString()));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteUserAccount() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.deleteUserAccount();
+        return Right(result);
+      } on AuthException catch (e) {
+        return Left(AuthFailure(e.toString()));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.toString()));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+  }
 }

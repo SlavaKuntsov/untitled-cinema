@@ -4,7 +4,8 @@ class UserModel extends User {
   const UserModel({
     required super.id,
     required super.email,
-    required super.name,
+    required super.firstName,
+    required super.lastName,
     required super.role,
     required super.dateOfBirth,
     required super.balance,
@@ -16,7 +17,8 @@ class UserModel extends User {
     return UserModel(
       id: json['id'],
       email: json['email'],
-      name: json['name'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
       photoUrl: json['photo_url'],
       role: json['role'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? '',
@@ -29,7 +31,8 @@ class UserModel extends User {
     return {
       'id': id,
       'email': email,
-      'name': name,
+      'firstName': firstName,
+      'lastName': lastName,
       'photo_url': photoUrl,
       'created_at': createdAt.toIso8601String(),
     };
@@ -39,7 +42,8 @@ class UserModel extends User {
     return UserModel(
       id: user.id,
       email: user.email,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       photoUrl: user.photoUrl,
       createdAt: user.createdAt,
       dateOfBirth: user.dateOfBirth,
@@ -51,7 +55,8 @@ class UserModel extends User {
   UserModel copyWith({
     String? id,
     String? email,
-    String? name,
+    String? firstName,
+    String? lastName,
     String? photoUrl,
     String? role,
     String? dateOfBirth,
@@ -61,7 +66,8 @@ class UserModel extends User {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
-      name: name ?? this.name,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       role: role ?? this.role,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       balance: balance ?? this.balance,
