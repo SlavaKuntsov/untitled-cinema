@@ -13,6 +13,7 @@ import 'package:untitledCinema/presentation/providers/day_management_provider.da
 import 'package:untitledCinema/presentation/providers/hall_managment_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_management_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
+import 'package:untitledCinema/presentation/providers/movie_statistics_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
 import 'package:untitledCinema/presentation/providers/user_management_provider.dart';
 
@@ -57,6 +58,7 @@ Future<void> init() async {
   sl.registerFactory(() => HallManagementProvider(apiClient: sl()));
   sl.registerFactory(() => MovieManagementProvider(apiClient: sl()));
   sl.registerFactory(() => BookingStatisticsProvider());
+  sl.registerFactory(() => MovieStatisticsProvider(apiClient: sl()));
   sl.registerFactory(() => ThemeProvider());
 
   // Notification Provider с внедрением зависимости

@@ -54,6 +54,15 @@ class ManagementScreen extends StatelessWidget {
               Navigator.pushNamed(context, '/booking_management');
             },
           ),
+          const SizedBox(height: 16),
+          _buildManagementCard(
+            context,
+            'Статистика фильмов',
+            Icons.movie_filter,
+            () {
+              Navigator.pushNamed(context, '/movie_statistics');
+            },
+          ),
         ],
       ),
     );

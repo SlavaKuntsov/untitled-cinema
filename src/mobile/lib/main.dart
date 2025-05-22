@@ -6,12 +6,14 @@ import 'package:untitledCinema/presentation/providers/day_management_provider.da
 import 'package:untitledCinema/presentation/providers/hall_managment_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_management_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
+import 'package:untitledCinema/presentation/providers/movie_statistics_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
 import 'package:untitledCinema/presentation/providers/user_management_provider.dart';
 import 'package:untitledCinema/presentation/screens/booking_statistics_screen.dart';
 import 'package:untitledCinema/presentation/screens/days_management_screen.dart';
 import 'package:untitledCinema/presentation/screens/halls_management_screen.dart';
 import 'package:untitledCinema/presentation/screens/history_screen.dart';
+import 'package:untitledCinema/presentation/screens/movie_statistics_screen.dart';
 import 'package:untitledCinema/presentation/screens/movies_management_screen.dart';
 import 'package:untitledCinema/presentation/screens/navigation_screen.dart';
 import 'package:untitledCinema/presentation/screens/splash_screen.dart';
@@ -84,6 +86,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => di.sl<MovieManagementProvider>()),
         ChangeNotifierProvider(
           create: (_) => di.sl<BookingStatisticsProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.sl<MovieStatisticsProvider>(),
         ),
         // ChangeNotifierProvider(create: (_) => di.sl<NotificationProvider>()),
       ],
@@ -194,6 +199,7 @@ class _MyAppState extends State<MyApp> {
         '/halls_management': (context) => const HallsManagementScreen(),
         '/movies_management': (context) => const MoviesManagementScreen(),
         '/booking_management': (context) => const BookingStatisticsScreen(),
+        '/movie_statistics': (context) => const MovieStatisticsScreen(),
       },
     );
   }

@@ -495,7 +495,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
           _movie!.genres.map((genre) {
             return Chip(
               label: Text(genre, style: const TextStyle(fontSize: 12)),
-              backgroundColor: Colors.blue[100],
+              backgroundColor: AppTheme.primaryColor,
               padding: EdgeInsets.zero,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             );

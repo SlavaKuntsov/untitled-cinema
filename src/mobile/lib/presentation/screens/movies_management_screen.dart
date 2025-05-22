@@ -11,6 +11,7 @@ import '../widgets/confirmation_dialog.dart';
 import 'booking_statistics_screen.dart';
 import 'movie_details_screen.dart';
 import 'movie_form_screen.dart';
+import 'movie_statistics_screen.dart';
 
 class MoviesManagementScreen extends StatefulWidget {
   const MoviesManagementScreen({super.key});
@@ -557,7 +558,7 @@ class _MoviesManagementScreenState extends State<MoviesManagementScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const BookingStatisticsScreen(),
+                  builder: (context) => const MovieStatisticsScreen(),
                 ),
               );
             },
