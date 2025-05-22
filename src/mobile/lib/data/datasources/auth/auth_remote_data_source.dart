@@ -26,6 +26,14 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> getCurrentUser();
 
   Future<bool> isAuthenticated();
+
+  Future<UserModel> updateUser({
+    required String firstName,
+    required String lastName,
+    required String dateOfBirth,
+  });
+
+  Future<bool> deleteUserAccount();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -51,8 +59,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       final tokenData = {
-        'access_token': response['authResultDto']['accessToken'],
-        'refresh_token': response['authResultDto']['refreshToken'],
+        'access_token': response['accessToken'],
+        'refresh_token': response['refreshToken'],
       };
 
       final TokenModel tokenModel = TokenModel.fromJson(tokenData);
@@ -80,6 +88,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'firstName': firstName,
+          'lastName': lastName,
           'lastName': lastName,
           'dateOfBirth': dateOfBirth,
         },
@@ -177,5 +186,40 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> _clearTokens() async {
     await prefs.remove('access_token');
     await prefs.remove('refresh_token');
+  }
+
+  @override
+  Future<UserModel> updateUser({
+    required String firstName,
+    required String lastName,
+    required String dateOfBirth,
+  }) async {
+    try {
+      final response = await client.patch(
+        ApiConstants.users,
+        data: {
+          'firstName': firstName,
+          'lastName': lastName,
+          'dateOfBirth': dateOfBirth,
+        },
+      );
+
+      return UserModel.fromJson(response);
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> deleteUserAccount() async {
+    try {
+      await client.delete(ApiConstants.delete);
+
+      await _clearTokens();
+
+      return true;
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
   }
 }

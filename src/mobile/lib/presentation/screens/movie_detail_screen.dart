@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitledCinema/presentation/widgets/home/buy_tickets_modal_widget.dart';
@@ -133,7 +134,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
       if (dateTime != null) {
         formattedReleaseDate =
-            "${dateTime.day}.${dateTime.month}.${dateTime.year}";
+            "${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year}";
       }
     }
 
@@ -159,22 +160,44 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child:
                     _movie!.poster.isNotEmpty
-                        ? Image.network(
-                          '${ApiConstants.moviePoster}/${_movie!.poster}',
+                        ? SizedBox(
                           height: 300,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 300,
-                              width: 200,
-                              color: Colors.grey.shade300,
-                              child: const Icon(
-                                Icons.movie,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                            );
-                          },
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                '${ApiConstants.moviePoster}/${_movie!.poster}',
+                            height: 300,
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => Container(
+                                  height: 300,
+                                  width: 200,
+                                  color: Colors.grey.shade300,
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        color: Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            errorWidget: (context, url, error) {
+                              debugPrint('Error loading movie poster: $error');
+                              return Container(
+                                height: 300,
+                                width: 200,
+                                color: Colors.grey.shade300,
+                                child: const Icon(
+                                  Icons.movie,
+                                  size: 50,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                            fadeInDuration: const Duration(milliseconds: 300),
+                          ),
                         )
                         : Container(
                           height: 300,

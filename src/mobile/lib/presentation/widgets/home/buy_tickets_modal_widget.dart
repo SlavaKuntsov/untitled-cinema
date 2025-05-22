@@ -30,14 +30,10 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
     _ensureSelectedDateIsValid();
   }
 
-  // Метод для проверки и коррекции выбранной даты
   void _ensureSelectedDateIsValid() {
-    // Определяем границы допустимого диапазона дат
-    final DateTime minDate = DateTime.now().subtract(const Duration(days: 3));
-    final DateTime maxDate = DateTime.now().add(const Duration(days: 14));
+    final DateTime minDate = DateTime.now().subtract(const Duration(days: 1));
+    final DateTime maxDate = DateTime.now().add(const Duration(days: 10));
 
-    // Приводим даты к единому формату для корректного сравнения
-    // (обнуляем часы, минуты, секунды, миллисекунды)
     final DateTime selectedDateNormalized = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -56,14 +52,12 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
       maxDate.day,
     );
 
-    // Если выбранная дата меньше минимальной, устанавливаем минимальную
     if (selectedDateNormalized.isBefore(minDateNormalized)) {
       setState(() {
         _selectedDate = minDate;
       });
     }
 
-    // Если выбранная дата больше максимальной, устанавливаем максимальную
     if (selectedDateNormalized.isAfter(maxDateNormalized)) {
       setState(() {
         _selectedDate = maxDate;
@@ -163,8 +157,8 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
               itemCount: 18,
               itemBuilder: (context, index) {
                 final date = DateTime.now()
-                    .subtract(const Duration(days: 3))
-                    .add(Duration(days: index));
+                // .subtract(const Duration(days: 1))
+                .add(Duration(days: index));
                 final isSelected =
                     _selectedDate.year == date.year &&
                     _selectedDate.month == date.month &&

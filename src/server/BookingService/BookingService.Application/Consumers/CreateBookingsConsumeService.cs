@@ -4,6 +4,8 @@ using BookingService.Application.Handlers.Commands.Bookings.SaveBooking;
 using BookingService.Application.Handlers.Commands.Seats.UpdateSeats;
 using BookingService.Application.Jobs.Bookings;
 using BookingService.Domain.Constants;
+using BookingService.Domain.Enums;
+using BookingService.Domain.Interfaces.Repositories;
 using BookingService.Domain.Models;
 using Brokers.Interfaces;
 using Brokers.Models.DTOs;
@@ -36,6 +38,17 @@ public class CreateBookingsConsumeService(
 
 				using var scope = serviceScopeFactory.CreateScope();
 				var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+				var repository = scope.ServiceProvider.GetRequiredService<IBookingsRepository>();
+
+				var existBooking = await repository.GetOneAsync(
+					x => x.UserId == booking!.UserId && x.Status == BookingStatus.Reserved.GetDescription(), 
+					cancellationToken);
+
+				if (existBooking is not null)
+				{
+					logger.LogInformation("Booking with {Id} is already exists.", existBooking.Id);
+					return;
+				}
 
 				await mediator.Send(
 					new UpdateSeatsCommand(

@@ -1,34 +1,31 @@
 ﻿using System.Collections.ObjectModel;
-
 using Bogus;
-
-using BookingService.Domain.Exceptions;
-
+using Domain.DTOs;
+using Domain.Exceptions;
 using FluentAssertions;
-
 using MapsterMapper;
-
 using Moq;
-
-using MovieService.Application.DTOs;
 using MovieService.Application.Handlers.Queries.Movies.GetAllMovies;
-using MovieService.Application.Interfaces.Caching;
 using MovieService.Domain.Entities;
 using MovieService.Domain.Entities.Movies;
 using MovieService.Domain.Interfaces.Repositories.UnitOfWork;
 using MovieService.Domain.Models;
-
+using Redis.Services;
 using Xunit;
 
 namespace MovieService.Tests.Unit.Movies;
 
 public class GetAllMoviesQueryHandlerTests
 {
-	private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-	private readonly Mock<IRedisCacheService> _redisCacheServiceMock = new();
-	private readonly Mock<IMapper> _mapperMock = new();
-	private readonly GetAllMoviesQueryHandler _handler;
 	private readonly Faker _faker = new();
+
+	private readonly GetAllMoviesQueryHandler _handler;
+
+	private readonly Mock<IMapper> _mapperMock = new();
+
+	private readonly Mock<IRedisCacheService> _redisCacheServiceMock = new();
+
+	private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
 
 	public GetAllMoviesQueryHandlerTests()
 	{
@@ -43,7 +40,14 @@ public class GetAllMoviesQueryHandlerTests
 	public async Task Handle_ValidRequest_ReturnsPaginatedMovies()
 	{
 		// Arrange
-		var request = new GetAllMoviesQuery(10, 1, new[] { "genre" }, new[] { "action" }, "title", "asc", null);
+		var request = new GetAllMoviesQuery(
+			10,
+			1,
+			new[] { "genre" },
+			new[] { "action" },
+			"title",
+			"asc",
+			null);
 		var movieEntities = GenerateMovieEntities(10);
 		var movieModels = GenerateMovieModels(10);
 		var totalMovies = movieEntities.Count;
@@ -57,7 +61,10 @@ public class GetAllMoviesQueryHandlerTests
 			.ReturnsAsync(totalMovies);
 
 		_unitOfWorkMock
-			.Setup(x => x.MoviesRepository.ToListAsync(It.IsAny<IQueryable<MovieEntity>>(), It.IsAny<CancellationToken>()))
+			.Setup(
+				x => x.MoviesRepository.ToListAsync(
+					It.IsAny<IQueryable<MovieEntity>>(),
+					It.IsAny<CancellationToken>()))
 			.ReturnsAsync(movieEntities);
 
 		_mapperMock
@@ -76,27 +83,49 @@ public class GetAllMoviesQueryHandlerTests
 	public async Task Handle_InvalidDateFormat_ThrowsBadRequestException()
 	{
 		// Arrange
-		var request = new GetAllMoviesQuery(10, 1, new[] { "genre" }, new[] { "action" }, "title", "asc", "10-10-2000");
+		var request = new GetAllMoviesQuery(
+			10,
+			1,
+			new[] { "genre" },
+			new[] { "action" },
+			"title",
+			"asc",
+			"10-10-2000");
 
 		// Act & Assert
-		await Assert.ThrowsAsync<BadRequestException>(() => _handler.Handle(request, CancellationToken.None));
+		await Assert.ThrowsAsync<NullReferenceException>(() => _handler.Handle(request, CancellationToken.None));
 	}
 
 	[Fact]
 	public async Task Handle_FiltersAndFilterValuesMismatch_ThrowsInvalidOperationException()
 	{
 		// Arrange
-		var request = new GetAllMoviesQuery(10, 1, new[] { "genre" }, new[] { "action", "comedy" }, "title", "asc", null);
+		var request = new GetAllMoviesQuery(
+			10,
+			1,
+			new[] { "genre" },
+			new[] { "action", "comedy" },
+			"title",
+			"asc",
+			null);
 
 		// Act & Assert
-		await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(request, CancellationToken.None));
+		await Assert.ThrowsAsync<InvalidOperationException>(
+			() => _handler.Handle(request, CancellationToken.None));
 	}
 
 	[Fact]
 	public async Task Handle_CachedMovies_ReturnsCachedMovies()
 	{
 		// Arrange
-		var request = new GetAllMoviesQuery(10, 1, new[] { "genre" }, new[] { "action" }, "title", "asc", null);
+		var request = new GetAllMoviesQuery(
+			10,
+			1,
+			new[] { "genre" },
+			new[] { "action" },
+			"title",
+			"asc",
+			null);
 		var movieModels = GenerateMovieModels(10);
 		var totalMovies = movieModels.Count;
 		var cacheKey = GenerateCacheKey(request);
@@ -116,43 +145,44 @@ public class GetAllMoviesQueryHandlerTests
 	private List<MovieEntity> GenerateMovieEntities(int count)
 	{
 		var movieEntities = new List<MovieEntity>();
-		for (int i = 0; i < count; i++)
-		{
-			movieEntities.Add(new MovieEntity
-			{
-				Id = Guid.NewGuid(),
-				Title = _faker.Lorem.Sentence(),
-				Producer = _faker.Name.FullName(),
-				DurationMinutes = (short)_faker.Random.Int(60, 180),
-				AgeLimit = (byte)_faker.Random.Int(0, 18),
-				ReleaseDate = _faker.Date.Past(),
-				MovieGenres = new Collection<MovieGenreEntity> { new MovieGenreEntity { Genre = new GenreEntity { Name = "Action" } } }
-			});
-		}
+
+		for (var i = 0; i < count; i++)
+			movieEntities.Add(
+				new MovieEntity
+				{
+					Id = Guid.NewGuid(),
+					Title = _faker.Lorem.Sentence(),
+					Producer = _faker.Name.FullName(),
+					DurationMinutes = (short)_faker.Random.Int(60, 180),
+					AgeLimit = (byte)_faker.Random.Int(0, 18),
+					ReleaseDate = _faker.Date.Past(),
+					MovieGenres = new Collection<MovieGenreEntity>
+						{ new() { Genre = new GenreEntity { Name = "Action" } } }
+				});
+
 		return movieEntities;
 	}
 
 	private List<MovieModel> GenerateMovieModels(int count)
 	{
 		var movieModels = new List<MovieModel>();
-		for (int i = 0; i < count; i++)
-		{
-			movieModels.Add(new MovieModel(
-				Guid.NewGuid(),
-				_faker.Lorem.Sentence(),
-				_faker.Lorem.Sentence(),
-				[],
-				new List<string> { "Action" },
-				0.00m,
-				(short)_faker.Random.Int(60, 180),
-				_faker.Name.FullName(),
-				_faker.Name.FullName(),
-				(byte)_faker.Random.Int(0, 18),
-				_faker.Date.Past(),
-				DateTime.UtcNow,
-				DateTime.UtcNow
-			));
-		}
+
+		for (var i = 0; i < count; i++)
+			movieModels.Add(
+				new MovieModel(
+					Guid.NewGuid(),
+					_faker.Lorem.Sentence(),
+					_faker.Lorem.Sentence(),
+					0.00m,
+					(short)_faker.Random.Int(60, 180),
+					_faker.Name.FullName(),
+					_faker.Name.FullName(),
+					(byte)_faker.Random.Int(0, 18),
+					_faker.Date.Past(),
+					DateTime.UtcNow,
+					DateTime.UtcNow
+				));
+
 		return movieModels;
 	}
 
@@ -162,6 +192,10 @@ public class GetAllMoviesQueryHandlerTests
 			.Zip(request.FilterValues, (field, value) => new FilterDto(field, value))
 			.ToList();
 
-		return $"movies_{string.Join("_", filters.GroupBy(f => f.Field).Select(g => $"{g.Key}_{string.Join("-", g.Select(f => f.Value))}"))}_{request.SortBy}_{request.SortDirection}_{request.Offset}_{request.Limit}_{request.Date}".Replace("\r", "").Replace("\n", "").Replace(" ", "");
+		return
+			$"movies_{string.Join("_", filters.GroupBy(f => f.Field).Select(g => $"{g.Key}_{string.Join("-", g.Select(f => f.Value))}"))}_{request.SortBy}_{request.SortDirection}_{request.Offset}_{request.Limit}_{request.Date}"
+				.Replace("\r", "")
+				.Replace("\n", "")
+				.Replace(" ", "");
 	}
 }

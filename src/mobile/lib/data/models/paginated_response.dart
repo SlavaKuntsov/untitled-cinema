@@ -1,4 +1,4 @@
-import '../../../domain/entities/paginated_items.dart';
+import '../../domain/entities/paginated_items.dart';
 
 class PaginatedResponseModel<T> extends PaginatedItems<T> {
   const PaginatedResponseModel({

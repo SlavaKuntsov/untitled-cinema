@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitledCinema/config/theme.dart';
 import 'package:untitledCinema/domain/entities/session/seat_type.dart';
 import 'package:untitledCinema/domain/entities/session/session.dart';
+import 'package:untitledCinema/presentation/providers/auth_provider.dart';
+import 'package:untitledCinema/presentation/providers/booking_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
 import 'package:untitledCinema/presentation/screens/movie_detail_screen.dart';
 
@@ -30,33 +33,12 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
   List<SeatType>? _seatTypes;
   String? _errorMessage;
 
-  // Добавьте эти переменные в начало класса _MovieSessionScreenState
   List<SelectedSeat> _selectedSeats = [];
   double _totalPrice = 0;
 
-  // Исправленный метод для расчета общей стоимости
   void _updateTotalPrice() {
     double total = 0;
     for (var seat in _selectedSeats) {
-      // Ищем тип места в списке, но используем безопасный подход
-
-      // // Проверяем, не null ли _seatTypes и не пуст ли он
-      // if (_seatTypes != null && _seatTypes!.isNotEmpty) {
-      //   try {
-      //     // Ищем соответствующий тип места
-      //     for (var type in _seatTypes!) {
-      //       if (type.id == seat.seatType.toString()) {
-      //         priceModifier = type.priceModifier;
-      //         break;
-      //       }
-      //     }
-      //   } catch (e) {
-      //     print('Ошибка при поиске типа места: $e');
-      //   }
-      // }
-
-      // Рассчитываем цену места
-      // total += _movie!.price * widget.session.priceModifier * priceModifier;
       total += seat.price;
     }
     _totalPrice = total;
@@ -81,10 +63,16 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
         listen: false,
       );
       _movie = await movieProvider.fetchMovieById(id: widget.session.movieId);
-      _hall = await sessionProvider.fetchHallById(id: widget.session.hall.id);
-      _seatTypes = await sessionProvider.fetchSeatTypesByHallId(
-        hallId: widget.session.hall.id,
-      );
+
+      var hallId =
+          widget.session.hall.id != ""
+              ? widget.session.hall.id
+              : widget.session.hallId;
+      _hall = await sessionProvider.fetchHallById(id: hallId);
+      _seatTypes = await sessionProvider.fetchSeatTypesByHallId(hallId: hallId);
+
+      sessionProvider.clearSelectedSeats();
+
       setState(() {
         _isLoading = false;
       });
@@ -113,7 +101,9 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
           icon: const Icon(Icons.home),
           onPressed:
               () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => NavigationScreen()),
+                MaterialPageRoute(
+                  builder: (context) => NavigationScreen(initialIndex: 0),
+                ),
                 (route) => false, // Удаляет все экраны до NavigationScreen
               ),
         ),
@@ -217,22 +207,44 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child:
                     _movie!.poster.isNotEmpty
-                        ? Image.network(
-                          '${ApiConstants.moviePoster}/${_movie!.poster}',
+                        ? SizedBox(
                           height: 300,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 300,
-                              width: 200,
-                              color: Colors.grey.shade300,
-                              child: const Icon(
-                                Icons.movie,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                            );
-                          },
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                '${ApiConstants.moviePoster}/${_movie!.poster}',
+                            height: 300,
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => Container(
+                                  height: 300,
+                                  width: 200,
+                                  color: Colors.grey.shade300,
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        color: Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            errorWidget: (context, url, error) {
+                              debugPrint('Error loading movie poster: $error');
+                              return Container(
+                                height: 300,
+                                width: 200,
+                                color: Colors.grey.shade300,
+                                child: const Icon(
+                                  Icons.movie,
+                                  size: 50,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                            fadeInDuration: const Duration(milliseconds: 300),
+                          ),
                         )
                         : Container(
                           height: 300,
@@ -384,7 +396,7 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                widget.session.hall.name,
+                                _hall!.name,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -563,6 +575,8 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
                           onTap: () {
                             setState(() {
                               _selectedSeats.remove(seat);
+
+                              _updateTotalPrice();
                             });
                           },
                           child: Container(
@@ -574,13 +588,20 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
                               color: cardColor,
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Text(
-                              'Ряд ${seat.row + 1}, Место ${seat.column + 1}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Ряд ${seat.row + 1}, Место ${seat.column + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Icon(Icons.close),
+                              ],
                             ),
                           ),
                         );
@@ -633,7 +654,37 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
               ],
             ),
           ),
+
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => navigateToBookingsHistory(context),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Перейти к бронированиям',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
       ],
+    );
+  }
+
+  void navigateToBookingsHistory(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => NavigationScreen(initialIndex: 1),
+      ),
+      (route) => false,
     );
   }
 
@@ -649,17 +700,59 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
     }
   }
 
-  // Добавьте этот метод для обработки нажатия на кнопку оформления
-  void _proceedToCheckout() {
-    // В будущем: переход к экрану оформления заказа
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Оформление заказа на ${_selectedSeats.length} ${_getSeatsWordForm(_selectedSeats.length)}',
-        ),
-        action: SnackBarAction(label: 'OK', onPressed: () {}),
-      ),
+  void _proceedToCheckout() async {
+    final bookingProvider = Provider.of<BookingProvider>(
+      context,
+      listen: false,
     );
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final sessionProvider = Provider.of<SessionProvider>(
+      context,
+      listen: false,
+    );
+    final userId = authProvider.currentUser?.id;
+
+    var isSuccess = await bookingProvider.createBooking(
+      userId: userId!,
+      sessionId: widget.session.id,
+      seats: _selectedSeats,
+    );
+
+    if (isSuccess) {
+      // Refresh seats data to update the seat map
+      await sessionProvider.fetchReservedSeats(widget.session.id);
+      sessionProvider.clearSelectedSeats();
+
+      setState(() {
+        _selectedSeats = [];
+        _totalPrice = 0;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Бронирование успешно оформлено. У вас есть минута чтобы '
+            'оплатить, иначе бронирование будет отмененно.',
+          ),
+          action: SnackBarAction(label: 'OK', onPressed: () {}),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Ошибка при создании бронирования...',
+            style: TextStyle(color: Colors.white),
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+            textColor: Colors.white,
+          ),
+        ),
+      );
+    }
   }
 
   Color _getAgeLimitColor(int ageLimit) {
@@ -676,12 +769,10 @@ class _MovieSessionScreenState extends State<MovieSessionScreen> {
     }
   }
 
-  // Форматирует дату в формат ДД.ММ
   String _formatDate(DateTime dateTime) {
     return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}';
   }
 
-  // Форматирует время в формат ЧЧ:ММ
   String _formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }

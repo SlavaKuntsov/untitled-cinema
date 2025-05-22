@@ -1,34 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../providers/auth_provider.dart';
+import 'history_screen.dart';
 import 'home_screen.dart';
+import 'management_screen.dart';
 import 'profile_screen.dart';
-import 'search_screen.dart';
 
 // NavigationScreen
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  final int initialIndex;
+
+  const NavigationScreen({super.key, this.initialIndex = 0});
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
-  final List<Widget> _pages = const <Widget>[
-    HomeScreen(),
-    SearchScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
-  final List<IconData> _icons = [
-    Icons.home_rounded,
-    Icons.search_rounded,
-    Icons.person_rounded,
-  ];
+  List<Widget> get _pages {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
 
-  final List<String> _labels = ['Главная', 'Поиск', 'Профиль'];
+    if (isAdmin) {
+      return const <Widget>[
+        HomeScreen(),
+        HistoryScreen(),
+        ManagementScreen(),
+        ProfileScreen(),
+      ];
+    }
+
+    return const <Widget>[
+      HomeScreen(),
+      HistoryScreen(),
+      ProfileScreen(),
+    ];
+  }
+
+  List<IconData> get _icons {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
+
+    if (isAdmin) {
+      return [
+        Icons.home_rounded,
+        Icons.history,
+        Icons.admin_panel_settings,
+        Icons.person_rounded,
+      ];
+    }
+
+    return [
+      Icons.home_rounded,
+      Icons.history,
+      Icons.person_rounded,
+    ];
+  }
+
+  List<String> get _labels {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
+
+    if (isAdmin) {
+      return ['Главная', 'История', 'Управление', 'Профиль'];
+    }
+
+    return ['Главная', 'История', 'Профиль'];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,22 +87,22 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Добро пожаловать", style: TextStyle(fontSize: 18)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Уведомления'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text("Добро пожаловать", style: TextStyle(fontSize: 18)),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.notifications),
+      //       onPressed: () {
+      //         ScaffoldMessenger.of(context).showSnackBar(
+      //           const SnackBar(
+      //             content: Text('Уведомления'),
+      //             duration: Duration(seconds: 1),
+      //           ),
+      //         );
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: _buildFloatingNavBar(),
     );

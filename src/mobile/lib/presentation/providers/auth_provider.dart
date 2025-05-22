@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitledCinema/domain/repositories/auth_repository.dart';
 
 import '../../core/constants/api_constants.dart';
 import '../../core/network/api_client.dart';
@@ -16,32 +17,50 @@ import '../../domain/usecases/auth/registration.dart';
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
 class AuthProvider extends ChangeNotifier {
+  final AuthRepository _repository;
   final LoginUseCase _loginUseCase;
   final RegistrationUseCase _registrationUseCase;
   final GoogleSignInUseCase _googleSignInUseCase;
   final GoogleSignIn _googleSignIn;
+  final SharedPreferences _prefs;
 
   AuthStatus _authStatus = AuthStatus.unknown;
   User? _currentUser;
   String? _savedEmail;
   String? _errorMessage;
   bool _isLoading = false;
+  String? _token;
 
   AuthProvider({
+    required AuthRepository repository,
     required LoginUseCase loginUseCase,
     required RegistrationUseCase registrationUseCase,
     required GoogleSignInUseCase googleSignInUseCase,
     required GoogleSignIn googleSignIn,
-  }) : _loginUseCase = loginUseCase,
+    required SharedPreferences prefs,
+  }) : _repository = repository,
+       _loginUseCase = loginUseCase,
        _registrationUseCase = registrationUseCase,
        _googleSignInUseCase = googleSignInUseCase,
-       _googleSignIn = googleSignIn;
+       _googleSignIn = googleSignIn,
+       _prefs = prefs;
 
   AuthStatus get authStatus => _authStatus;
   User? get currentUser => _currentUser;
   String? get savedEmail => _savedEmail;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  String? get token => _prefs.getString('access_token');
+
+  Future<void> checkUser() async {
+    final apiClient = sl<ApiClient>();
+
+    final response = await apiClient.get(ApiConstants.authorize);
+
+    if (response != null) {
+      _currentUser = User.fromJson(response);
+    }
+  }
 
   Future<void> checkAuthStatus() async {
     _isLoading = true;
@@ -53,6 +72,8 @@ class AuthProvider extends ChangeNotifier {
       final prefs = sl<SharedPreferences>();
       final accessToken = prefs.getString('access_token');
       final refreshToken = prefs.getString('refresh_token');
+
+      _token = accessToken;
 
       debugPrint(accessToken);
       debugPrint(refreshToken);
@@ -133,7 +154,7 @@ class AuthProvider extends ChangeNotifier {
               if (userData.containsKey('email')) {
                 _currentUser = User.fromJson(userData);
                 debugPrint(
-                  'Создан объект пользователя: ${_currentUser?.name}, email: '
+                  'Создан объект пользователя: ${_currentUser?.firstName}, email: '
                   '${_currentUser?.email}, role: ${_currentUser?.role}',
                 );
               } else {
@@ -245,7 +266,8 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = User(
           id: '', // ID будет получен позже при запросе данных пользователя
           email: email,
-          name: '$firstName $lastName',
+          firstName: firstName,
+          lastName: lastName,
           dateOfBirth: dateOfBirth,
           role: '',
           balance: 0,
@@ -318,7 +340,8 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = User(
           id: googleUser.id ?? '', // Добавлена проверка на null
           email: googleUser.email ?? '', // Добавлена проверка на null
-          name: googleUser.displayName ?? '',
+          firstName: googleUser.displayName ?? '',
+          lastName: googleUser.displayName ?? '',
           photoUrl:
               googleUser.photoUrl ??
               '', // Проверьте, может ли это поле быть null
@@ -329,7 +352,7 @@ class AuthProvider extends ChangeNotifier {
           createdAt: DateTime.now(),
         );
         debugPrint(
-          'Получены данные пользователя из Google: ${_currentUser?.name}',
+          'Получены данные пользователя из Google: ${_currentUser?.firstName}',
         );
       }
     } catch (e) {
@@ -408,5 +431,67 @@ class AuthProvider extends ChangeNotifier {
   void clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  Future<bool> updateUserProfile({
+    required String firstName,
+    required String lastName,
+    required String dateOfBirth,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final result = await _repository.updateUser(
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth,
+    );
+
+    _isLoading = false;
+
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        notifyListeners();
+        return false;
+      },
+      (user) {
+        // Обновляем данные пользователя
+        _currentUser = user;
+        notifyListeners();
+        return true;
+      },
+    );
+  }
+
+  Future<bool> deleteAccount() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final result = await _repository.deleteUserAccount();
+
+    _isLoading = false;
+
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        notifyListeners();
+        return false;
+      },
+      (success) {
+        // Сбрасываем статус авторизации и данные пользователя
+        _authStatus = AuthStatus.unauthenticated;
+        _currentUser = null;
+
+        // Очищаем токены в SharedPreferences
+        _prefs.remove('access_token');
+        _prefs.remove('refresh_token');
+
+        notifyListeners();
+        return true;
+      },
+    );
   }
 }

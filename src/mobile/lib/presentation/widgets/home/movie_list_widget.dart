@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../config/theme.dart';
@@ -24,6 +25,7 @@ class MovieListWidget extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      cacheExtent: 500,
       itemCount:
           moviesState.movies.length +
           (moviesState.status == MovieStatus.loading ? 1 : 0),
@@ -116,15 +118,29 @@ class _MoviePoster extends StatelessWidget {
       ),
       child:
           poster.isNotEmpty
-              ? Image.network(
-                '${ApiConstants.moviePoster}/$poster',
+              ? CachedNetworkImage(
+                imageUrl: '${ApiConstants.moviePoster}/$poster',
                 width: 130,
                 height: 160,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  debugPrint('Error loading image: $error\n$stackTrace');
-                  return _PlaceholderPoster();
+                placeholder:
+                    (context, url) => Container(
+                      width: 130,
+                      height: 160,
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                errorWidget: (context, url, error) {
+                  debugPrint('Error loading image: $error');
+                  return const _PlaceholderPoster();
                 },
+                fadeInDuration: const Duration(milliseconds: 100),
               )
               : const _PlaceholderPoster(),
     );

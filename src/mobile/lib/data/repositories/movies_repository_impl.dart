@@ -11,7 +11,7 @@ class MovieRepositoryImpl implements MovieRepository {
   @override
   Future<PaginatedItems<Movie>> getMovies({
     int limit = 10,
-    int offset = 0,
+    int offset = 1,
     String? sortBy,
     String? sortDirection,
     DateTime? date,
@@ -46,5 +46,10 @@ class MovieRepositoryImpl implements MovieRepository {
   @override
   Future<List<String>> getMovieFrames(String id) async {
     return await remoteDataSource.getMovieFrames(id);
+  }
+
+  @override
+  Future<List<String>> getMovieGenres() async {
+    return await remoteDataSource.getMovieGenres();
   }
 }

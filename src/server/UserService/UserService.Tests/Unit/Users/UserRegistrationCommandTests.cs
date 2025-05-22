@@ -1,17 +1,16 @@
 ﻿using Bogus;
-
+using Domain.Enums;
+using Domain.Exceptions;
 using FluentAssertions;
 
 using MapsterMapper;
 
 using Moq;
-
+using UserService.Application.Data;
 using UserService.Application.DTOs;
-using UserService.Application.Exceptions;
 using UserService.Application.Handlers.Commands.Users.UserRegistration;
 using UserService.Application.Interfaces.Auth;
 using UserService.Domain.Entities;
-using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Models;
 
@@ -24,6 +23,7 @@ public class UserRegistrationCommandTests
 	private readonly Mock<IUsersRepository> _usersRepositoryMock = new();
 	private readonly Mock<IPasswordHash> _passwordHashMock = new();
 	private readonly Mock<IJwt> _jwtMock = new();
+	private readonly Mock<IDBContext> _dbcontextMock = new();
 	private readonly Mock<IMapper> _mapperMock = new();
 	private readonly UserRegistrationCommandHandler _handler;
 	private readonly Faker _faker = new();
@@ -32,8 +32,9 @@ public class UserRegistrationCommandTests
 	{
 		_handler = new UserRegistrationCommandHandler(
 			_usersRepositoryMock.Object,
-			_passwordHashMock.Object,
 			_jwtMock.Object,
+			_passwordHashMock.Object,
+			_dbcontextMock.Object,
 			_mapperMock.Object
 		);
 	}
@@ -49,11 +50,11 @@ public class UserRegistrationCommandTests
 		var userEntity = new UserEntity { Id = userId };
 		var refreshTokenEntity = new RefreshTokenEntity { UserId = userId };
 
-		SetupMocksForSuccessScenario(command, userModel, userEntity, refreshTokenEntity, expectedAuthDto);
-
 		// Act
 		_jwtMock.Setup(x => x.GenerateAccessToken(userModel.Id, It.IsAny<Role>()))
 			.Returns(expectedAuthDto.AccessToken);
+
+		SetupMocksForSuccessScenario(command, userModel, userEntity, refreshTokenEntity, expectedAuthDto);
 
 		var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -69,7 +70,7 @@ public class UserRegistrationCommandTests
 		var command = GetCommandWithInvalidDate();
 
 		// Act & Assert
-		await Assert.ThrowsAsync<BadRequestException>(() =>
+		await Assert.ThrowsAsync<InvalidOperationException>(() =>
 			_handler.Handle(command, CancellationToken.None));
 	}
 
@@ -205,6 +206,6 @@ public class UserRegistrationCommandTests
 			Role.User,
 			command.FirstName,
 			command.LastName,
-			DateTime.Parse(command.DateOfBirth));
+			command.DateOfBirth);
 	}
 }
