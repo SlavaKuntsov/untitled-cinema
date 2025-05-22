@@ -20,6 +20,11 @@ class ApiConstants {
   static String get notifications => '$userServiceBaseUrl/notifications';
   static String get notificationsHub => '$userServiceBaseUrl/notificationsHub';
 
+  // Admin API endpoints
+  static String getAllUsers() => '$userServiceBaseUrl/users';
+  static String deleteUser(String userId) =>
+      '$userServiceBaseUrl/users/$userId';
+
   // Movie Service Endpoints
   static String get movieServiceBaseUrl =>
       EnvironmentConfig.movieServiceBaseUrl;
@@ -32,6 +37,7 @@ class ApiConstants {
   static String get upcoming => '$movieServiceBaseUrl/movies/upcoming';
   static String get search => '$movieServiceBaseUrl/movies/search';
   static String get moviePoster => '$movieServiceBaseUrl/movies/poster';
+  static String get movieFrame => '$movieServiceBaseUrl/movies/frames';
   static String get sessions => '$movieServiceBaseUrl/sessions';
   static String get halls => '$movieServiceBaseUrl/halls';
   static String get seatsType => '$movieServiceBaseUrl/seats/types';
@@ -60,6 +66,51 @@ class ApiConstants {
 
   // JWT константы
   static const String REFRESH_COOKIE_NAME = "yummy-cackes";
+
+  // Day management API endpoints
+  static String getAllDays() => '$movieServiceBaseUrl/days';
+  static String createDay() => '$movieServiceBaseUrl/days';
+  static String deleteDay(String dayId) => '$movieServiceBaseUrl/days/$dayId';
+
+  static String getAllHalls() => '$movieServiceBaseUrl/halls';
+  static String getHallById(String id) => '$movieServiceBaseUrl/halls/$id';
+  static String createSimpleHall() => '$movieServiceBaseUrl/halls/simple';
+  static String createCustomHall() => '$movieServiceBaseUrl/halls/custom';
+  static String updateHall() => '$movieServiceBaseUrl/halls';
+  static String deleteHall(String id) => '$movieServiceBaseUrl/halls/$id';
+
+  static String getMovieById(String id) => '$movieServiceBaseUrl/movies/$id';
+  static String createMovie() => '$movieServiceBaseUrl/movies';
+  static String updateMovie() => '$movieServiceBaseUrl/movies';
+  static String deleteMovie(String id) => '$movieServiceBaseUrl/movies/$id';
+
+  static String getMoviePoster(String id) =>
+      '$movieServiceBaseUrl/movies/$id/poster';
+  static String changeMoviePoster(String id) =>
+      '$movieServiceBaseUrl/movies/$id/poster';
+  static String getMoviePosterByName(String fileName) =>
+      '$movieServiceBaseUrl/movies/poster/$fileName';
+
+  // Movie frames endpoints
+  static String getAllMovieFrames() => '$movieServiceBaseUrl/movies/frames';
+  static String getMovieFramesByMovieId(String movieId) =>
+      '$movieServiceBaseUrl/movies/$movieId/frames';
+  static String getMovieFrameByName(String fileName) =>
+      '$movieServiceBaseUrl/movies/frames/$fileName';
+  static String addMovieFrame(String movieId, int frameOrder) =>
+      '$movieServiceBaseUrl/movies/$movieId/frames/$frameOrder';
+  static String deleteMovieFrame(String frameId) =>
+      '$movieServiceBaseUrl/movies/frames/$frameId';
+
+  // Genre endpoints
+  static String getAllGenres() => '$movieServiceBaseUrl/movies/genres';
+  static String updateGenre() => '$movieServiceBaseUrl/movies/genres';
+  static String deleteGenre(String id) =>
+      '$movieServiceBaseUrl/movies/genres/$id';
+
+  // Session endpoints
+  static String fetchSeatTypesByHallId(String hallId) =>
+      '$movieServiceBaseUrl/sessions/halls/$hallId/seat-types';
 }
 
 // Константы JWT

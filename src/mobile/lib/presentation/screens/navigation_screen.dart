@@ -8,7 +8,6 @@ import 'home_screen.dart';
 import 'management_screen.dart';
 import 'profile_screen.dart';
 
-// NavigationScreen
 class NavigationScreen extends StatefulWidget {
   final int initialIndex;
 
@@ -20,62 +19,33 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   late int _selectedIndex;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialIndex;
+    _selectedIndex = 0;
   }
 
-  List<Widget> get _pages {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    if (isAdmin) {
-      return const <Widget>[
-        HomeScreen(),
-        HistoryScreen(),
-        ManagementScreen(),
-        ProfileScreen(),
-      ];
+    if (!_isInitialized) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isAdmin = authProvider.currentUser?.role == 'Admin';
+
+      if (isAdmin) {
+        // Для админа: Management (0) и Profile (1)
+        _selectedIndex =
+            widget.initialIndex >= 2 ? 1 : (widget.initialIndex == 1 ? 1 : 0);
+      } else {
+        // Для пользователя: Home (0), History (1), Profile (2)
+        _selectedIndex = widget.initialIndex.clamp(0, 2);
+      }
+
+      _isInitialized = true;
     }
-
-    return const <Widget>[
-      HomeScreen(),
-      HistoryScreen(),
-      ProfileScreen(),
-    ];
-  }
-
-  List<IconData> get _icons {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
-
-    if (isAdmin) {
-      return [
-        Icons.home_rounded,
-        Icons.history,
-        Icons.admin_panel_settings,
-        Icons.person_rounded,
-      ];
-    }
-
-    return [
-      Icons.home_rounded,
-      Icons.history,
-      Icons.person_rounded,
-    ];
-  }
-
-  List<String> get _labels {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
-
-    if (isAdmin) {
-      return ['Главная', 'История', 'Управление', 'Профиль'];
-    }
-
-    return ['Главная', 'История', 'Профиль'];
   }
 
   void _onItemTapped(int index) {
@@ -86,29 +56,62 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isAdmin = authProvider.currentUser?.role == 'Admin';
+
+    // Если еще не инициализированы, показываем загрузку
+    if (!_isInitialized) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final pages = _getPages(isAdmin);
+    final icons = _getIcons(isAdmin);
+    final labels = _getLabels(isAdmin);
+
+    // Проверяем корректность индекса для текущей роли
+    final maxIndex = pages.length - 1;
+    if (_selectedIndex > maxIndex) {
+      // Сбрасываем на первую страницу, если индекс некорректен
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _selectedIndex = 0;
+        });
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Добро пожаловать", style: TextStyle(fontSize: 18)),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.notifications),
-      //       onPressed: () {
-      //         ScaffoldMessenger.of(context).showSnackBar(
-      //           const SnackBar(
-      //             content: Text('Уведомления'),
-      //             duration: Duration(seconds: 1),
-      //           ),
-      //         );
-      //       },
-      //     ),
-      //   ],
-      // ),
-      body: _pages.elementAt(_selectedIndex),
-      bottomNavigationBar: _buildFloatingNavBar(),
+      body:
+          pages[_selectedIndex], // Используем прямой доступ вместо IndexedStack
+      bottomNavigationBar: _buildFloatingNavBar(icons, labels),
     );
   }
 
-  Widget _buildFloatingNavBar() {
+  List<Widget> _getPages(bool isAdmin) {
+    if (isAdmin) {
+      return const <Widget>[ManagementScreen(), ProfileScreen()];
+    }
+
+    return const <Widget>[HomeScreen(), HistoryScreen(), ProfileScreen()];
+  }
+
+  List<IconData> _getIcons(bool isAdmin) {
+    if (isAdmin) {
+      return [Icons.admin_panel_settings, Icons.person_rounded];
+    }
+
+    return [Icons.home_rounded, Icons.history, Icons.person_rounded];
+  }
+
+  List<String> _getLabels(bool isAdmin) {
+    if (isAdmin) {
+      return ['Управление', 'Профиль'];
+    }
+
+    return ['Главная', 'История', 'Профиль'];
+  }
+
+  Widget _buildFloatingNavBar(List<IconData> icons, List<String> labels) {
     return Padding(
       padding: const EdgeInsets.all(14.0),
       child: Container(
@@ -126,15 +129,15 @@ class _NavigationScreenState extends State<NavigationScreen> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(_icons.length, (index) {
-            return _buildFloatingNavItem(index);
+          children: List.generate(icons.length, (index) {
+            return _buildFloatingNavItem(index, icons[index], labels[index]);
           }),
         ),
       ),
     );
   }
 
-  Widget _buildFloatingNavItem(int index) {
+  Widget _buildFloatingNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
     final activeColor = AppTheme.accentColor;
     final inactiveColor = Colors.grey;
@@ -152,14 +155,14 @@ class _NavigationScreenState extends State<NavigationScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              _icons[index],
+              icon,
               color: isSelected ? Colors.white : inactiveColor,
               size: 24,
             ),
             if (isSelected) ...[
               const SizedBox(width: 8),
               Text(
-                _labels[index],
+                label,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

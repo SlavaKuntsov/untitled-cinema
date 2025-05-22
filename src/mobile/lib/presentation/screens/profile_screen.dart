@@ -60,6 +60,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _saveProfile() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    // Validate that firstName is not empty
+    if (_firstNameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Имя не может быть пустым',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final success = await authProvider.updateUserProfile(
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
@@ -88,64 +102,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
   }
-
-  // В методе _showDeleteConfirmation() добавим вызов deleteAccount
-  // Future<void> _showDeleteConfirmation() async {
-  //   return showDialog<void>(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Удаление аккаунта'),
-  //         content: const SingleChildScrollView(
-  //           child: Text(
-  //             'Вы действительно хотите удалить свой аккаунт? Это действие нельзя отменить.',
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text('Отмена'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: const Text('Удалить', style: TextStyle(color: Colors.red)),
-  //             onPressed: () async {
-  //               Navigator.of(context).pop(); // Закрываем диалог
-  //
-  //               final authProvider = Provider.of<AuthProvider>(
-  //                 context,
-  //                 listen: false,
-  //               );
-  //               final success = await authProvider.deleteAccount();
-  //
-  //               if (success) {
-  //                 Navigator.of(context).pushReplacementNamed('/login');
-  //
-  //                 ScaffoldMessenger.of(context).showSnackBar(
-  //                   const SnackBar(
-  //                     content: Text('Аккаунт удален'),
-  //                     backgroundColor: Colors.red,
-  //                   ),
-  //                 );
-  //               } else {
-  //                 ScaffoldMessenger.of(context).showSnackBar(
-  //                   SnackBar(
-  //                     content: Text(
-  //                       'Ошибка: ${authProvider.errorMessage ?? "Не удалось удалить аккаунт"}',
-  //                     ),
-  //                     backgroundColor: Colors.red,
-  //                   ),
-  //                 );
-  //               }
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   Future<void> _showDeleteConfirmation() async {
     return showDialog<void>(
@@ -254,72 +210,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.currentUser;
-    final isAdmin = user?.role == 'ADMIN';
+    final isAdmin = user?.role == 'Admin';
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Профиль'),
-        backgroundColor: AppTheme.primaryColor,
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Профиль'),
+      //   backgroundColor: AppTheme.primaryColor,
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          top: 48,
+          right: 16,
+          left: 16,
+          bottom: 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with user name
-            Center(
-              child: Row(
+            // Header with user name - only show for non-admin users
+            if (!isAdmin) ...[
+              Center(
+                child: Row(
+                  children: [
+                    Text(
+                      user.firstName,
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Text(
+                      user.lastName,
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+
+            // Admin role indicator
+            if (isAdmin) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.primaryColor),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.admin_panel_settings,
+                      color: Colors.white,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Администратор',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      user.email,
+                      style: TextStyle(fontSize: 16, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            // Edit toggle - only for non-admin
+            if (!isAdmin) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    user.firstName,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  const Text(
+                    'Изменить данные профиля:',
+                    style: TextStyle(fontSize: 19, color: Colors.white),
                   ),
-                  SizedBox(width: 16),
-                  Text(
-                    user.lastName,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  Switch(
+                    value: _isEditing,
+                    onChanged: (value) {
+                      setState(() {
+                        _isEditing = value;
+                      });
+                    },
+                    activeColor: AppTheme.accentColor,
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+            ],
 
-            const SizedBox(height: 40),
-
-            // Edit toggle
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Change profile data:',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-                Switch(
-                  value: _isEditing,
-                  onChanged: (value) {
-                    setState(() {
-                      _isEditing = value;
-                    });
-                  },
-                  activeColor: AppTheme.accentColor,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Email
+            // Email - always show
             const Text(
               'Email',
               style: TextStyle(fontSize: 18, color: Colors.white),
@@ -339,85 +338,88 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            // Only show these fields for non-admin users
+            if (!isAdmin) ...[
+              const SizedBox(height: 20),
 
-            // FirstName
-            const Text(
-              'FirstName',
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _firstNameController,
-              style: const TextStyle(color: Colors.white),
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+              // FirstName
+              const Text(
+                'Имя',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _firstNameController,
+                style: const TextStyle(color: Colors.white),
+                enabled: _isEditing,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // LastName
-            const Text(
-              'LastName',
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _lastNameController,
-              style: const TextStyle(color: Colors.white),
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+              // LastName
+              const Text(
+                'Фамилия',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _lastNameController,
+                style: const TextStyle(color: Colors.white),
+                enabled: _isEditing,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Date of Birth
-            const Text(
-              'Date of Birth',
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _dateOfBirthController,
-              style: const TextStyle(color: Colors.white),
-              enabled: _isEditing,
-              readOnly: true, // Readonly because we use date picker
-              onTap: _isEditing ? _selectDate : null,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon:
-                    _isEditing
-                        ? const Icon(
-                          Icons.calendar_today,
-                          color: Colors.white,
-                        )
-                        : null,
+              // Date of Birth
+              const Text(
+                'Деь Рождение',
+                style: TextStyle(fontSize: 18, color: Colors.white),
               ),
-            ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _dateOfBirthController,
+                style: const TextStyle(color: Colors.white),
+                enabled: _isEditing,
+                readOnly: true, // Readonly because we use date picker
+                onTap: _isEditing ? _selectDate : null,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon:
+                      _isEditing
+                          ? const Icon(
+                            Icons.calendar_today,
+                            color: Colors.white,
+                          )
+                          : null,
+                ),
+              ),
+            ],
 
             const SizedBox(height: 16),
 
             if (!isAdmin) ...[
-              if (_isEditing)
+              if (_isEditing) ...[
                 ElevatedButton(
                   onPressed: _saveProfile,
                   style: ElevatedButton.styleFrom(
@@ -428,24 +430,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'Сохранить',
                     style: TextStyle(fontSize: 16),
                   ),
-                )
-              else
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accentColor,
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Text(
-                    'Редактировать',
-                    style: TextStyle(fontSize: 16),
-                  ),
                 ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
+              ],
+              // else
+              //   ElevatedButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         _isEditing = true;
+              //       });
+              //     },
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: AppTheme.accentColor,
+              //       minimumSize: const Size(double.infinity, 50),
+              //     ),
+              //     child: const Text(
+              //       'Редактировать',
+              //       style: TextStyle(fontSize: 16),
+              //     ),
+              //   ),
               ElevatedButton(
                 onPressed: _showDeleteConfirmation,
                 style: ElevatedButton.styleFrom(
@@ -465,10 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 backgroundColor: Colors.grey,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text(
-                'Выйти',
-                style: TextStyle(fontSize: 16),
-              ),
+              child: const Text('Выйти', style: TextStyle(fontSize: 16)),
             ),
           ],
         ),

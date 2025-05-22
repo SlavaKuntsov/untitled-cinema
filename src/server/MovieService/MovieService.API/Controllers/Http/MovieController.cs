@@ -136,8 +136,13 @@ public class MovieController(
 			_ => "application/octet-stream"
 		};
 		
-		Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
-		Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
+		// Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
+		// Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
+		
+		Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+		Response.Headers.Append("Pragma", "no-cache");
+		Response.Headers.Append("Expires", "0");
+		Response.Headers.Remove("ETag");
 
 		return File(stream, contentType);
 	}
@@ -174,21 +179,16 @@ public class MovieController(
 			_ => "application/octet-stream"
 		};
 		
-		Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
-		Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
+		Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+		Response.Headers.Append("Pragma", "no-cache");
+		Response.Headers.Append("Expires", "0");
+		Response.Headers.Remove("ETag");
+		
+		// Response.Headers.Append("Cache-Control", "public, max-age=604800"); 
+		// Response.Headers.Append("ETag", fileName.GetHashCode().ToString());
 
 		return File(stream, contentType);
 	}
-
-	// [HttpGet("/movies/{id:Guid}/frames/url")]
-	// public async Task<IActionResult> GetFramesUrl(
-	// 	[FromRoute] Guid id,
-	// 	CancellationToken cancellationToken)
-	// {
-	// 	var frames = await mediator.Send(new GetMovieFramesByMovieIdQuery(id), cancellationToken);
-	//
-	// 	return Ok(frames.Select(f => f.FrameUrl));
-	// }
 
 	/// <summary>
 	/// </summary>

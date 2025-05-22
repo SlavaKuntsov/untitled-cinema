@@ -378,6 +378,9 @@ class ApiClient {
       case 200:
       case 201:
         return response.data;
+      case 204:
+        // Handle 204 No Content as success (common for DELETE operations)
+        return null;
       case 400:
         throw BadRequestException(response.data.toString());
       case 401:

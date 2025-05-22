@@ -8,8 +8,14 @@ import 'package:untitledCinema/data/datasources/session_remote_data_source.dart'
 import 'package:untitledCinema/data/repositories/sessions_repository_impl.dart';
 import 'package:untitledCinema/domain/repositories/sessions_repository.dart';
 import 'package:untitledCinema/presentation/providers/booking_provider.dart';
+import 'package:untitledCinema/presentation/providers/booking_statistics_provider.dart';
+import 'package:untitledCinema/presentation/providers/day_management_provider.dart';
+import 'package:untitledCinema/presentation/providers/hall_managment_provider.dart';
+import 'package:untitledCinema/presentation/providers/movie_management_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
+import 'package:untitledCinema/presentation/providers/movie_statistics_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
+import 'package:untitledCinema/presentation/providers/user_management_provider.dart';
 
 import '../core/constants/oauth_constants.dart';
 import '../core/network/api_client.dart';
@@ -47,6 +53,12 @@ Future<void> init() async {
   sl.registerFactory(() => MovieProvider(repository: sl()));
   sl.registerFactory(() => SessionProvider(repository: sl()));
   sl.registerFactory(() => BookingProvider(repository: sl(), prefs: sl()));
+  sl.registerFactory(() => UserManagementProvider(apiClient: sl()));
+  sl.registerFactory(() => DayManagementProvider(apiClient: sl()));
+  sl.registerFactory(() => HallManagementProvider(apiClient: sl()));
+  sl.registerFactory(() => MovieManagementProvider(apiClient: sl()));
+  sl.registerFactory(() => BookingStatisticsProvider());
+  sl.registerFactory(() => MovieStatisticsProvider(apiClient: sl()));
   sl.registerFactory(() => ThemeProvider());
 
   // Notification Provider с внедрением зависимости
