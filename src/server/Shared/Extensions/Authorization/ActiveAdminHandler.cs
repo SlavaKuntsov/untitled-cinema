@@ -14,16 +14,8 @@ public class ActiveAdminHandler : AuthorizationHandler<ActiveAdminRequirement>
 		AuthorizationHandlerContext context,
 		ActiveAdminRequirement requirement)
 	{
-		// Проверяем, есть ли claim с идентификатором пользователя
 		var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
 		var userRole = context.User.FindFirst(ClaimTypes.Role);
-
-		//if (userRole.Value != Role.Admin.GetDescription() ||
-		//	userRole.Value != Role.User.GetDescription())
-		//{
-		//	context.Fail();
-		//	return Task.CompletedTask;
-		//}
 
 		if (userIdClaim == null || userRole == null)
 		{

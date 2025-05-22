@@ -89,7 +89,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
           'firstName': firstName,
           'lastName': lastName,
-          'lastName': lastName,
           'dateOfBirth': dateOfBirth,
         },
       );

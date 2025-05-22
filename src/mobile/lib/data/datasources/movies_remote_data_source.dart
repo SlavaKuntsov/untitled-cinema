@@ -44,8 +44,6 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
     List<String>? filterValues,
   }) async {
     try {
-      // offset++;
-      // Формируем URL с параметрами запроса
       final queryParams = <String, String>{
         'limit': limit.toString(),
         'offset': offset.toString(),
@@ -91,17 +89,12 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
         });
       }
 
-      // Выполняем запрос к API
       final dynamic responseData = await client.get(
         ApiConstants.movies,
         queryParameters: queryParams,
       );
 
-      // Проверяем, что responseData не null и является Map
       if (responseData != null && responseData is Map<String, dynamic>) {
-        // Заменяем localhost на  в постерах
-        // _replaceLocalhostInPosters(responseData);
-
         return PaginatedResponseModel<MovieModel>.fromJson(
           responseData,
           (json) => MovieModel.fromJson(json),
@@ -111,7 +104,7 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       }
     } catch (e) {
       if (e is ServerException) {
-        throw e; // Пробрасываем специальные исключения
+        throw e;
       }
       throw ServerException('Ошибка при получении фильмов: ${e.toString()}');
     }

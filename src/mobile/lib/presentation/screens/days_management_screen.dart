@@ -7,7 +7,7 @@ import '../../domain/entities/day/day.dart';
 import '../providers/day_management_provider.dart';
 
 class DaysManagementScreen extends StatefulWidget {
-  const DaysManagementScreen({Key? key}) : super(key: key);
+  const DaysManagementScreen({super.key});
 
   @override
   State<DaysManagementScreen> createState() => _DaysManagementScreenState();

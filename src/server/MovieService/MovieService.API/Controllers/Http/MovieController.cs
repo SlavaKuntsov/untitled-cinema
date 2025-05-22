@@ -180,16 +180,6 @@ public class MovieController(
 		return File(stream, contentType);
 	}
 
-	// [HttpGet("/movies/{id:Guid}/frames/url")]
-	// public async Task<IActionResult> GetFramesUrl(
-	// 	[FromRoute] Guid id,
-	// 	CancellationToken cancellationToken)
-	// {
-	// 	var frames = await mediator.Send(new GetMovieFramesByMovieIdQuery(id), cancellationToken);
-	//
-	// 	return Ok(frames.Select(f => f.FrameUrl));
-	// }
-
 	/// <summary>
 	/// </summary>
 	/// <param name="id"></param>

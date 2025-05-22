@@ -19,10 +19,11 @@ class ApiConstants {
   static String get authorize => '$userServiceBaseUrl/auth/authorize';
   static String get notifications => '$userServiceBaseUrl/notifications';
   static String get notificationsHub => '$userServiceBaseUrl/notificationsHub';
-  
+
   // Admin API endpoints
   static String getAllUsers() => '$userServiceBaseUrl/users';
-  static String deleteUser(String userId) => '$userServiceBaseUrl/users/$userId';
+  static String deleteUser(String userId) =>
+      '$userServiceBaseUrl/users/$userId';
 
   // Movie Service Endpoints
   static String get movieServiceBaseUrl =>
@@ -69,6 +70,13 @@ class ApiConstants {
   static String getAllDays() => '$movieServiceBaseUrl/days';
   static String createDay() => '$movieServiceBaseUrl/days';
   static String deleteDay(String dayId) => '$movieServiceBaseUrl/days/$dayId';
+
+  static String getAllHalls() => '$movieServiceBaseUrl/halls';
+  static String getHallById(String id) => '$movieServiceBaseUrl/halls/$id';
+  static String createSimpleHall() => '$movieServiceBaseUrl/halls/simple';
+  static String createCustomHall() => '$movieServiceBaseUrl/halls/custom';
+  static String updateHall() => '$movieServiceBaseUrl/halls';
+  static String deleteHall(String id) => '$movieServiceBaseUrl/halls/$id';
 }
 
 // Константы JWT

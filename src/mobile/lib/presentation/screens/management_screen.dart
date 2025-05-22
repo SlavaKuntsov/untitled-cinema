@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../config/theme.dart';
-import 'days_management_screen.dart';
-import 'users_management_screen.dart';
 
 class ManagementScreen extends StatelessWidget {
   const ManagementScreen({Key? key}) : super(key: key);
@@ -17,14 +15,9 @@ class ManagementScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          _buildManagementCard(
-            context,
-            'Управление фильмами',
-            Icons.movie,
-            () {
-              // TODO: Navigate to movie management
-            },
-          ),
+          _buildManagementCard(context, 'Управление фильмами', Icons.movie, () {
+            // TODO: Navigate to movie management
+          }),
           const SizedBox(height: 16),
           _buildManagementCard(
             context,
@@ -46,6 +39,15 @@ class ManagementScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildManagementCard(
             context,
+            'Управление залами',
+            Icons.calendar_today,
+            () {
+              Navigator.pushNamed(context, '/halls_management');
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildManagementCard(
+            context,
             'Управление пользователями',
             Icons.people,
             () {
@@ -53,14 +55,9 @@ class ManagementScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
-          _buildManagementCard(
-            context,
-            'Статистика',
-            Icons.bar_chart,
-            () {
-              // TODO: Navigate to statistics
-            },
-          ),
+          _buildManagementCard(context, 'Статистика', Icons.bar_chart, () {
+            // TODO: Navigate to statistics
+          }),
         ],
       ),
     );
@@ -74,9 +71,7 @@ class ManagementScreen extends StatelessWidget {
   ) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -84,11 +79,7 @@ class ManagementScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 28,
-                color: Colors.white,
-              ),
+              Icon(icon, size: 28, color: Colors.white),
               const SizedBox(width: 16),
               Text(
                 title,
@@ -98,10 +89,7 @@ class ManagementScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey,
-              ),
+              const Icon(Icons.arrow_forward_ios, color: Colors.grey),
             ],
           ),
         ),
