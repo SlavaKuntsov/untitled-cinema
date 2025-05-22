@@ -73,16 +73,17 @@ class BookingProvider extends ChangeNotifier {
   BookingState _bookingState = BookingState();
   BookingState get bookingState => _bookingState;
 
-  // Выбранное бронирование
   Booking? _selectedBooking;
   Booking? get selectedBooking => _selectedBooking;
 
-  // Состояние операций
   bool _isCreating = false;
   bool get isCreating => _isCreating;
 
   bool _isCanceling = false;
   bool get isCanceling => _isCanceling;
+
+  bool _isPaying = false;
+  bool get isPaying => _isPaying;
 
   String? _operationError;
   String? get operationError => _operationError;
@@ -199,6 +200,9 @@ class BookingProvider extends ChangeNotifier {
       },
       (isSuccess) {
         success = isSuccess;
+        if (isSuccess) {
+          refreshBookings(userId);
+        }
       },
     );
 
@@ -207,42 +211,91 @@ class BookingProvider extends ChangeNotifier {
     return success;
   }
 
-  // Отмена бронирования
   Future<bool> cancelBooking(String bookingId) async {
-    _isCanceling = true;
-    _operationError = null;
-    notifyListeners();
+    // _isCanceling = true;
+    // _operationError = null;
+    // notifyListeners();
+    //
+    // final result = await _repository.cancelBooking(bookingId);
+    //
+    // bool success = false;
+    // result.fold(
+    //   (failure) {
+    //     _operationError = failure.message;
+    //     success = false;
+    //   },
+    //   (opSuccess) {
+    //     success = opSuccess;
+    //     if (opSuccess) {
+    //       if (_selectedBooking?.id == bookingId) {
+    //         // _selectedBooking = Booking(
+    //         //   id: _selectedBooking!.id,
+    //         //   userId: _selectedBooking!.userId,
+    //         //   sessionId: _selectedBooking!.sessionId,
+    //         //   seats: _selectedBooking!.seats,
+    //         //   status: 'Cancelled',
+    //         //   createdAt: _selectedBooking!.createdAt,
+    //         //   updatedAt: DateTime.now(),
+    //         // );
+    //       }
+    //       refreshBookings(_prefs.getString('userId')!);
+    //     }
+    //   },
+    // );
+    //
+    // _isCanceling = false;
+    // notifyListeners();
+    // return success;
 
-    final result = await _repository.cancelBooking(bookingId);
+    try {
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.loading,
+        errorMessage: null,
+      );
+      notifyListeners();
 
-    bool success = false;
-    result.fold(
-      (failure) {
-        _operationError = failure.message;
-        success = false;
-      },
-      (success) {
-        if (success && _selectedBooking?.id == bookingId) {
-          // Обновляем статус выбранного бронирования, если оно было отменено
-          final updatedBooking = Booking(
-            id: _selectedBooking!.id,
-            userId: _selectedBooking!.userId,
-            sessionId: _selectedBooking!.sessionId,
-            seats: _selectedBooking!.seats,
-            totalPrice: _selectedBooking!.totalPrice,
-            status: 'Cancelled', // Предполагаемый статус отмены
-            createdAt: _selectedBooking!.createdAt,
-            updatedAt: DateTime.now(),
-          );
-          _selectedBooking = updatedBooking;
-        }
-        success = true;
-      },
-    );
+      final result = await _repository.cancelBooking(bookingId);
 
-    _isCanceling = false;
-    notifyListeners();
-    return success;
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.loaded,
+      );
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.error,
+        errorMessage: e.toString(),
+      );
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> payBooking(String bookingId, String userId) async {
+    try {
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.loading,
+        errorMessage: null,
+      );
+      notifyListeners();
+
+      final result = await _repository.payBooking(bookingId, userId);
+
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.loaded,
+      );
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _bookingState = _bookingState.copyWith(
+        status: BookingLoadingStatus.error,
+        errorMessage: e.toString(),
+      );
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<void> nextPage(String userId, int selectedPageSize) async {
@@ -251,6 +304,8 @@ class BookingProvider extends ChangeNotifier {
         userId: userId,
         page: _bookingState.currentPage + 1,
         limit: selectedPageSize,
+        filters: _getActiveFilters()?.filters,
+        filterValues: _getActiveFilters()?.values,
         date: _getActiveDate(),
       );
     }
@@ -269,8 +324,15 @@ class BookingProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> refreshBookings(String userId) async {
-    await fetchBookingHistory(userId: userId, page: 1);
+  Future<void> refreshBookings(String userId, {int? pageSize}) async {
+    await fetchBookingHistory(
+      userId: userId,
+      page: 1,
+      limit: pageSize ?? _bookingState.pageSize,
+      filters: _getActiveFilters()?.filters,
+      filterValues: _getActiveFilters()?.values,
+      date: _getActiveDate(),
+    );
   }
 
   void clearSelectedBooking() {
@@ -284,7 +346,9 @@ class BookingProvider extends ChangeNotifier {
   }
 
   _FilterPair? _getActiveFilters() {
-    if (_currentFilters != null && _currentFilterValues != null) {
+    if (_currentFilters != null &&
+        _currentFilterValues != null &&
+        _currentFilters!.isNotEmpty) {
       return _FilterPair(
         filters: _currentFilters!,
         values: _currentFilterValues!,

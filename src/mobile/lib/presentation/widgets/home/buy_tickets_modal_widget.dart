@@ -157,8 +157,8 @@ class _BuyTicketsModalWidgetState extends State<BuyTicketsModalWidget> {
               itemCount: 18,
               itemBuilder: (context, index) {
                 final date = DateTime.now()
-                    .subtract(const Duration(days: 1))
-                    .add(Duration(days: index));
+                // .subtract(const Duration(days: 1))
+                .add(Duration(days: index));
                 final isSelected =
                     _selectedDate.year == date.year &&
                     _selectedDate.month == date.month &&

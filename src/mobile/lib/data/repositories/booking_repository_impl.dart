@@ -91,4 +91,21 @@ class BookingRepositoryImpl implements BookingRepository {
       return Left(NetworkFailure('Отсутствует подключение к интернету'));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> payBooking(
+    String bookingId,
+    String userId,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.payBooking(bookingId, userId);
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      }
+    } else {
+      return Left(NetworkFailure('Отсутствует подключение к интернету'));
+    }
+  }
 }

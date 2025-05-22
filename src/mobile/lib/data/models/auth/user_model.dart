@@ -14,16 +14,29 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is int) return value.toDouble();
+      if (value is double) return value;
+      if (value is String) {
+        try {
+          return double.parse(value);
+        } catch (e) {
+          return 0.0;
+        }
+      }
+      return 0.0;
+    }
+
     return UserModel(
       id: json['id'],
       email: json['email'],
       firstName: json['firstName'],
       lastName: json['lastName'],
-      photoUrl: json['photo_url'],
       role: json['role'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? '',
-      balance: json['balance'] ?? 0,
-      createdAt: DateTime.parse(json['created_at']),
+      balance: 0,
+      createdAt: DateTime.now(),
     );
   }
 

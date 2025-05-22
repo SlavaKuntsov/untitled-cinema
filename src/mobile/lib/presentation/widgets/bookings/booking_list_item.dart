@@ -123,38 +123,75 @@ class _BookingListItemState extends State<BookingListItem> {
           topRight: Radius.circular(12),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Дата бронирования',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Дата бронирования',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  Text(
+                    dateFormat.format(widget.booking.createdAt),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              Text(
-                dateFormat.format(widget.booking.createdAt),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: status.color.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: status.color),
+                ),
+                child: Text(
+                  status.label,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: status.color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: status.color),
-            ),
-            child: Text(
-              status.label,
-              style: TextStyle(
-                color: status.color,
-                fontWeight: FontWeight.bold,
+          if (status == BookingStatus.reserved) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Будет отменено через 1 минуту',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

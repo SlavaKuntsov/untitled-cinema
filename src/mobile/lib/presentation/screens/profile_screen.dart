@@ -46,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _initFields() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    authProvider.checkUser();
     final user = authProvider.currentUser;
 
     if (user != null) {
@@ -89,16 +90,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // В методе _showDeleteConfirmation() добавим вызов deleteAccount
+  // Future<void> _showDeleteConfirmation() async {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Удаление аккаунта'),
+  //         content: const SingleChildScrollView(
+  //           child: Text(
+  //             'Вы действительно хотите удалить свой аккаунт? Это действие нельзя отменить.',
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Отмена'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text('Удалить', style: TextStyle(color: Colors.red)),
+  //             onPressed: () async {
+  //               Navigator.of(context).pop(); // Закрываем диалог
+  //
+  //               final authProvider = Provider.of<AuthProvider>(
+  //                 context,
+  //                 listen: false,
+  //               );
+  //               final success = await authProvider.deleteAccount();
+  //
+  //               if (success) {
+  //                 Navigator.of(context).pushReplacementNamed('/login');
+  //
+  //                 ScaffoldMessenger.of(context).showSnackBar(
+  //                   const SnackBar(
+  //                     content: Text('Аккаунт удален'),
+  //                     backgroundColor: Colors.red,
+  //                   ),
+  //                 );
+  //               } else {
+  //                 ScaffoldMessenger.of(context).showSnackBar(
+  //                   SnackBar(
+  //                     content: Text(
+  //                       'Ошибка: ${authProvider.errorMessage ?? "Не удалось удалить аккаунт"}',
+  //                     ),
+  //                     backgroundColor: Colors.red,
+  //                   ),
+  //                 );
+  //               }
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   Future<void> _showDeleteConfirmation() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Удаление аккаунта'),
+          title: const Text('Подтверждение'),
           content: const SingleChildScrollView(
             child: Text(
-              'Вы действительно хотите удалить свой аккаунт? Это действие нельзя отменить.',
+              'Вы действительно хотите удалить свой аккаунт? Это '
+              'действие нельзя отменить.',
             ),
           ),
           actions: <Widget>[
@@ -110,34 +169,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             TextButton(
               child: const Text('Удалить', style: TextStyle(color: Colors.red)),
-              onPressed: () async {
-                Navigator.of(context).pop(); // Закрываем диалог
-
+              onPressed: () {
                 final authProvider = Provider.of<AuthProvider>(
                   context,
                   listen: false,
                 );
-                final success = await authProvider.deleteAccount();
-
-                if (success) {
-                  Navigator.of(context).pushReplacementNamed('/login');
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Аккаунт удален'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Ошибка: ${authProvider.errorMessage ?? "Не удалось удалить аккаунт"}',
-                      ),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                authProvider.deleteAccount();
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed('/login');
               },
             ),
           ],
@@ -215,226 +254,223 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.currentUser;
+    final isAdmin = user?.role == 'ADMIN';
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Профиль'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            right: 16,
-            left: 16,
-            bottom: 16,
-            top: 42,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with user name
-              Center(
-                child: Row(
-                  children: [
-                    Text(
-                      user.firstName,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Text(
-                      user.lastName,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Edit toggle
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with user name
+            Center(
+              child: Row(
                 children: [
-                  const Text(
-                    'Change profile data:',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  Text(
+                    user.firstName,
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  Switch(
-                    value: _isEditing,
-                    onChanged: (value) {
-                      setState(() {
-                        _isEditing = value;
-                      });
-                    },
-                    activeColor: AppTheme.accentColor,
+                  SizedBox(width: 16),
+                  Text(
+                    user.lastName,
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 40),
 
-              // Email
-              const Text(
-                'Email',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _emailController,
-                style: const TextStyle(color: Colors.white),
-                enabled: false, // Email cannot be edited
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
+            // Edit toggle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Change profile data:',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+                Switch(
+                  value: _isEditing,
+                  onChanged: (value) {
+                    setState(() {
+                      _isEditing = value;
+                    });
+                  },
+                  activeColor: AppTheme.accentColor,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // Email
+            const Text(
+              'Email',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _emailController,
+              style: const TextStyle(color: Colors.white),
+              enabled: false, // Email cannot be edited
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // FirstName
-              const Text(
-                'FirstName',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _firstNameController,
-                style: const TextStyle(color: Colors.white),
-                enabled: _isEditing,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
+            // FirstName
+            const Text(
+              'FirstName',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _firstNameController,
+              style: const TextStyle(color: Colors.white),
+              enabled: _isEditing,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // LastName
-              const Text(
-                'LastName',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _lastNameController,
-                style: const TextStyle(color: Colors.white),
-                enabled: _isEditing,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
+            // LastName
+            const Text(
+              'LastName',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _lastNameController,
+              style: const TextStyle(color: Colors.white),
+              enabled: _isEditing,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // Date of Birth
-              const Text(
-                'Date of Birth',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _dateOfBirthController,
-                style: const TextStyle(color: Colors.white),
-                enabled: _isEditing,
-                readOnly: true, // Readonly because we use date picker
-                onTap: _isEditing ? _selectDate : null,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  suffixIcon:
-                      _isEditing
-                          ? const Icon(
-                            Icons.calendar_today,
-                            color: Colors.white,
-                          )
-                          : null,
+            // Date of Birth
+            const Text(
+              'Date of Birth',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _dateOfBirthController,
+              style: const TextStyle(color: Colors.white),
+              enabled: _isEditing,
+              readOnly: true, // Readonly because we use date picker
+              onTap: _isEditing ? _selectDate : null,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: _isEditing ? Colors.grey[800] : Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
+                suffixIcon:
+                    _isEditing
+                        ? const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        )
+                        : null,
               ),
+            ),
 
-              const SizedBox(height: 40),
+            const SizedBox(height: 16),
 
-              // Save button
+            if (!isAdmin) ...[
               if (_isEditing)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Save', style: TextStyle(fontSize: 18)),
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              // Logout button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _showLogoutConfirmation,
+                ElevatedButton(
+                  onPressed: _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    backgroundColor: AppTheme.accentColor,
+                    minimumSize: const Size(double.infinity, 50),
                   ),
-                  child: const Text('Logout', style: TextStyle(fontSize: 18)),
+                  child: const Text(
+                    'Сохранить',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accentColor,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text(
+                    'Редактировать',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Delete button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: _showDeleteConfirmation,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Delete', style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _showDeleteConfirmation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text(
+                  'Удалить аккаунт',
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ],
-          ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _showLogoutConfirmation,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text(
+                'Выйти',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
         ),
       ),
     );

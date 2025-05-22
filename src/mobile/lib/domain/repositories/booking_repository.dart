@@ -27,4 +27,5 @@ abstract class BookingRepository {
   });
 
   Future<Either<Failure, bool>> cancelBooking(String bookingId);
+  Future<Either<Failure, bool>> payBooking(String bookingId, String userId);
 }

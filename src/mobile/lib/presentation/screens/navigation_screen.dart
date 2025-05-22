@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../providers/auth_provider.dart';
 import 'history_screen.dart';
 import 'home_screen.dart';
+import 'management_screen.dart';
 import 'profile_screen.dart';
 
 // NavigationScreen
@@ -24,19 +27,56 @@ class _NavigationScreenState extends State<NavigationScreen> {
     _selectedIndex = widget.initialIndex;
   }
 
-  final List<Widget> _pages = const <Widget>[
-    HomeScreen(),
-    HistoryScreen(),
-    ProfileScreen(),
-  ];
+  List<Widget> get _pages {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
 
-  final List<IconData> _icons = [
-    Icons.home_rounded,
-    Icons.history,
-    Icons.person_rounded,
-  ];
+    if (isAdmin) {
+      return const <Widget>[
+        HomeScreen(),
+        HistoryScreen(),
+        ManagementScreen(),
+        ProfileScreen(),
+      ];
+    }
 
-  final List<String> _labels = ['Главная', 'История', 'Профиль'];
+    return const <Widget>[
+      HomeScreen(),
+      HistoryScreen(),
+      ProfileScreen(),
+    ];
+  }
+
+  List<IconData> get _icons {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
+
+    if (isAdmin) {
+      return [
+        Icons.home_rounded,
+        Icons.history,
+        Icons.admin_panel_settings,
+        Icons.person_rounded,
+      ];
+    }
+
+    return [
+      Icons.home_rounded,
+      Icons.history,
+      Icons.person_rounded,
+    ];
+  }
+
+  List<String> get _labels {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAdmin = authProvider.currentUser?.role == 'ADMIN';
+
+    if (isAdmin) {
+      return ['Главная', 'История', 'Управление', 'Профиль'];
+    }
+
+    return ['Главная', 'История', 'Профиль'];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

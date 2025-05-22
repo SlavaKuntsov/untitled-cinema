@@ -204,7 +204,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     booking.id,
                                     provider,
                                   ),
-                              onPay: () => _handlePayBooking(booking.id),
+                              onPay:
+                                  () => _handlePayBooking(booking.id, provider),
                             );
                           }).toList(),
                     ),
@@ -265,6 +266,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     if (confirmed == true) {
       final success = await provider.cancelBooking(bookingId);
+      _loadBookingHistory();
       if (success) {
         _loadBookingHistory(); // Обновляем список
 
@@ -289,14 +291,57 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  void _handlePayBooking(String bookingId) {
-    // Навигация к экрану оплаты
-    // Navigator.of(context).pushNamed('/payment', arguments: bookingId);
+  Future<void> _handlePayBooking(
+    String bookingId,
+    BookingProvider provider,
+  ) async {
+    // Показываем диалог подтверждения
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Оплата бронирования'),
+            content: const Text(
+              'Вы уверены, что хотите оплатить бронирование?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Подтвердить'),
+              ),
+            ],
+          ),
+    );
 
-    // Пока заглушка
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Переход к оплате...')));
+    if (confirmed == true) {
+      final success = await provider.payBooking(bookingId, userId);
+      _loadBookingHistory();
+      if (success) {
+        _loadBookingHistory(); // Обновляем список
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Бронирование успешно оплачено'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              provider.operationError ?? 'Ошибка при оплате бронирования',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildFiltersSection() {

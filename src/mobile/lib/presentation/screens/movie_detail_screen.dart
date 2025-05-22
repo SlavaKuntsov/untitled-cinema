@@ -134,7 +134,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
       if (dateTime != null) {
         formattedReleaseDate =
-            "${dateTime.day}.${dateTime.month}.${dateTime.year}";
+            "${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year}";
       }
     }
 

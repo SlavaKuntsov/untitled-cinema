@@ -24,14 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> _selectedGenres = ['Все'];
   DateTime? _selectedDate = DateTime(
     DateTime.now().year,
-    DateTime.now().month, 
-    DateTime.now().day
+    DateTime.now().month,
+    DateTime.now().day,
   );
-  
+
   // Sorting options
   String _sortBy = 'title';
   String _sortDirection = 'asc';
-  
+
   // Sorting display options
   final Map<String, String> _sortOptions = {
     'title_asc': 'Название (А-Я)',
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'price_asc': 'Цена (низкая-высокая)',
     'price_desc': 'Цена (высокая-низкая)',
   };
-  
+
   String get _currentSortOption => '${_sortBy}_$_sortDirection';
 
   final ScrollController _scrollController = ScrollController();
@@ -110,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedGenres = ['Все'];
       _selectedDate = DateTime(
         DateTime.now().year,
-        DateTime.now().month, 
-        DateTime.now().day
+        DateTime.now().month,
+        DateTime.now().day,
       );
       _searchController.clear();
     });
@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!_selectedGenres.contains('Все')) {
       filters = [];
       filterValues = [];
-      
+
       for (var genre in _selectedGenres) {
         filters.add('genre');
         filterValues.add(genre);
@@ -143,8 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     // Debug output
-    print('Applying filters with date: $_selectedDate, sort: $_sortBy $_sortDirection');
-    
+    print(
+      'Applying filters with date: $_selectedDate, sort: $_sortBy $_sortDirection',
+    );
+
     // Fetch movies with filters
     Provider.of<MovieProvider>(context, listen: false).fetchMovies(
       page: 1,
@@ -223,16 +225,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       OutlinedButton.icon(
                         onPressed: () async {
                           final now = DateTime.now();
-                          // Use as initial date either the currently selected date 
+                          // Use as initial date either the currently selected date
                           // or today, ensuring it's not in the past
-                          final initialDate = _selectedDate != null && 
-                              _selectedDate!.isAfter(DateTime(now.year, now.month, now.day)) ? 
-                              _selectedDate! : DateTime(now.year, now.month, now.day);
-                          
+                          final initialDate =
+                              _selectedDate != null &&
+                                      _selectedDate!.isAfter(
+                                        DateTime(now.year, now.month, now.day),
+                                      )
+                                  ? _selectedDate!
+                                  : DateTime(now.year, now.month, now.day);
+
                           final DateTime? pickedDate = await showDatePicker(
                             context: context,
                             initialDate: initialDate,
-                            firstDate: DateTime(now.year, now.month, now.day), // Today
+                            firstDate: DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                            ), // Today
                             lastDate: DateTime.now().add(
                               const Duration(days: 365),
                             ),
@@ -267,19 +277,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             setState(() {
-                              _selectedDate =
-                                  DateTime(
-                                    DateTime.now().year,
-                                    DateTime.now().month, 
-                                    DateTime.now().day
-                                  );
+                              _selectedDate = DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                              );
                             });
                           },
                         ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Sorting section
                   const Text(
                     'Сортировка:',
@@ -289,35 +298,39 @@ class _HomeScreenState extends State<HomeScreen> {
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 8.0,
-                    children: _sortOptions.entries.map((entry) {
-                      final key = entry.key;
-                      final value = entry.value;
-                      final isSelected = _currentSortOption == key;
-                      
-                      return FilterChip(
-                        label: Text(value),
-                        selected: isSelected,
-                        onSelected: (_) {
-                          setState(() {
-                            final parts = key.split('_');
-                            _sortBy = parts[0];
-                            _sortDirection = parts[1];
-                          });
-                        },
-                        backgroundColor: AppTheme.cardColor,
-                        selectedColor: AppTheme.accentColor,
-                        checkmarkColor: Colors.black,
-                        showCheckmark: false,
-                        side: BorderSide(color: AppTheme.accentColor),
-                        labelStyle: TextStyle(
-                          color: Colors.white,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      );
-                    }).toList(),
+                    children:
+                        _sortOptions.entries.map((entry) {
+                          final key = entry.key;
+                          final value = entry.value;
+                          final isSelected = _currentSortOption == key;
+
+                          return FilterChip(
+                            label: Text(value),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              setState(() {
+                                final parts = key.split('_');
+                                _sortBy = parts[0];
+                                _sortDirection = parts[1];
+                              });
+                            },
+                            backgroundColor: AppTheme.cardColor,
+                            selectedColor: AppTheme.accentColor,
+                            checkmarkColor: Colors.black,
+                            showCheckmark: false,
+                            side: BorderSide(color: AppTheme.accentColor),
+                            labelStyle: TextStyle(
+                              color: Colors.white,
+                              fontWeight:
+                                  isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                            ),
+                          );
+                        }).toList(),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Genre filter
                   const Text(
                     'Жанры:',
@@ -462,9 +475,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Determine if we should show filter chips
     final bool shouldShowFilters =
-        !(_selectedGenres.contains('Все') && 
-          _isDateToday(_selectedDate) && 
-          _currentSortOption == 'title_asc');
+        !(_selectedGenres.contains('Все') &&
+            _isDateToday(_selectedDate) &&
+            _currentSortOption == 'title_asc');
 
     return SingleChildScrollView(
       controller: _scrollController,
@@ -473,50 +486,75 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Баннер с новинками
           Container(
-            height: 200,
+            height: 180, // Adjusted height as the button is removed
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade800, Colors.blue.shade600],
+                colors: [
+                  AppTheme.accentColor,
+                  AppTheme.accentColor.withOpacity(0.8),
+                ],
               ),
             ),
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.3,
-                    child: Icon(Icons.icecream_outlined),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 32),
+                    child: Opacity(
+                      opacity: 0.2, // Slightly more subtle background icon
+                      child: Icon(
+                        Icons
+                            .local_movies_outlined, // A more generic movie-related icon
+                        size: 100,
+                        color: Colors.white.withOpacity(0.5),
+                      ),
+                    ),
                   ),
                 ),
                 Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Новинки этой недели',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.local_activity),
-                        label: const Text('Купить билет'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 42,
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Добро пожаловать!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28, // Larger font for welcome message
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              // Adding a subtle shadow for better readability
+                              Shadow(
+                                blurRadius: 4.0,
+                                color: Colors.black38,
+                                offset: Offset(2.0, 2.0),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Откройте для себя мир кино',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                Colors.white70, // Slightly dimmer for subtitle
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -539,14 +577,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       suffixIcon:
                           _searchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                    });
-                                    _applyFilters();
-                                  },
-                                )
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  setState(() {
+                                    _searchController.clear();
+                                  });
+                                  _applyFilters();
+                                },
+                              )
                               : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -587,12 +625,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       deleteIcon: const Icon(Icons.clear, size: 16),
                       onDeleted: () {
                         setState(() {
-                          _selectedDate =
-                              DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month, 
-                                DateTime.now().day
-                              );
+                          _selectedDate = DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                          );
                         });
                         _applyFilters();
                       },
@@ -602,14 +639,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       side: BorderSide(color: AppTheme.accentColor),
                     ),
-                  
+
                   // Sort filter chip (always show unless default)
-                  if (_currentSortOption != 'title_asc') // Only show if not default sort
+                  if (_currentSortOption !=
+                      'title_asc') // Only show if not default sort
                     Chip(
                       avatar: Icon(Icons.sort, size: 16, color: Colors.white70),
-                      label: Text(
-                        _sortOptions[_currentSortOption]!,
-                      ),
+                      label: Text(_sortOptions[_currentSortOption]!),
                       backgroundColor: AppTheme.cardColor,
                       deleteIcon: const Icon(Icons.clear, size: 16),
                       onDeleted: () {
@@ -625,7 +661,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       side: BorderSide(color: AppTheme.accentColor),
                     ),
-                  
+
                   // Genre filter chips
                   if (!_selectedGenres.contains('Все'))
                     ..._selectedGenres.map((genre) {

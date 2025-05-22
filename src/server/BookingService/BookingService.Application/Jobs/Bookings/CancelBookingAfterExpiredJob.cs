@@ -30,6 +30,17 @@ public class CancelBookingAfterExpiredJob(
 	{
 		logger.LogInformation("CancelBookingAfterExpired job for '{BookingId}' started", bookingId);
 
+		var existBooking = await bookingsRepository.GetOneAsync(
+			b => b.Id == bookingId,
+			cancellationToken: cancellationToken);
+
+		if (existBooking.Status == BookingStatus.Paid.GetDescription())
+		{
+			logger.LogInformation("CancelBookingAfterExpired job for '{BookingId}' cancelled because booking was paid.", bookingId);
+			
+			return;
+		}
+
 		// Change booking status for the canceled if it was not paid 
 		await bookingsRepository.UpdateStatusAsync(
 			bookingId,

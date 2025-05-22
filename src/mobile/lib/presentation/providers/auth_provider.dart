@@ -52,6 +52,16 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get token => _prefs.getString('access_token');
 
+  Future<void> checkUser() async {
+    final apiClient = sl<ApiClient>();
+
+    final response = await apiClient.get(ApiConstants.authorize);
+
+    if (response != null) {
+      _currentUser = User.fromJson(response);
+    }
+  }
+
   Future<void> checkAuthStatus() async {
     _isLoading = true;
     _errorMessage = null;
