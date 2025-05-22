@@ -1,7 +1,8 @@
 class InputValidator {
+  // Валидация email
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return 'Email обязателен для заполнения';
     }
 
     final RegExp emailRegExp = RegExp(
@@ -9,51 +10,55 @@ class InputValidator {
     );
 
     if (!emailRegExp.hasMatch(value)) {
-      return 'Please enter a valid email';
+      return 'Пожалуйста, введите корректный email';
     }
 
     return null;
   }
 
+  // Валидация пароля
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'Пароль обязателен для заполнения';
     }
 
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return 'Пароль должен содержать минимум 6 символов';
     }
 
     return null;
   }
 
+  // Валидация имени
   static String? validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name is required';
+      return 'Имя обязательно для заполнения';
     }
 
     if (value.length < 2) {
-      return 'Name must be at least 2 characters';
+      return 'Имя должно содержать минимум 2 символа';
     }
 
     return null;
   }
 
+  // Подтверждение пароля
   static String? validateConfirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
-      return 'Confirm password is required';
+      return 'Необходимо подтвердить пароль';
     }
 
     if (value != password) {
-      return 'Passwords do not match';
+      return 'Пароли не совпадают';
     }
 
     return null;
   }
 
+  // Общая валидация обязательных полей
   static String? validateRequired(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return '$fieldName is required';
+      return '$fieldName обязателен для заполнения';
     }
 
     return null;

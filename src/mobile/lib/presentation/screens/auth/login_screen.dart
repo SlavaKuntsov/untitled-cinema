@@ -144,17 +144,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       onEditingComplete: _onLoginPressed,
                       prefixIcon: const Icon(Icons.lock_outline),
                     ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // Навигация на экран восстановления пароля
-                        },
-                        child: const Text('Забыли пароль?'),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                    // const SizedBox(height: 8),
+                    // Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: TextButton(
+                    //     onPressed: () {
+                    //       // Навигация на экран восстановления пароля
+                    //     },
+                    //     child: const Text('Забыли пароль?'),
+                    //   ),
+                    // ),
+                    const SizedBox(height: 32),
                     if (errorMessage != null) ...[
                       Container(
                         padding: const EdgeInsets.all(8),

@@ -16,22 +16,13 @@ class ManagementScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: [
           _buildManagementCard(context, 'Управление фильмами', Icons.movie, () {
-            // TODO: Navigate to movie management
+            Navigator.pushNamed(context, '/movies_management');
           }),
           const SizedBox(height: 16),
           _buildManagementCard(
             context,
             'Управление сеансами',
             Icons.event_seat,
-            () {
-              // TODO: Navigate to session management
-            },
-          ),
-          const SizedBox(height: 16),
-          _buildManagementCard(
-            context,
-            'Управление днями',
-            Icons.calendar_today,
             () {
               Navigator.pushNamed(context, '/days_management');
             },
@@ -40,7 +31,7 @@ class ManagementScreen extends StatelessWidget {
           _buildManagementCard(
             context,
             'Управление залами',
-            Icons.calendar_today,
+            Icons.meeting_room,
             () {
               Navigator.pushNamed(context, '/halls_management');
             },
@@ -55,9 +46,14 @@ class ManagementScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
-          _buildManagementCard(context, 'Статистика', Icons.bar_chart, () {
-            // TODO: Navigate to statistics
-          }),
+          _buildManagementCard(
+            context,
+            'Статистика продаж',
+            Icons.bar_chart,
+            () {
+              Navigator.pushNamed(context, '/booking_management');
+            },
+          ),
         ],
       ),
     );

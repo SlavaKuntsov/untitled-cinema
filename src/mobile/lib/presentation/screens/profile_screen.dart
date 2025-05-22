@@ -60,6 +60,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _saveProfile() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    // Validate that firstName is not empty
+    if (_firstNameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Имя не может быть пустым',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final success = await authProvider.updateUserProfile(
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
@@ -203,12 +217,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Профиль'),
-        backgroundColor: AppTheme.primaryColor,
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Профиль'),
+      //   backgroundColor: AppTheme.primaryColor,
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          top: 48,
+          right: 16,
+          left: 16,
+          bottom: 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -282,8 +301,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Change profile data:',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    'Изменить данные профиля:',
+                    style: TextStyle(fontSize: 19, color: Colors.white),
                   ),
                   Switch(
                     value: _isEditing,
@@ -325,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // FirstName
               const Text(
-                'FirstName',
+                'Имя',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 8),
@@ -347,7 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // LastName
               const Text(
-                'LastName',
+                'Фамилия',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 8),
@@ -369,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Date of Birth
               const Text(
-                'Date of Birth',
+                'Деь Рождение',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 8),

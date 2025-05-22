@@ -78,7 +78,7 @@ class GoogleAuthService {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         debugPrint('Вход отменен пользователем');
-        throw const GoogleSignInException('Google sign-in was canceled');
+        throw const GoogleSignInException('Вход через Google был отменен');
       }
 
       debugPrint('Получен Google аккаунт: ${googleUser.email}');

@@ -263,16 +263,16 @@ class AuthProvider extends ChangeNotifier {
         _authStatus = AuthStatus.authenticated;
 
         // Создаем базовый объект пользователя, так как мы знаем его имя и email
-        _currentUser = User(
-          id: '', // ID будет получен позже при запросе данных пользователя
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          dateOfBirth: dateOfBirth,
-          role: '',
-          balance: 0,
-          createdAt: DateTime.now(),
-        );
+        // _currentUser = User(
+        //   id: '', // ID будет получен позже при запросе данных пользователя
+        //   email: email,
+        //   firstName: firstName,
+        //   lastName: lastName,
+        //   dateOfBirth: dateOfBirth,
+        //   role: '',
+        //   balance: 0,
+        //   createdAt: DateTime.now(),
+        // );
 
         // Загрузим полные данные пользователя
         checkAuthStatus();
