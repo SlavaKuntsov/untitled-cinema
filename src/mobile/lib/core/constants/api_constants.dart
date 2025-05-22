@@ -19,6 +19,10 @@ class ApiConstants {
   static String get authorize => '$userServiceBaseUrl/auth/authorize';
   static String get notifications => '$userServiceBaseUrl/notifications';
   static String get notificationsHub => '$userServiceBaseUrl/notificationsHub';
+  
+  // Admin API endpoints
+  static String getAllUsers() => '$userServiceBaseUrl/users';
+  static String deleteUser(String userId) => '$userServiceBaseUrl/users/$userId';
 
   // Movie Service Endpoints
   static String get movieServiceBaseUrl =>
@@ -60,6 +64,11 @@ class ApiConstants {
 
   // JWT константы
   static const String REFRESH_COOKIE_NAME = "yummy-cackes";
+
+  // Day management API endpoints
+  static String getAllDays() => '$movieServiceBaseUrl/days';
+  static String createDay() => '$movieServiceBaseUrl/days';
+  static String deleteDay(String dayId) => '$movieServiceBaseUrl/days/$dayId';
 }
 
 // Константы JWT

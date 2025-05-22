@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitledCinema/presentation/providers/booking_provider.dart';
+import 'package:untitledCinema/presentation/providers/day_management_provider.dart';
 import 'package:untitledCinema/presentation/providers/movie_provider.dart';
 import 'package:untitledCinema/presentation/providers/session_provider.dart';
+import 'package:untitledCinema/presentation/providers/user_management_provider.dart';
+import 'package:untitledCinema/presentation/screens/days_management_screen.dart';
 import 'package:untitledCinema/presentation/screens/history_screen.dart';
 import 'package:untitledCinema/presentation/screens/navigation_screen.dart';
 import 'package:untitledCinema/presentation/screens/splash_screen.dart';
+import 'package:untitledCinema/presentation/screens/users_management_screen.dart';
 
 import 'config/theme.dart';
 import 'core/config/environment_config.dart';
@@ -68,6 +72,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => di.sl<MovieProvider>()),
         ChangeNotifierProvider(create: (_) => di.sl<SessionProvider>()),
         ChangeNotifierProvider(create: (_) => di.sl<BookingProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<UserManagementProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<DayManagementProvider>()),
         // ChangeNotifierProvider(create: (_) => di.sl<NotificationProvider>()),
       ],
       child: const MyApp(),
@@ -172,6 +178,8 @@ class _MyAppState extends State<MyApp> {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const NavigationScreen(),
         '/history': (context) => const HistoryScreen(),
+        '/users_management': (context) => const UsersManagementScreen(),
+        '/days_management': (context) => const DaysManagementScreen(),
       },
     );
   }

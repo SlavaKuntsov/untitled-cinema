@@ -61,28 +61,18 @@ public class BookingController(
 		[FromBody] CreateBookingCommand request,
 		CancellationToken cancellationToken)
 	{
-		//var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-		//	?? throw new UnauthorizedAccessException("User ID not found in claims.");
-
-		//if (!Guid.TryParse(userIdClaim.Value, out var userId))
-		//	throw new UnauthorizedAccessException("Invalid User ID format in claims.");
-
-		//var command = request with { UserId = userId };
-
 		logger.LogInformation(
 			"Starting to create bookings {UserId} - {SessionId}.",
 			request.UserId,
 			request.SessionId);
 
-		var bookingId = await mediator.Send(request, cancellationToken);
+		await mediator.Send(request, cancellationToken);
 
 		logger.LogInformation(
 			"Processed create bookings {UserId} - {SessionId}.",
 			request.UserId,
 			request.SessionId);
 
-		// return Accepted();
-		// for flutter do 200
 		return Ok();
 	}
 

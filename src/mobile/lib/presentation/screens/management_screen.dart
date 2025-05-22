@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../../config/theme.dart';
+import 'days_management_screen.dart';
+import 'users_management_screen.dart';
 
 class ManagementScreen extends StatelessWidget {
   const ManagementScreen({Key? key}) : super(key: key);
@@ -34,10 +37,19 @@ class ManagementScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildManagementCard(
             context,
+            'Управление днями',
+            Icons.calendar_today,
+            () {
+              Navigator.pushNamed(context, '/days_management');
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildManagementCard(
+            context,
             'Управление пользователями',
             Icons.people,
             () {
-              // TODO: Navigate to user management
+              Navigator.pushNamed(context, '/users_management');
             },
           ),
           const SizedBox(height: 16),
@@ -74,14 +86,14 @@ class ManagementScreen extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 32,
-                color: AppTheme.primaryColor,
+                size: 28,
+                color: Colors.white,
               ),
               const SizedBox(width: 16),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -96,4 +108,4 @@ class ManagementScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}
