@@ -161,9 +161,3 @@ src/
 2. Install the required dependencies
 3. Run the project using Docker Compose
 4. Access the web application at http://localhost:80
-
-## Contributors
-- Your name and contact information
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
