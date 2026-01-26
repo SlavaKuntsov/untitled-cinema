@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: server/UsersDockerfile
+      dockerfile: server-asp/UsersDockerfile
     ports:
       - "7101:7001"
     environment:
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: server/MoviesDockerfile
+      dockerfile: server-asp/MoviesDockerfile
     ports:
       - "7102:7002"
     environment:
@@ -71,7 +71,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: server/BookingsDockerfile
+      dockerfile: server-asp/BookingsDockerfile
     ports:
       - "7103:7003"
     environment:
